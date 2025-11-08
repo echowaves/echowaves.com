@@ -1,50 +1,548 @@
 .home {
-  text-align: center;
-  padding: 2rem 0;
+  max-width: 100%;
+  margin: 0;
+  background-color: #FFFFFF;
+  color: #2C2C2C;
 }
 
-.home h1 {
+/* Hero Section */
+.hero {
+  padding: 6rem 2rem 5rem;
+  background: linear-gradient(140deg, #6B4C9A 0%, #8B5FB8 45%, #FF6B35 100%);
+  color: #FFFFFF;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.25), transparent 60%),
+    radial-gradient(circle at 80% 0%, rgba(255, 255, 255, 0.15), transparent 55%);
+  pointer-events: none;
+}
+
+.hero-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4rem;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+}
+
+.hero-copy {
+  text-align: left;
+}
+
+.hero-preheading {
+  font-size: 1.1rem;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.hero-title {
+  font-size: clamp(3rem, 4vw, 4.5rem);
+  margin-bottom: 1.5rem;
+  font-weight: 200;
+  letter-spacing: 0.05em;
+  text-transform: none;
+}
+
+.hero-subtitle {
+  font-size: 1.25rem;
+  line-height: 1.9;
+  margin-bottom: 2.5rem;
+  font-weight: 300;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.hero-media {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+  align-items: flex-end;
+}
+
+.hero-image {
+  width: min(320px, 40vw);
+  filter: drop-shadow(0 25px 45px rgba(16, 8, 36, 0.28));
+  border-radius: 36px;
+}
+
+.hero-graphic {
+  width: min(200px, 28vw);
+  filter: drop-shadow(0 12px 30px rgba(16, 8, 36, 0.25));
+}
+
+/* App Badges */
+.app-badges {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  margin-top: 2rem;
+}
+
+.badge-link {
+  text-decoration: none;
+}
+
+.badge {
+  display: inline-block;
+  padding: 1rem 2.5rem;
+  border-radius: 999px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+  font-size: 1.05rem;
+  letter-spacing: 0.02em;
+  background: rgba(255, 255, 255, 0.92);
+  color: #6B4C9A;
+}
+
+.ios-badge {
+  border-color: rgba(255, 255, 255, 0.8);
+}
+
+.android-badge {
+  background: #FF6B35;
+  color: #FFFFFF;
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.badge:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.22);
+}
+
+.ios-badge:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: #FFFFFF;
+}
+
+.android-badge:hover {
+  background: #FFFFFF;
+  color: #FF6B35;
+}
+
+/* Description Section */
+.description {
+  padding: 5rem 2rem;
+  background: #FFFFFF;
+}
+
+.description-content {
+  max-width: 960px;
+  margin: 0 auto;
+  text-align: center;
+  font-size: 1.15rem;
+  line-height: 1.9;
+  font-weight: 300;
+  color: #2C2C2C;
+}
+
+.description-content p {
+  margin-bottom: 2rem;
+}
+
+.use-case-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem 1.5rem;
+  list-style: none;
+  padding: 0;
+  margin: 2rem 0 3rem;
+  font-weight: 400;
+  color: #6B4C9A;
+  letter-spacing: 0.03em;
+}
+
+/* Innovation Principles */
+.innovation-principles {
+  padding: 5rem 2rem;
+  background: #F8F8F8;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.innovation-principles h2 {
+  text-align: center;
   font-size: 3rem;
   margin-bottom: 1rem;
-  background: linear-gradient(135deg, #646cff 0%, #535bf2 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: #6B4C9A;
+  font-weight: 200;
+  letter-spacing: 0.05em;
 }
 
-.tagline {
-  font-size: 1.25rem;
-  color: rgba(255, 255, 255, 0.6);
-  margin-bottom: 3rem;
+.principles-intro {
+  text-align: center;
+  font-size: 1.2rem;
+  color: #7A7A7A;
+  margin-bottom: 4rem;
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+  font-weight: 300;
+  line-height: 1.8;
 }
 
-.features {
+.principles-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 2rem;
-  margin-top: 3rem;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 3rem;
+  margin-top: 2rem;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
-.feature-card {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
-  padding: 2rem;
+.principle-card {
+  background: #FFFFFF;
+  border-radius: 12px;
+  padding: 2.5rem;
   transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  text-align: center;
 }
 
-.feature-card:hover {
-  transform: translateY(-4px);
-  border-color: #646cff;
-  box-shadow: 0 8px 16px rgba(100, 108, 255, 0.2);
+.principle-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 32px rgba(107, 76, 154, 0.15);
 }
 
-.feature-card h3 {
-  font-size: 1.5rem;
+.principle-card h3 {
+  font-size: 1.6rem;
+  margin-bottom: 1rem;
+  color: #FF6B35;
+  font-weight: 300;
+  letter-spacing: 0.05em;
+}
+
+.principle-card p {
+  color: #2C2C2C;
+  line-height: 1.8;
+  font-weight: 300;
+  font-size: 1.05rem;
+}
+
+/* About Echowaves */
+.about-echowaves {
+  padding: 5rem 2rem;
+  text-align: center;
+  background: #FFFFFF;
+}
+
+.about-content {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.about-echowaves h2 {
+  font-size: 3rem;
+  margin-bottom: 1.5rem;
+  color: #6B4C9A;
+  font-weight: 200;
+  letter-spacing: 0.05em;
+}
+
+.nonprofit {
+  font-size: 1.4rem;
+  font-weight: 300;
+  color: #2C2C2C;
+  margin-bottom: 2rem;
+}
+
+.about-echowaves p {
+  font-size: 1.15rem;
+  line-height: 1.9;
+  color: #2C2C2C;
+  margin-bottom: 1.5rem;
+  font-weight: 300;
+}
+
+/* Press Review */
+.press-review {
+  padding: 5rem 2rem;
+  background: linear-gradient(135deg, #FF6B35 0%, #FF8555 100%);
+  color: #FFFFFF;
+  position: relative;
+  overflow: hidden;
+}
+
+.press-review::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120"><path d="M0,64L48,69.3C96,75,192,85,288,80C384,75,480,53,576,58.7C672,64,768,96,864,96C960,96,1056,64,1152,58.7L1200,53.3L1200,0L1152,0C1104,0,1008,0,912,0C816,0,720,0,624,0C528,0,432,0,336,0C240,0,144,0,96,0L0,0Z" fill="%23FFFFFF" fill-opacity="0.1"/></svg>') repeat-x top;
+  background-size: 1200px 120px;
+  opacity: 0.3;
+}
+
+.press-review h2 {
+  text-align: center;
+  font-size: 3rem;
+  margin-bottom: 3rem;
+  color: #FFFFFF;
+  font-weight: 200;
+  letter-spacing: 0.05em;
+  position: relative;
+  z-index: 1;
+}
+
+.review {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 3rem;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  position: relative;
+  z-index: 1;
+}
+
+.review-text {
+  font-size: 1.4rem;
+  font-style: italic;
+  color: #2C2C2C;
+  line-height: 1.8;
+  margin-bottom: 1.5rem;
+  font-weight: 300;
+}
+
+.review-author {
+  text-align: right;
+  font-style: normal;
+}
+
+.review-author cite {
+  display: block;
+  font-weight: 400;
+  color: #6B4C9A;
+  font-size: 1.2rem;
   margin-bottom: 0.5rem;
 }
 
-.feature-card p {
-  color: rgba(255, 255, 255, 0.6);
-  margin: 0;
+.review-author time {
+  display: block;
+  color: #7A7A7A;
+  font-size: 0.95rem;
+  font-weight: 300;
 }
+
+/* CTA Section */
+.cta {
+  padding: 6rem 2rem;
+  text-align: center;
+  background: #F8F8F8;
+}
+
+.cta h2 {
+  font-size: 3rem;
+  margin-bottom: 3rem;
+  color: #6B4C9A;
+  font-weight: 200;
+  letter-spacing: 0.05em;
+}
+
+.contact {
+  margin-top: 3rem;
+  font-size: 1.2rem;
+}
+
+.contact a {
+  color: #FF6B35;
+  text-decoration: none;
+  font-weight: 400;
+  transition: color 0.3s;
+  border-bottom: 2px solid transparent;
+}
+
+.contact a:hover {
+  color: #6B4C9A;
+  border-bottom-color: #6B4C9A;
+}
+
+.cta-social-links {
+  margin-top: 1.5rem;
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  font-size: 1rem;
+}
+
+.cta-social-links a {
+  color: #6B4C9A;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.cta-social-links a:hover {
+  color: #FF6B35;
+}
+
+/* Screenshots */
+.screenshots {
+  padding: 5rem 2rem 6rem;
+  background: linear-gradient(140deg, #f9f5ff 0%, #fff7f0 100%);
+}
+
+.screenshots-heading {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.screenshots-heading h2 {
+  font-size: 3rem;
+  color: #6B4C9A;
+  font-weight: 200;
+  letter-spacing: 0.05em;
+}
+
+.screenshots-subheading {
+  font-size: 1.1rem;
+  color: #FF6B35;
+  font-weight: 500;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+}
+
+.screenshots-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2.5rem;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.screenshot-card {
+  background: rgba(255, 255, 255, 0.95);
+  padding: 2.5rem 1.5rem;
+  border-radius: 24px;
+  box-shadow: 0 20px 40px rgba(107, 76, 154, 0.12);
+  display: flex;
+  justify-content: center;
+}
+
+.screenshot-card img {
+  width: min(320px, 100%);
+  border-radius: 36px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+/* Additional Links */
+.additional-links {
+  padding: 4.5rem 2rem;
+  background: #FFFFFF;
+  text-align: center;
+}
+
+.additional-links h2 {
+  font-size: 2.5rem;
+  color: #6B4C9A;
+  font-weight: 200;
+  letter-spacing: 0.05em;
+  margin-bottom: 2rem;
+}
+
+.additional-links ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 2.5rem;
+  justify-content: center;
+}
+
+.additional-links a {
+  color: #6B4C9A;
+  text-decoration: none;
+  font-weight: 400;
+  transition: color 0.3s ease;
+  letter-spacing: 0.04em;
+}
+
+.additional-links a:hover {
+  color: #FF6B35;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .hero {
+    padding: 4.5rem 1.5rem 4rem;
+  }
+
+  .hero-inner {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .hero-copy {
+    text-align: center;
+  }
+
+  .hero-subtitle {
+    font-size: 1.1rem;
+  }
+
+  .hero-media {
+    margin: 0 auto;
+  }
+
+  .app-badges {
+    justify-content: center;
+  }
+
+  .badge {
+    width: 100%;
+    max-width: 280px;
+  }
+
+  .use-case-list {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .screenshots-heading h2,
+  .innovation-principles h2,
+  .about-echowaves h2,
+  .press-review h2,
+  .cta h2 {
+    font-size: 2.2rem;
+  }
+
+  .screenshots-subheading {
+    letter-spacing: 0.2em;
+  }
+
+  .principles-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .review {
+    padding: 2rem;
+  }
+
+  .review-text {
+    font-size: 1.2rem;
+  }
+
+  .additional-links ul {
+    gap: 0.75rem 1.5rem;
+  }
+}
+
+

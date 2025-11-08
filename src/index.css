@@ -1,11 +1,19 @@
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
+  font-family: 'Avenir', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  line-height: 1.6;
   font-weight: 400;
 
+  /* EchoWaves Color Palette */
+  --primary-purple: #6B4C9A;
+  --primary-orange: #FF6B35;
+  --dark-bg: #2C2C2C;
+  --light-text: #FFFFFF;
+  --gray-text: #7A7A7A;
+  --accent-pink: #E63462;
+  
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  background-color: #FFFFFF;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -23,15 +31,39 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  background-color: #FFFFFF;
+  color: #2C2C2C;
 }
 
 #root {
   width: 100%;
 }
 
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Avenir', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-weight: 300;
+  letter-spacing: 0.05em;
+}
+
 h1 {
   font-size: 3.2em;
   line-height: 1.1;
+  font-weight: 200;
+}
+
+h2 {
+  font-weight: 300;
+  font-size: 2.5em;
+}
+
+h3 {
+  font-weight: 300;
+  font-size: 1.8em;
+}
+
+p {
+  font-size: 1.1em;
+  line-height: 1.8;
 }
 
 button {
@@ -41,13 +73,16 @@ button {
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  background-color: #1a1a1a;
+  background-color: var(--primary-purple);
+  color: white;
   cursor: pointer;
-  transition: border-color 0.25s;
+  transition: all 0.3s;
 }
 
 button:hover {
-  border-color: #646cff;
+  background-color: var(--primary-orange);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 button:focus,
@@ -55,12 +90,26 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
-@media (prefers-color-scheme: light) {
+a {
+  color: var(--primary-purple);
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+a:hover {
+  color: var(--primary-orange);
+}
+
+@media (prefers-color-scheme: dark) {
+  /* Keep light theme even in dark mode to match echowaves.com */
   :root {
-    color: #213547;
-    background-color: #ffffff;
+    color: #2C2C2C;
+    background-color: #FFFFFF;
   }
-  button {
-    background-color: #f9f9f9;
+  
+  body {
+    background-color: #FFFFFF;
+    color: #2C2C2C;
   }
 }
+
