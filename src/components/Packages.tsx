@@ -128,14 +128,43 @@ const Packages: React.FC = () => {
           {' '}— a location-based photo sharing app with thousands of users.
         </p>
         <div className="app-links">
-          <a href="https://apps.apple.com/us/app/wisaw/id1299949122" target="_blank" rel="noopener noreferrer" className="btn">
-            📱 iOS App
+          <a 
+            href="https://apps.apple.com/us/app/wisaw/id1299949122" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="app-store-badge"
+          >
+            <img 
+              src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/en-us?size=250x83&amp;releaseDate=1517356800" 
+              alt="Download on the App Store"
+              style={{ height: '50px' }}
+            />
           </a>
-          <a href="https://play.google.com/store/apps/details?id=com.echowaves.wisaw" target="_blank" rel="noopener noreferrer" className="btn">
-            🤖 Android App
+          <a 
+            href="https://play.google.com/store/apps/details?id=com.echowaves.wisaw" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="app-store-badge"
+          >
+            <img 
+              src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" 
+              alt="Get it on Google Play"
+              style={{ height: '75px' }}
+            />
           </a>
-          <a href="https://github.com/echowaves/WiSaw" target="_blank" rel="noopener noreferrer" className="btn btn-outline">
-            💻 Source Code
+        </div>
+        <div style={{ marginTop: '20px' }}>
+          <a 
+            href="https://github.com/echowaves/WiSaw" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="app-store-badge"
+          >
+            <img 
+              src="https://img.shields.io/badge/View%20on-GitHub-181717?style=for-the-badge&logo=github&logoColor=white" 
+              alt="View on GitHub"
+              style={{ height: '40px' }}
+            />
           </a>
         </div>
       </div>
