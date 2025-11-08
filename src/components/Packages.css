@@ -179,8 +179,24 @@
 .app-links {
   display: flex;
   justify-content: center;
+  align-items: center;
   gap: 20px;
   flex-wrap: wrap;
+  margin-top: 20px;
+}
+
+.app-store-badge {
+  display: inline-block;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.app-store-badge:hover {
+  transform: translateY(-2px);
+  opacity: 0.8;
+}
+
+.app-store-badge img {
+  display: block;
 }
 
 @media (max-width: 768px) {
