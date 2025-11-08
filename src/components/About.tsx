@@ -40,10 +40,7 @@ const About: React.FC = () => {
           </div>
         </div>
         <div className="about-links">
-          <a href="https://www.echowaves.com" target="_blank" rel="noopener noreferrer" className="btn">
-            Visit Website
-          </a>
-          <a href="https://www.linkedin.com/in/dmitryame" target="_blank" rel="noopener noreferrer" className="btn btn-outline">
+          <a href="https://www.linkedin.com/in/dmitryame" target="_blank" rel="noopener noreferrer" className="btn">
             Connect on LinkedIn
           </a>
           <a href="mailto:dmitry@echowaves.com" className="btn btn-outline">
