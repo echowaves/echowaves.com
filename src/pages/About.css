@@ -1,0 +1,54 @@
+.about {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.about h1 {
+  font-size: 2.5rem;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.about-content {
+  line-height: 1.8;
+}
+
+.about-content h2 {
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  color: #646cff;
+}
+
+.about-content p {
+  margin-bottom: 1.5rem;
+  color: rgba(255, 255, 255, 0.87);
+}
+
+.tech-list,
+.features-list {
+  list-style: none;
+  padding: 0;
+}
+
+.tech-list li,
+.features-list li {
+  padding: 0.75rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.87);
+}
+
+.tech-list li:last-child,
+.features-list li:last-child {
+  border-bottom: none;
+}
+
+.tech-list strong {
+  color: #646cff;
+}
+
+.features-list li::before {
+  content: "✓ ";
+  color: #646cff;
+  font-weight: bold;
+  margin-right: 0.5rem;
+}

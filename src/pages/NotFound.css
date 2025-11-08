@@ -1,0 +1,38 @@
+.not-found {
+  text-align: center;
+  padding: 4rem 2rem;
+}
+
+.not-found h1 {
+  font-size: 8rem;
+  margin: 0;
+  background: linear-gradient(135deg, #646cff 0%, #535bf2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.not-found h2 {
+  font-size: 2rem;
+  margin: 1rem 0;
+}
+
+.not-found p {
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 2rem;
+}
+
+.home-link {
+  display: inline-block;
+  padding: 0.75rem 2rem;
+  background: #646cff;
+  color: white;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: background 0.3s;
+}
+
+.home-link:hover {
+  background: #535bf2;
+}
