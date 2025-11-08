@@ -54,7 +54,6 @@ const Footer: React.FC = () => {
           <h4>Contact</h4>
           <ul>
             <li><a href="mailto:dmitry@echowaves.com">dmitry@echowaves.com</a></li>
-            <li><a href="https://www.echowaves.com" target="_blank" rel="noopener noreferrer">www.echowaves.com</a></li>
             <li><a href="https://wisaw.com" target="_blank" rel="noopener noreferrer">WiSaw App</a></li>
           </ul>
         </div>

@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Echowaves Corporation company showcase - featuring open-source React Native and Expo packages",
   "author": "Echowaves Corp. <dmitry@echowaves.com>",
-  "homepage": "https://www.echowaves.com",
+  "homepage": "https://echowaves.com",
   "repository": {
     "type": "git",
     "url": "https://github.com/echowaves/echowaves.com"
