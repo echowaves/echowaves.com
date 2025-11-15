@@ -61,7 +61,9 @@ const Footer: React.FC = () => {
 
       <div className="footer-bottom">
         <p>&copy; {currentYear} Echowaves Corp. All rights reserved.</p>
-        <p>Built with ❤️ using React and TypeScript</p>
+        <p>
+          Built with ❤️ using React and TypeScript | <a href="/privacy">Privacy Policy</a>
+        </p>
       </div>
     </footer>
   );
