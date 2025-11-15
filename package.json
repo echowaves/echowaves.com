@@ -1,6 +1,6 @@
 {
   "name": "echowaves-showcase",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Echowaves Corporation company showcase - featuring open-source React Native and Expo packages",
   "author": "Echowaves Corp. <dmitry@echowaves.com>",
   "homepage": "https://echowaves.com",
@@ -30,6 +30,7 @@
     "@types/react-dom": "^19.2.2",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
+    "react-router-dom": "^7.9.6",
     "react-scripts": "5.0.1",
     "typescript": "^4.9.5",
     "web-vitals": "^2.1.4"
