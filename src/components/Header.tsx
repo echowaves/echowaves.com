@@ -8,13 +8,15 @@ const Header: React.FC = () => {
     <header className="header">
       <div className="header-content">
         <div className="logo">
-          <h1>ECHOWAVES CORP.</h1>
+          <a href="/">
+            <h1>ECHOWAVES CORP.</h1>
+          </a>
         </div>
         <nav className={`nav ${isMenuOpen ? 'active' : ''}`}>
-          <a href="#about">About</a>
-          <a href="#projects">Projects</a>
-          <a href="#packages">Packages</a>
-          <a href="#blog">Blog</a>
+          <a href="/#about">About</a>
+          <a href="/#projects">Projects</a>
+          <a href="/#packages">Packages</a>
+          <a href="/#blog">Blog</a>
           <a href="https://github.com/echowaves" target="_blank" rel="noopener noreferrer">
             GitHub
           </a>

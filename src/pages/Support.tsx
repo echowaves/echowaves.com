@@ -1,16 +1,16 @@
 import React from 'react';
 import Header from '../components/Header';
-import PrivacyComponent from '../components/Privacy';
+import SupportComponent from '../components/Support';
 import Footer from '../components/Footer';
 
-const Privacy: React.FC = () => {
+const Support: React.FC = () => {
   return (
     <>
       <Header />
-      <PrivacyComponent />
+      <SupportComponent />
       <Footer />
     </>
   );
 };
 
-export default Privacy;
+export default Support;

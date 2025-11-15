@@ -36,6 +36,7 @@ const Footer: React.FC = () => {
             <li><a href="#projects">Projects</a></li>
             <li><a href="#packages">Packages</a></li>
             <li><a href="#blog">Blog</a></li>
+            <li><a href="/support">Support</a></li>
             <li><a href="https://dev.to/dmitryame" target="_blank" rel="noopener noreferrer">Dev.to Articles</a></li>
             <li><a href="https://github.com/orgs/echowaves/repositories" target="_blank" rel="noopener noreferrer">All Repositories</a></li>
           </ul>
