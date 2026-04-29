@@ -1,0 +1,16 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header';
+import PrivacyComponent from '../components/Privacy';
+import Footer from '../components/Footer';
+---
+
+<BaseLayout
+  title="Privacy Policy — Echowaves"
+  description="Privacy policy for Echowaves and its open-source projects. Learn how we handle data, cookies, and your privacy rights."
+  canonicalUrl="https://echowaves.com/privacy"
+>
+  <Header client:load />
+  <PrivacyComponent />
+  <Footer />
+</BaseLayout>
