@@ -1,0 +1,75 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header';
+import Hero from '../components/Hero';
+import About from '../components/About';
+import Projects from '../components/Projects';
+import Packages from '../components/Packages';
+import Blog from '../components/Blog';
+import Footer from '../components/Footer';
+---
+
+<BaseLayout
+  title="Echowaves — Open-Source React Native & Expo Packages | expo-cached-image, expo-storage"
+  description="Open-source Expo & React Native tools by Dmitry Amelchenko. High-performance packages: expo-cached-image, expo-storage, expo-masonry-layout. Used in production apps."
+  canonicalUrl="https://echowaves.com/"
+>
+  <Fragment slot="head">
+    <!-- JSON-LD Person -->
+    <script type="application/ld+json" set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": "Dmitry Amelchenko",
+      "jobTitle": "CTO",
+      "worksFor": {
+        "@type": "Organization",
+        "name": "Echowaves"
+      },
+      "url": "https://echowaves.com",
+      "sameAs": [
+        "https://github.com/dmitryame",
+        "https://www.linkedin.com/in/dmitryame",
+        "https://dev.to/dmitryame"
+      ]
+    })} />
+
+    <!-- JSON-LD SoftwareSourceCode for packages -->
+    <script type="application/ld+json" set:html={JSON.stringify([
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareSourceCode",
+        "name": "expo-cached-image",
+        "description": "Super fast cached image component for react-native applications powered by expo",
+        "codeRepository": "https://github.com/echowaves/expo-cached-image",
+        "programmingLanguage": "TypeScript",
+        "runtimePlatform": "React Native"
+      },
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareSourceCode",
+        "name": "expo-storage",
+        "description": "Simple way to store persistent data without size limitations of react-native async-storage",
+        "codeRepository": "https://github.com/echowaves/expo-storage",
+        "programmingLanguage": "TypeScript",
+        "runtimePlatform": "React Native"
+      },
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareSourceCode",
+        "name": "expo-masonry-layout",
+        "description": "High-performance masonry layout component for React Native and Expo applications",
+        "codeRepository": "https://github.com/echowaves/expo-masonry-layout",
+        "programmingLanguage": "TypeScript",
+        "runtimePlatform": "React Native"
+      }
+    ])} />
+  </Fragment>
+
+  <Header client:load />
+  <Hero />
+  <About />
+  <Projects />
+  <Packages />
+  <Blog />
+  <Footer />
+</BaseLayout>

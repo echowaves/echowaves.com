@@ -16,7 +16,7 @@ const Projects: React.FC = () => {
     {
       name: 'WiSaw',
       description: 'Incognito photos and short videos, anonymous posting. A location-based photo sharing mobile app.',
-      stars: 35,
+      stars: 38,
       forks: 6,
       language: 'JavaScript',
       link: 'https://github.com/echowaves/WiSaw',

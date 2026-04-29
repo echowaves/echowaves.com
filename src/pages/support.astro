@@ -1,0 +1,16 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header';
+import SupportComponent from '../components/Support';
+import Footer from '../components/Footer';
+---
+
+<BaseLayout
+  title="Support — Echowaves"
+  description="Get help with Echowaves open-source packages: expo-cached-image, expo-storage, expo-masonry-layout. Contact, FAQ, and resources."
+  canonicalUrl="https://echowaves.com/support"
+>
+  <Header client:load />
+  <SupportComponent />
+  <Footer />
+</BaseLayout>

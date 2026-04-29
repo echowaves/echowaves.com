@@ -20,7 +20,7 @@ const Packages: React.FC = () => {
       version: '54.0.7',
       description: 'Super fast cached image component for react-native applications powered by expo',
       downloads: '907/week',
-      stars: 100,
+      stars: 103,
       icon: '🖼️',
       features: [
         'Fast image loading with local caching',
@@ -37,7 +37,7 @@ const Packages: React.FC = () => {
       version: '54.0.6',
       description: 'Simple way to store persistent data, which does not have size limitations of react-native async-storage',
       downloads: '599/week',
-      stars: 14,
+      stars: 15,
       icon: '💾',
       features: [
         'No size limitations',
@@ -54,7 +54,7 @@ const Packages: React.FC = () => {
       version: '1.1.11',
       description: 'High-performance masonry layout component for React Native and Expo applications',
       downloads: '8/week',
-      stars: 0,
+      stars: 1,
       icon: '📐',
       features: [
         'High Performance with VirtualizedList',
