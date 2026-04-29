@@ -9,7 +9,7 @@ const Header: React.FC = () => {
       <div className="header-content">
         <div className="logo">
           <a href="/">
-            <h1>ECHOWAVES CORP.</h1>
+            <div className="logo-text"><span className="logo-prefix">~/</span>echowaves</div>
           </a>
         </div>
         <nav className={`nav ${isMenuOpen ? 'active' : ''}`}>
