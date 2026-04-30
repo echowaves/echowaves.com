@@ -38,6 +38,14 @@ All data in this application is hardcoded — there are no API calls, databases,
 | Before vs. After: How AI 'Vibe-Coded' a Mobile App Makeover     | Jun 15, 2025 | 4 min | AI, React Native                             |
 | Minimalistic architecture for Minimalistic product (PINNED)      | Feb 19, 2019 | 2 min | Architecture, JavaScript, ES6, Node          |
 
+## Featured Article Data Accuracy
+
+All featured article entries SHALL contain the correct dev.to URL, the exact published title, and a description that accurately summarizes the article content.
+
+- **WHEN** a user clicks any featured article link, **THEN** the browser SHALL navigate to a live dev.to article page (HTTP 200), not a 404 error
+- **WHEN** the featured articles section is rendered, **THEN** each article title SHALL match the title displayed on the corresponding dev.to page
+- **WHEN** the featured articles section is rendered, **THEN** each article description SHALL be a faithful summary of the linked article's content
+
 ## Blog Topic Areas
 
 6 topics: AI & Agentic Coding, React Native & Expo, Architecture, Vibe Coding, AWS & Cloud, Engineering Leadership
