@@ -2,36 +2,24 @@
 
 ## Route Definitions
 
-Routes are defined in `src/App.tsx` using React Router DOM v7 `<BrowserRouter>`.
+Routes are defined by `.astro` files in `src/pages/` using Astro file-based routing. Each route produces a separate HTML file with its own `<head>` containing unique title, meta description, OG tags, and JSON-LD.
 
-| Path       | Component  | Layout                         |
-|------------|------------|--------------------------------|
-| `/`        | `Home`     | Header → Hero → About → Projects → Packages → Blog → Footer |
-| `/privacy` | `Privacy`  | Header → Privacy content → Footer |
-| `/support` | `Support`  | Header → Support content → Footer |
+| Path       | Page File          | Layout                         |
+|------------|-------------------|--------------------------------|
+| `/`        | `index.astro`     | BaseLayout → Hero → About → Projects → Packages → Blog |
+| `/privacy` | `privacy.astro`   | BaseLayout → Privacy content   |
+| `/support` | `support.astro`   | BaseLayout → Support content   |
 
-## Page Components
+## Layout Composition
 
-All page components live in `src/pages/` and are re-exported via barrel file `src/pages/index.ts`.
-
-### Home (`src/pages/Home.tsx`)
-- Composes all main sections in order: Header, Hero, About, Projects, Packages, Blog, Footer
-- No props, no state
-
-### Privacy (`src/pages/Privacy.tsx`)
-- Layout wrapper: Header + PrivacyComponent (from `src/components/Privacy.tsx`) + Footer
-- No props, no state
-
-### Support (`src/pages/Support.tsx`)
-- Layout wrapper: Header + SupportComponent (from `src/components/Support.tsx`) + Footer
-- No props, no state
+A shared `BaseLayout.astro` layout wraps all pages, providing common `<head>` elements (charset, viewport, favicon, global CSS, JSON-LD Organization schema) and accepting per-page props for title, description, and OG tags. Header and Footer are rendered within the layout.
 
 ## Navigation Patterns
 
 ### In-page Scrolling
 - Home page sections have `id` attributes (`about`, `projects`, `packages`, `blog`)
-- Nav links use `/#section` format (e.g., `/#about`)
-- `ScrollToHash` component in `App.tsx` listens to `location.hash` changes and scrolls the target element into view with smooth behavior after a 100ms delay
+- Nav links use `#section` format (e.g., `#about`)
+- Native CSS `scroll-behavior: smooth` handles anchor scrolling — no JavaScript-based scroll handling needed
 
 ### Cross-page Links
 - Footer links to `/privacy` and `/support`

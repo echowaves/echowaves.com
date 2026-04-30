@@ -4,7 +4,7 @@
 
 - **File:** `src/components/Header.tsx`
 - **State:** `isMenuOpen` (boolean) — toggles mobile hamburger menu
-- **Renders:** Sticky top nav bar with logo ("ECHOWAVES CORP." linking to `/`), navigation links (About, Projects, Packages, Blog as `/#section` anchors), external GitHub link, hamburger menu toggle
+- **Renders:** Sticky top nav bar with logo ("echowaves" as a styled `<div>` or `<span>`, NOT `<h1>`), navigation links (About, Projects, Packages, Blog as `#section` anchors), external GitHub link, hamburger menu toggle. Uses Astro `client:load` directive for client-side interactivity.
 - **External links:** `https://github.com/echowaves`
 - **Responsive:** Hamburger menu below 768px
 
@@ -12,7 +12,7 @@
 
 - **File:** `src/components/Hero.tsx`
 - **State:** None (stateless)
-- **Renders:** Title ("Building the Future of Mobile Development"), subtitle, two CTA buttons ("Explore Packages" → `#packages`, "View on GitHub" → external), stats grid (100+ stars, 43 repos, 1,500+ weekly downloads)
+- **Renders:** Nerdy tagline, upside-down text brand element ("Sonɹɔǝ oɟ ɔoɯdlǝx solnʇᴉous ʇo ʎonɹ sᴉɯdlǝ dɹoqlǝɯs˙"), two CTA buttons ("Explore Packages" → `#packages`, "View on GitHub" → external), stats grid (103+ stars, 43 repos, 1,500+ weekly downloads)
 - **External links:** `https://github.com/echowaves`
 - **Note:** Stats are hardcoded
 
@@ -38,7 +38,7 @@
     tags: string[];
   }
   ```
-- **Content:** 5 hardcoded projects (WiSaw, WiSaw.cdk, WiSaw.client, get2knowu, chimingClock)
+- **Content:** 5 hardcoded projects (WiSaw 38 stars/6 forks, WiSaw.cdk, WiSaw.client, get2knowu, chimingClock)
 - **Renders:** Grid of project cards with language badge, tags, star/fork counts, GitHub link. Footer CTA to "View All 43 Repositories"
 - **External links:** Individual GitHub repo URLs, `https://github.com/orgs/echowaves/repositories`
 
@@ -59,7 +59,7 @@
     icon: string;
   }
   ```
-- **Content:** 3 NPM packages (expo-cached-image v54.0.7, expo-storage v54.0.6, expo-masonry-layout v1.1.11)
+- **Content:** 3 NPM packages (expo-cached-image v54.0.7 / 103 stars, expo-storage v54.0.6 / 15 stars, expo-masonry-layout v1.1.11 / 1 star)
 - **Renders:** Package cards (icon, version badge, description, download/star stats, feature list, NPM/GitHub links, install command), "Used in Production" section with WiSaw app store badges
 - **External links:** NPM package pages, GitHub repos, `https://wisaw.com`, Apple App Store, Google Play Store, shields.io badge
 
@@ -78,8 +78,8 @@
   }
   // topicAreas: { icon: string; name: string; color: string }[]
   ```
-- **Content:** 6 featured blog posts (Jan 2021 – Aug 2024), 6 topic area cards, blog stats (26 posts, 19 comments, 6+ years), author bio with skills
-- **Renders:** Blog post cards (clickable, link to dev.to), topic area cards with colored borders, stats section, blockquote, author bio
+- **Content:** 7 featured blog posts (Feb 2019 pinned + 2025–2026), 6 topic area cards, blog stats (31 posts, 19 comments, 7+ years), author bio with skills
+- **Renders:** Blog post cards (clickable, link to dev.to, pinned post visually distinguished), topic area cards, stats section, blockquote, author bio
 - **External links:** `dev.to/dmitryame/*` articles, `https://dev.to/dmitryame` profile
 
 ## Footer
