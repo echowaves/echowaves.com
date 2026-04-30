@@ -47,6 +47,6 @@
 
 - [x] 5.1 Remove old `build/` directory from `.gitignore` if present, add `dist/`. Remove leftover CRA files (`public/index.html` — content moved to BaseLayout).
 - [x] 5.2 Run full build and verify all pages render correctly with dark theme.
-- [ ] 5.3 Run Lighthouse audit on each page — verify SEO score, accessibility score, and performance score.
+- [x] 5.3 Run Lighthouse audit on each page — verify SEO score, accessibility score, and performance score.
 - [x] 5.4 Verify all external links work (dev.to articles, GitHub repos, npm packages, app store links).
 - [x] 5.5 Test responsive layout on mobile (375px) and tablet (768px) breakpoints.
