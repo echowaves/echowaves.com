@@ -14,36 +14,36 @@ interface BlogPost {
 const Blog: React.FC = () => {
   const featuredPosts: BlogPost[] = [
     {
-      title: 'The Token Tax: Why AI-Generated Code Costs More Than You Think',
-      description: 'The hidden costs of AI-generated code — token bloat, maintenance debt, and why less is more.',
+      title: 'The Token Tax: Why GenAI Billing Makes Minimalist Architecture Mandatory',
+      description: 'Why token-based GenAI billing makes minimalist architecture mandatory — complexity is now metered per token.',
       date: 'Apr 29, 2026',
-      tags: ['AI', 'Architecture', 'Productivity'],
-      link: 'https://dev.to/dmitryame/the-token-tax-why-ai-generated-code-costs-more-than-you-think-4a1b',
-      readTime: '6 min read'
+      tags: ['AI', 'Software Engineering', 'WebDev', 'Architecture'],
+      link: 'https://dev.to/dmitryame/the-token-tax-why-genai-billing-makes-minimalist-architecture-mandatory-4fl2',
+      readTime: '3 min read'
     },
     {
-      title: 'Velocity is a Vanity Metric. Ship Less, Matter More.',
-      description: 'Why shipping faster does not mean shipping better — and what actually matters.',
+      title: 'Velocity is a Vanity Metric: Why Agentic Coding is Actually About Quality.',
+      description: 'Why viewing agentic AI as just a speed booster is a category error — the real gain is compounding quality.',
       date: 'Apr 23, 2026',
-      tags: ['Engineering', 'Leadership', 'Agile'],
-      link: 'https://dev.to/dmitryame/velocity-is-a-vanity-metric-ship-less-matter-more-2k9f',
-      readTime: '5 min read'
+      tags: ['AI', 'Software Development', 'Architecture', 'Productivity'],
+      link: 'https://dev.to/dmitryame/velocity-is-a-vanity-metric-why-agentic-coding-is-actually-about-quality-3cof',
+      readTime: '3 min read'
     },
     {
-      title: 'From Vibe Coding to Spec-Driven Development',
-      description: 'How I evolved past vibe coding into a structured, spec-driven workflow with AI agents.',
+      title: 'From Vibe Coding to SDD: Why the Future of Engineering is Architecture',
+      description: 'The shift from vibe coding to spec-driven development, where every developer becomes an architect.',
       date: 'Mar 30, 2026',
-      tags: ['AI', 'SDD', 'Workflow'],
-      link: 'https://dev.to/dmitryame/from-vibe-coding-to-spec-driven-development-3g7h',
-      readTime: '7 min read'
+      tags: ['AI', 'Architecture', 'Software Engineering', 'Vibe Coding'],
+      link: 'https://dev.to/dmitryame/from-vibe-coding-to-sdd-why-the-future-of-engineering-is-architecture-2ae5',
+      readTime: '3 min read'
     },
     {
       title: 'The End of Vibe Coding',
-      description: 'Why the vibe coding era is ending and what disciplined AI-assisted development looks like.',
-      date: 'Mar 8, 2026',
-      tags: ['AI', 'Vibe Coding', 'Future'],
-      link: 'https://dev.to/dmitryame/the-end-of-vibe-coding-4k2m',
-      readTime: '5 min read'
+      description: 'Why vibe coding fails at scale and how Spec-Driven Development replaces it with disciplined, architectural AI workflows.',
+      date: 'Mar 7, 2026',
+      tags: ['AI', 'Engineering', 'Testing', 'Workflow'],
+      link: 'https://dev.to/dmitryame/the-end-of-vibe-coding-2e78',
+      readTime: '3 min read'
     },
     {
       title: 'Make Coding Fun Again',
@@ -57,17 +57,17 @@ const Blog: React.FC = () => {
       title: "Before vs. After: How AI 'Vibe-Coded' a Mobile App Makeover",
       description: 'UX improvements for mobile app using AI — a before and after side-by-side comparison.',
       date: 'Jun 15, 2025',
-      tags: ['AI', 'React Native', 'UX'],
+      tags: ['AI', 'React Native'],
       link: 'https://dev.to/dmitryame/vibe-coding-ux-improvements-for-mobile-app-before-and-after-side-by-side-comparison-h3j',
       readTime: '4 min read'
     },
     {
       title: 'Minimalistic architecture for Minimalistic product',
-      description: 'The philosophy behind building lean systems — why less infrastructure means more resilience.',
-      date: 'Feb 20, 2019',
-      tags: ['Architecture', 'AWS', 'Minimalism'],
-      link: 'https://dev.to/dmitryame/minimalistic-architecture-for-minimalistic-product-1lji',
-      readTime: '6 min read',
+      description: 'A practical startup architecture — JavaScript end-to-end, AWS Lambda serverless, and PostgreSQL for a simple, scalable stack.',
+      date: 'Feb 19, 2019',
+      tags: ['Architecture', 'JavaScript', 'ES6', 'Node'],
+      link: 'https://dev.to/dmitryame/minimalistic-architecture-for-minimalistic-product-ffd',
+      readTime: '2 min read',
       pinned: true
     }
   ];
