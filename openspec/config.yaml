@@ -5,4 +5,8 @@ context: |
   Domain: Company showcase / marketing site for Echowaves Corporation
   Features: Open-source project showcase, NPM package showcase, blog highlights, privacy policy, support page
   Styling: Component-scoped CSS files, responsive design, mobile-first
-  Deployment: Static site (build/ directory)
+  Deployment: Static site (build/ directory). MANUAL DEPLOYMENT ONLY - no automated S3 deployments.
+
+deployment:
+  type: manual
+  notes: "All deployments must be performed manually by the developer. No automated deployment pipelines are configured."
