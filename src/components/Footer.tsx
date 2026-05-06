@@ -36,7 +36,7 @@ const Footer: React.FC = () => {
             <li><a href="#projects">Projects</a></li>
             <li><a href="#packages">Packages</a></li>
             <li><a href="#blog">Blog</a></li>
-            <li><a href="/support/index.html">Support</a></li>
+            <li><a href="/support">Support</a></li>
             <li><a href="https://dev.to/dmitryame" target="_blank" rel="noopener noreferrer">Dev.to Articles</a></li>
             <li><a href="https://github.com/orgs/echowaves/repositories" target="_blank" rel="noopener noreferrer">All Repositories</a></li>
           </ul>
@@ -62,9 +62,9 @@ const Footer: React.FC = () => {
 
       <div className="footer-bottom">
         <p>&copy; {currentYear} Echowaves Corp. All rights reserved.</p>
-        <p>
-          Built with ❤️ using React and TypeScript | <a href="/privacy/index.html">Privacy Policy</a>
-        </p>
+      <p>
+        Built with ❤️ using React and TypeScript | <a href="/privacy">Privacy Policy</a>
+      </p>
       </div>
     </footer>
   );
