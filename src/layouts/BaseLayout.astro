@@ -1,0 +1,85 @@
+---
+import '../index.css';
+
+interface Props {
+  title: string;
+  description: string;
+  canonicalUrl?: string;
+  ogImage?: string;
+}
+
+const {
+  title,
+  description,
+  canonicalUrl = 'https://echowaves.com',
+  ogImage = 'https://echowaves.com/android-chrome-512x512.png',
+} = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-22JW6D5KRZ"></script>
+    <script is:inline>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-22JW6D5KRZ');
+    </script>
+
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0d1117" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href={canonicalUrl} />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImage} />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content={canonicalUrl} />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <!-- Favicon and icons -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.webp" />
+    <link rel="icon" type="image/webp" href="/favicon-32x32.webp" sizes="32x32" />
+    <link rel="icon" type="image/webp" href="/favicon-16x16.webp" sizes="16x16" />
+
+    <!-- JSON-LD Organization (every page) -->
+    <script type="application/ld+json" set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "Echowaves",
+      "url": "https://echowaves.com",
+      "logo": "https://echowaves.com/android-chrome-512x512.png",
+      "sameAs": [
+        "https://github.com/echowaves",
+        "https://www.linkedin.com/in/dmitryame",
+        "https://dev.to/dmitryame"
+      ],
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "email": "dmitry@echowaves.com",
+        "contactType": "technical support"
+      }
+    })} />
+
+    <slot name="head" />
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>
