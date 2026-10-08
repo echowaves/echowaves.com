@@ -5,9 +5,12 @@ const Hero: React.FC = () => {
   return (
     <section className="hero">
       <div className="hero-content">
-        <h1 className="hero-title">Building the Future of Mobile Development</h1>
+        <p className="hero-tagline">$ npm install the-future</p>
+        <h1 className="hero-title">Open-Source Expo &amp; React Native Tools</h1>
+        <p className="hero-upside-down">Sonɹɔǝ oɟ ɔoɯdlǝx solnʇᴉous ʇo ʎonɹ sᴉɯdlǝ dɹoqlǝɯs˙</p>
         <p className="hero-subtitle">
-          High-performance React Native and Expo components for modern mobile applications
+          High-performance packages for mobile development, battle-tested in production apps.
+          Built by Dmitry Amelchenko in Boston.
         </p>
         <div className="hero-buttons">
           <a href="#packages" className="btn">Explore Packages</a>
@@ -17,7 +20,7 @@ const Hero: React.FC = () => {
         </div>
         <div className="hero-stats">
           <div className="stat">
-            <div className="stat-number">100+</div>
+            <div className="stat-number">103+</div>
             <div className="stat-label">GitHub Stars</div>
           </div>
           <div className="stat">
