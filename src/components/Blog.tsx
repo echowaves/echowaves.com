@@ -8,67 +8,77 @@ interface BlogPost {
   tags: string[];
   link: string;
   readTime: string;
+  pinned?: boolean;
 }
 
 const Blog: React.FC = () => {
   const featuredPosts: BlogPost[] = [
     {
-      title: 'From 18 to 3 Hours: When Gen AI Overdelivers (or Did It?)',
-      description: 'Exploring how Gen AI performs against its own estimates and holds itself accountable.',
-      date: 'Aug 14, 2024',
-      tags: ['AI', 'GenAI', 'Productivity'],
-      link: 'https://dev.to/dmitryame/how-good-is-gen-ai-at-providing-estimates-and-then-holding-itself-accountable-for-meeting-them-3pee',
-      readTime: '2 min read'
+      title: 'The Token Tax: Why GenAI Billing Makes Minimalist Architecture Mandatory',
+      description: 'Why token-based GenAI billing makes minimalist architecture mandatory — complexity is now metered per token.',
+      date: 'Apr 29, 2026',
+      tags: ['AI', 'Software Engineering', 'WebDev', 'Architecture'],
+      link: 'https://dev.to/dmitryame/the-token-tax-why-genai-billing-makes-minimalist-architecture-mandatory-4fl2',
+      readTime: '3 min read'
     },
     {
-      title: "Before vs. After: How AI 'Vibe-Coded' a Mobile App Makeover That Defies Expectations!",
-      description: 'UX improvements for mobile app using AI - a before and after side-by-side comparison.',
-      date: 'Jun 15, 2024',
-      tags: ['AI', 'React Native', 'UX'],
-      link: 'https://dev.to/dmitryame/vibe-coding-ux-improvements-for-mobile-app-before-and-after-side-by-side-comparison-h3j',
-      readTime: '4 min read'
+      title: 'Velocity is a Vanity Metric: Why Agentic Coding is Actually About Quality.',
+      description: 'Why viewing agentic AI as just a speed booster is a category error — the real gain is compounding quality.',
+      date: 'Apr 23, 2026',
+      tags: ['AI', 'Software Development', 'Architecture', 'Productivity'],
+      link: 'https://dev.to/dmitryame/velocity-is-a-vanity-metric-why-agentic-coding-is-actually-about-quality-3cof',
+      readTime: '3 min read'
     },
     {
-      title: 'Design Smarter: Testing Top LLMs for Mobile UI Optimization',
-      description: 'Comparing different LLMs for optimizing mobile interface design.',
-      date: 'Jun 15, 2024',
-      tags: ['AI', 'React Native', 'Design'],
-      link: 'https://dev.to/dmitryame/design-smarter-testing-top-llms-for-mobile-interface-optimization-k89',
-      readTime: '5 min read'
+      title: 'From Vibe Coding to SDD: Why the Future of Engineering is Architecture',
+      description: 'The shift from vibe coding to spec-driven development, where every developer becomes an architect.',
+      date: 'Mar 30, 2026',
+      tags: ['AI', 'Architecture', 'Software Engineering', 'Vibe Coding'],
+      link: 'https://dev.to/dmitryame/from-vibe-coding-to-sdd-why-the-future-of-engineering-is-architecture-2ae5',
+      readTime: '3 min read'
+    },
+    {
+      title: 'The End of Vibe Coding',
+      description: 'Why vibe coding fails at scale and how Spec-Driven Development replaces it with disciplined, architectural AI workflows.',
+      date: 'Mar 7, 2026',
+      tags: ['AI', 'Engineering', 'Testing', 'Workflow'],
+      link: 'https://dev.to/dmitryame/the-end-of-vibe-coding-2e78',
+      readTime: '3 min read'
     },
     {
       title: 'Make Coding Fun Again',
       description: 'How GenAI and GitHub Copilot are transforming the development experience.',
-      date: 'Apr 26, 2024',
+      date: 'Apr 26, 2025',
       tags: ['GenAI', 'GitHub Copilot', 'JavaScript'],
       link: 'https://dev.to/dmitryame/make-coding-fun-again-1p2a',
       readTime: '8 min read'
     },
     {
-      title: 'Simple alternative to react-native async-storage',
-      description: 'Introduction to expo-storage - a better solution for persistent data storage.',
-      date: 'Aug 20, 2021',
-      tags: ['React Native', 'Storage', 'Expo'],
-      link: 'https://dev.to/dmitryame/simple-alternative-to-react-native-async-storage-5hid',
+      title: "Before vs. After: How AI 'Vibe-Coded' a Mobile App Makeover",
+      description: 'UX improvements for mobile app using AI — a before and after side-by-side comparison.',
+      date: 'Jun 15, 2025',
+      tags: ['AI', 'React Native'],
+      link: 'https://dev.to/dmitryame/vibe-coding-ux-improvements-for-mobile-app-before-and-after-side-by-side-comparison-h3j',
       readTime: '4 min read'
     },
     {
-      title: 'Implementing fast-image for react-native expo apps',
-      description: 'The origin story of expo-cached-image - solving image caching in React Native.',
-      date: 'Jan 19, 2021',
-      tags: ['React Native', 'Hooks', 'JavaScript'],
-      link: 'https://dev.to/dmitryame/implementing-fast-image-for-react-native-expo-apps-1dn3',
-      readTime: '4 min read'
+      title: 'Minimalistic architecture for Minimalistic product',
+      description: 'A practical startup architecture — JavaScript end-to-end, AWS Lambda serverless, and PostgreSQL for a simple, scalable stack.',
+      date: 'Feb 19, 2019',
+      tags: ['Architecture', 'JavaScript', 'ES6', 'Node'],
+      link: 'https://dev.to/dmitryame/minimalistic-architecture-for-minimalistic-product-ffd',
+      readTime: '2 min read',
+      pinned: true
     }
   ];
 
   const topicAreas = [
-    { icon: '🤖', name: 'AI & GenAI', color: '#667eea' },
-    { icon: '📱', name: 'React Native', color: '#61dafb' },
-    { icon: '☁️', name: 'AWS & Cloud', color: '#ff9900' },
-    { icon: '🚀', name: 'Agile & Leadership', color: '#00c853' },
-    { icon: '🔧', name: 'Performance', color: '#f4511e' },
-    { icon: '🔒', name: 'Security & Privacy', color: '#e91e63' }
+    { icon: '🤖', name: 'AI & Agentic Coding' },
+    { icon: '📱', name: 'React Native & Expo' },
+    { icon: '🏗️', name: 'Architecture' },
+    { icon: '🎸', name: 'Vibe Coding' },
+    { icon: '☁️', name: 'AWS & Cloud' },
+    { icon: '🚀', name: 'Engineering Leadership' }
   ];
 
   return (
@@ -81,7 +91,7 @@ const Blog: React.FC = () => {
         </p>
         <div className="blog-stats">
           <div className="blog-stat">
-            <span className="blog-stat-number">26</span>
+            <span className="blog-stat-number">31</span>
             <span className="blog-stat-label">Posts Published</span>
           </div>
           <div className="blog-stat">
@@ -89,7 +99,7 @@ const Blog: React.FC = () => {
             <span className="blog-stat-label">Comments Written</span>
           </div>
           <div className="blog-stat">
-            <span className="blog-stat-number">6+</span>
+            <span className="blog-stat-number">7+</span>
             <span className="blog-stat-label">Years Active</span>
           </div>
         </div>
@@ -99,7 +109,7 @@ const Blog: React.FC = () => {
         <h3>Topics Covered</h3>
         <div className="topics-grid">
           {topicAreas.map((topic) => (
-            <div key={topic.name} className="topic-card" style={{ borderColor: topic.color }}>
+            <div key={topic.name} className="topic-card">
               <span className="topic-icon">{topic.icon}</span>
               <span className="topic-name">{topic.name}</span>
             </div>
@@ -113,7 +123,7 @@ const Blog: React.FC = () => {
           <a 
             key={post.title} 
             href={post.link} 
-            className="blog-post-card"
+            className={`blog-post-card${post.pinned ? ' pinned' : ''}`}
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -137,7 +147,7 @@ const Blog: React.FC = () => {
 
       <div className="blog-footer">
         <a href="https://dev.to/dmitryame" className="btn" target="_blank" rel="noopener noreferrer">
-          View All 26 Articles on Dev.to
+          View All 31 Articles on Dev.to
         </a>
       </div>
 
@@ -147,9 +157,9 @@ const Blog: React.FC = () => {
           "Source of complex solutions to your simple problems."
         </blockquote>
         <p className="blog-bio">
-          <strong>Dmitry Amelchenko</strong> - CTO at Echowaves, based in Boston MA. 
-          Joined Dev.to on Feb 19, 2019. Skills: React Native, Node.js, GraphQL, AWS, SQL, 
-          Agile, Team Building, Motivation, Mentoring.
+          <strong>Dmitry Amelchenko</strong> — builder at Echowaves, based in Boston MA. 
+          Writing about AI-assisted development, spec-driven workflows, React Native, 
+          and the philosophy of minimalistic architecture since 2019.
         </p>
       </div>
     </section>
