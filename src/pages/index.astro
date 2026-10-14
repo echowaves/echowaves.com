@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { getBlogData } from '../utils/devto';
 import Header from '../components/Header';
 import Hero from '../components/Hero';
 import About from '../components/About';
@@ -7,6 +8,13 @@ import Projects from '../components/Projects';
 import Packages from '../components/Packages';
 import Blog from '../components/Blog';
 import Footer from '../components/Footer';
+
+let blogData = null;
+try {
+  blogData = await getBlogData();
+} catch (e) {
+  console.warn('Could not fetch blog data at build time:', e);
+}
 ---
 
 <BaseLayout
@@ -70,6 +78,6 @@ import Footer from '../components/Footer';
   <About />
   <Projects />
   <Packages />
-  <Blog />
+  <Blog client:load blogData={blogData} />
   <Footer />
 </BaseLayout>

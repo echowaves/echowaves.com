@@ -96,6 +96,21 @@ Instead, it will copy all the configuration files and the transitive dependencie
 
 You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
 
+## Dynamic Blog Feed
+
+The Technical Blog section on the homepage pulls articles from the [dev.to API](https://forem.com/api-docs) for [dmitryame](https://dev.to/dmitryame):
+
+- **At build time** (`src/pages/index.astro` + `src/utils/devto.ts`): the latest 7 articles (plus the pinned "classic" post) are fetched and pre-rendered into static HTML for SEO.
+- **On page load** (`src/components/Blog.tsx`): the list silently refreshes against the API, so newly published articles appear without a redeploy. If the API is unreachable, the build-time snapshot stays.
+
+To deploy the site (e.g. after publishing a new article, if you want it in the build-time snapshot):
+
+```bash
+npm run build
+aws s3 sync dist s3://echowaves.com --delete --acl public-read --cache-control max-age=31536000
+aws cloudfront create-invalidation --distribution-id <ID> --paths "/*"
+```
+
 ## Learn More
 
 You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
