@@ -1,0 +1,124 @@
+<!--
+  DIRECTION 05 — THE INVERSION
+  Rationale: Breaks the portfolio convention entirely. The hero does NOT open with a
+  name or a title — it opens on THE EVIDENCE: one colossal measured number with a
+  hairline scale under it, the way an instrument reads out. Only in the second beat,
+  smaller and set below, does the person reveal themselves ("the operator behind
+  these readings"). The terminal motif lives in the scale — the tick marks are a
+  command-line ruler. Motion implication: the number reads up from zero like a
+  gauge settling; the person's line types in after. Register: confident enough to
+  let the work speak before the self — anti-ego, pro-proof.
+  Key hex: bg #101216, ink #EDEFF3, dim #7C8494, faint #3C4350, hair #262C36,
+  signal #5CE1A4, signal-dim #2E7A5B, amber #E8B44A, terminal-green #63D68C.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Direction 05 — The Inversion</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  :root{
+    --bg:#101216; --ink:#EDEFF3; --dim:#7C8494; --faint:#3C4350;
+    --hair:#262C36; --signal:#5CE1A4; --sigdim:#2E7A5B; --amber:#E8B44A; --tgreen:#63D68C;
+    --mono:ui-monospace,'SF Mono','JetBrains Mono',Menlo,Consolas,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  }
+  body{ background:#1B1E24; font-family:var(--sans); color:var(--ink); padding:28px; }
+  .browser{ max-width:1040px; margin:0 auto; border-radius:12px; overflow:hidden;
+    box-shadow:0 30px 80px rgba(0,0,0,.6); border:1px solid #2a313d; }
+  .bar{ height:40px; background:#15181E; display:flex; align-items:center; padding:0 14px; gap:8px;
+    border-bottom:1px solid var(--hair); }
+  .dot{ width:11px; height:11px; border-radius:50%; }
+  .dot.r{background:#FF5F57;} .dot.y{background:#FEBC2E;} .dot.g{background:#28C840;}
+  .url{ margin-left:14px; background:var(--bg); color:var(--dim); font-size:12px;
+    padding:5px 14px; border-radius:7px; border:1px solid var(--hair); font-family:var(--mono); }
+  .page{ background:var(--bg); padding:70px 72px 40px; min-height:520px; display:flex; flex-direction:column; }
+  .topline{ display:flex; justify-content:space-between; font-family:var(--mono);
+    font-size:11px; letter-spacing:2px; text-transform:uppercase; color:var(--faint); margin-bottom:56px; }
+  .topline .live{ color:var(--signal); }
+  /* beat 1 — the reading */
+  .reading .unit{ font-family:var(--mono); font-size:13px; letter-spacing:2px; text-transform:uppercase; color:var(--dim); }
+  .reading .num{ font-size:150px; font-weight:800; letter-spacing:-5px; line-height:.95;
+    font-variant-numeric:tabular-nums; margin:6px 0 2px; }
+  .reading .num .s{ font-size:54px; letter-spacing:-1px; color:var(--dim); font-weight:700; }
+  .reading .num .ar{ color:var(--signal); font-weight:700; font-size:90px; letter-spacing:-2px; }
+  .reading .ctx{ font-size:16px; color:var(--dim); max-width:52ch; line-height:1.55; margin-top:10px; }
+  .reading .ctx b{ color:var(--ink); font-weight:600; }
+  /* the command-line ruler */
+  .ruler{ margin:34px 0 8px; border-top:1px solid var(--hair); padding-top:14px; position:relative; }
+  .ruler .track{ display:flex; justify-content:space-between; font-family:var(--mono); font-size:10.5px; color:var(--faint); }
+  .ruler .track .now{ color:var(--signal); }
+  .ruler .track span b{ display:block; font-size:11px; color:var(--dim); font-weight:500; margin-top:3px; }
+  .ruler .track span.now b{ color:var(--ink); }
+  .ruler .caret{ position:absolute; top:-16px; font-family:var(--mono); font-size:10.5px; color:var(--signal);
+    right:0; background:var(--bg); padding-right:4px; }
+  /* beat 2 — the person, smaller, typed */
+  .person{ margin-top:auto; border-top:1px dashed var(--hair); padding-top:22px;
+    display:flex; gap:22px; align-items:flex-start; }
+  .person .cmd{ font-family:var(--mono); font-size:14px; line-height:1.9; }
+  .person .p{ color:var(--tgreen); }
+  .person .path{ color:var(--amber); }
+  .person .who{ color:var(--ink); }
+  .person .role{ color:var(--dim); }
+  .person .links{ margin-left:auto; font-family:var(--mono); font-size:12px; color:var(--dim); text-align:right; line-height:2; }
+  .person .links a{ color:var(--dim); }
+  .person .links .k{ color:var(--signal); }
+  .strip{ background:#14171D; border-top:1px solid var(--hair); padding:13px 34px;
+    display:flex; gap:30px; font-family:var(--mono); font-size:11.5px; color:var(--dim); flex-wrap:wrap; }
+  .strip b{ color:var(--ink); font-weight:600; }
+  .strip .s{ color:var(--signal); }
+  .note{ max-width:1040px; margin:12px auto 0; font-size:12px; color:#7d8ba0; font-family:var(--mono); }
+</style>
+</head>
+<body>
+  <div class="browser">
+    <div class="bar">
+      <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+      <span class="url">echowaves.com</span>
+    </div>
+    <div class="page">
+      <div class="topline">
+        <span>echowaves · readings from a working system</span>
+        <span class="live">● live · 2019 → now</span>
+      </div>
+      <div class="reading">
+        <div class="unit">release cycle time, enterprise mobile · liberty mutual</div>
+        <div class="num">20<span class="s">d</span> <span class="ar">→</span> 10<span class="s">d</span></div>
+        <div class="ctx">Halved. With a <b>&lt;1% annual defect rate</b>, an <b>89% eNPS</b> team (industry: 2–25%), and GenAI, Copilot and agentic workflows running through the SDLC — inside a Fortune-100 regulated environment.</div>
+      </div>
+      <div class="ruler">
+        <span class="caret">▲ reading</span>
+        <div class="track">
+          <span>2011<b>VP SWE — lead time −90%</b></span>
+          <span>2015<b>CTO — 0→1</b></span>
+          <span>2018<b>Manager — HIPAA</b></span>
+          <span>2019<b>Fortune 100 mobile</b></span>
+          <span class="now">now<b>still shipping</b></span>
+        </div>
+      </div>
+      <div class="person">
+        <div class="cmd">
+          <div><span class="p">dmitry</span><span class="path">@echowaves</span> <span class="p">~</span> <span class="p">$</span> <span class="who">whoami</span></div>
+          <div class="role">engineering transformation · AI-native delivery · the operator behind these readings</div>
+          <div><span class="p">~</span> <span class="p">$</span> <span class="who">npm install the-future</span> <span style="color:var(--signal)">✓ done</span></div>
+        </div>
+        <div class="links">
+          <span class="k">→</span> packages: expo-cached-image · expo-storage · expo-masonry-layout<br>
+          <span class="k">→</span> writing on AI-assisted development · dev.to/dmitryame
+        </div>
+      </div>
+    </div>
+    <div class="strip">
+      <span>defects <b>&lt;1%</b>/yr</span>
+      <span>eNPS <b class="s">89%</b></span>
+      <span>engineers led <b>50+</b></span>
+      <span>mobile CSAT <b>+47pts</b> JD Power</span>
+      <span>lead time <b>−90%</b> (ServiceChannel)</span>
+      <span>npm downloads <b>1,500+/wk</b></span>
+    </div>
+  </div>
+  <p class="note">DIRECTION 05 — THE INVERSION · motion: number reads up from zero, person types in second · evidence first, the self second.</p>
+</body>
+</html>

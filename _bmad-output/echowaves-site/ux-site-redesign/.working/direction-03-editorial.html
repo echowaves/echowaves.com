@@ -1,0 +1,123 @@
+<!--
+  DIRECTION 03 — THE FIELD NOTE
+  Rationale: A print/editorial register — the anti-AI-landing move. Warm paper
+  ground, one enormous confident serif statement set asymmetrically, generous
+  white space, the terminal motif reduced to a small *inset artifact* (a printed
+  screenshot pinned into the margin) so it reads as evidence, not costume.
+  Motion implication: almost none — a slow fade-in of the statement, a hairline
+  rule that draws. Register: considered, literary, quietly confident. The person
+  is an author of systems, not a marketer.
+  Key hex: paper #F5F1E8, ink #1A1814, ink-soft #4A443A, rule #D8D0BF,
+  accent-vermillion #C24A28, terminal-bg #14120E, terminal-fg #E8E1D2, terminal-green #7FBF7A.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Direction 03 — The Field Note</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  :root{
+    --paper:#F5F1E8; --ink:#1A1814; --soft:#4A443A; --rule:#D8D0BF;
+    --verm:#C24A28;
+    --tbg:#14120E; --tfg:#E8E1D2; --tgreen:#7FBF7A; --tdim:#8A8272;
+    --serif:'Iowan Old Style','Palatino Linotype',Palatino,Georgia,'Times New Roman',serif;
+    --mono:ui-monospace,'SF Mono','JetBrains Mono',Menlo,Consolas,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  }
+  body{ background:#E7E1D3; font-family:var(--sans); color:var(--ink); padding:28px; }
+  .browser{ max-width:1040px; margin:0 auto; border-radius:12px; overflow:hidden;
+    box-shadow:0 30px 80px rgba(60,50,30,.35); border:1px solid #D2C9B6; }
+  .bar{ height:40px; background:#EFEAE0; display:flex; align-items:center; padding:0 14px; gap:8px;
+    border-bottom:1px solid var(--rule); }
+  .dot{ width:11px; height:11px; border-radius:50%; }
+  .dot.r{background:#FF5F57;} .dot.y{background:#FEBC2E;} .dot.g{background:#28C840;}
+  .url{ margin-left:14px; background:var(--paper); color:#9a917e; font-size:12px;
+    padding:5px 14px; border-radius:7px; border:1px solid var(--rule); font-family:var(--mono); }
+  .page{ background:var(--paper); padding:64px 72px; position:relative; }
+  .masthead{ display:flex; justify-content:space-between; align-items:baseline;
+    font-family:var(--mono); font-size:11.5px; letter-spacing:2px; text-transform:uppercase; color:var(--soft);
+    border-bottom:2px solid var(--ink); padding-bottom:12px; margin-bottom:52px; }
+  .masthead .n{ color:var(--verm); }
+  .hero-grid{ display:grid; grid-template-columns:1fr 268px; gap:56px; align-items:start; }
+  .statement{ font-family:var(--serif); font-size:62px; line-height:1.04; letter-spacing:-1.5px; font-weight:600; }
+  .statement em{ font-style:italic; color:var(--verm); }
+  .standfirst{ font-family:var(--serif); font-size:20px; line-height:1.5; color:var(--soft);
+    margin-top:26px; max-width:30ch; }
+  .deck{ margin-top:34px; font-size:14.5px; line-height:1.75; color:var(--ink); max-width:52ch; }
+  .deck b{ font-weight:700; }
+  .deck .fig{ font-variant-numeric:tabular-nums; font-weight:700; color:var(--verm); }
+  .pull{ margin-top:30px; border-left:3px solid var(--verm); padding:4px 0 4px 20px;
+    font-family:var(--serif); font-style:italic; font-size:19px; line-height:1.4; color:var(--ink); max-width:40ch; }
+  /* the terminal as a printed artifact, pinned in the margin */
+  .artifact{ background:var(--tbg); border:1px solid #2a261e; border-radius:8px;
+    box-shadow:6px 8px 0 rgba(26,24,20,.14); transform:rotate(1.2deg); }
+  .artifact .cap{ font-family:var(--mono); font-size:10px; letter-spacing:1.5px; text-transform:uppercase;
+    color:var(--tdim); padding:9px 12px; border-bottom:1px solid #26221a; display:flex; gap:6px; align-items:center; }
+  .artifact .cap i{ width:7px;height:7px;border-radius:50%;background:#3a352b;display:inline-block; }
+  .artifact .body{ padding:14px 15px; font-family:var(--mono); font-size:12px; line-height:1.85; color:var(--tfg); }
+  .artifact .p{ color:var(--tgreen); }
+  .artifact .k{ color:#D8A24A; }
+  .figlabel{ font-family:var(--mono); font-size:10.5px; letter-spacing:1.5px; text-transform:uppercase; color:var(--soft); margin-top:14px; }
+  .strip{ border-top:2px solid var(--ink); margin-top:54px; padding-top:18px; display:flex; gap:40px; flex-wrap:wrap; }
+  .strip .cell{ font-family:var(--serif); }
+  .strip .n{ font-size:30px; font-weight:600; letter-spacing:-.5px; }
+  .strip .n .v{ color:var(--verm); }
+  .strip .t{ font-family:var(--mono); font-size:10.5px; letter-spacing:1.5px; text-transform:uppercase; color:var(--soft); margin-top:4px; }
+  .note{ max-width:1040px; margin:12px auto 0; font-size:12px; color:#6f6858; font-family:var(--mono); }
+</style>
+</head>
+<body>
+  <div class="browser">
+    <div class="bar">
+      <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+      <span class="url">echowaves.com</span>
+    </div>
+    <div class="page">
+      <div class="masthead">
+        <span>Echowaves · Field Notes on Engineering</span>
+        <span class="n">No. 01 — The Operator</span>
+      </div>
+      <div class="hero-grid">
+        <div>
+          <h1 class="statement">I lead at Fortune-100 scale.<br>I <em>ship</em> the tools I use.</h1>
+          <p class="standfirst">An engineering transformation, measured — and an early adoption of AI-first delivery, proven in a regulated enterprise.</p>
+          <p class="deck">
+            At Liberty Mutual I cut the mobile release cycle from <span class="fig">20 to 10 days</span>, held the
+            production defect rate under <span class="fig">1%</span>, and built a team that scores
+            <span class="fig">89% eNPS</span> against a 2–25% industry norm — then introduced Copilot, agentic
+            workflows, and specification-driven development before the rest of the org caught up.
+          </p>
+          <div class="pull">"Leadership as an engineering discipline: you don't manage delivery, you build the system that delivers."</div>
+        </div>
+        <aside>
+          <div class="artifact">
+            <div class="cap"><i></i><i></i><i></i>&nbsp;dmitry@echowaves</div>
+            <div class="body">
+              <div><span class="p">$</span> cat trajectory.log</div>
+              <div>2011–15&nbsp; VP SWE, ServiceChannel</div>
+              <div>&nbsp;&nbsp;lead time <span class="k">−90%</span></div>
+              <div>&nbsp;&nbsp;monolith → microservices</div>
+              <div>2015–18&nbsp; CTO, Sober Grid</div>
+              <div>2019–&nbsp;&nbsp; Liberty Mutual, Mobile</div>
+              <div>&nbsp;&nbsp;cycle 20d → 10d · &lt;1% defect</div>
+              <div><span class="p">$</span> npm install the-future</div>
+              <div>✓ expo-cached-image · storage · masonry</div>
+            </div>
+          </div>
+          <p class="figlabel">Fig. 1 — the log, unedited</p>
+        </aside>
+      </div>
+      <div class="strip">
+        <div class="cell"><div class="n"><span class="v">20→10</span> days</div><div class="t">release cycle</div></div>
+        <div class="cell"><div class="n">&lt;<span class="v">1%</span></div><div class="t">prod defect rate</div></div>
+        <div class="cell"><div class="n"><span class="v">89</span>%</div><div class="t">team eNPS</div></div>
+        <div class="cell"><div class="n"><span class="v">+47</span> pts</div><div class="t">mobile CSAT · JD Power</div></div>
+        <div class="cell"><div class="n"><span class="v">50</span>+</div><div class="t">engineers led</div></div>
+      </div>
+    </div>
+  </div>
+  <p class="note">DIRECTION 03 — THE FIELD NOTE · motion: near-static, slow fade + a drawn rule · terminal as a printed artifact, paper ground, serif voice.</p>
+</body>
+</html>

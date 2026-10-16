@@ -1,0 +1,140 @@
+<!--
+  DIRECTION 02 — THE DASHBOARD
+  Rationale: The proof points are not bullets — they are telemetry. The hero reads
+  like an engineering-ops console: a dominant lead-time trend, gauges for eNPS and
+  defect rate, deploy-frequency sparkline, with the executive narrative demoted to a
+  narrow side rail. Dense grid, data-ink everywhere, ONE dominant accent (signal
+  green) on a deep slate. Motion implication: numbers count up, sparklines draw in.
+  Register: "I measure what I lead" — leadership as an engineering discipline.
+  Key hex: bg #0E1116, card #161B22, card-2 #12161D, grid #222A35,
+  text #E8EDF4, dim #77839A, signal-green #3DDC84, cyan #4CC2E8, amber #F5B54A,
+  red #EF6A5A, violet #9B8CFB.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Direction 02 — The Dashboard</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  :root{
+    --bg:#0E1116; --card:#161B22; --card2:#12161D; --grid:#222A35;
+    --text:#E8EDF4; --dim:#77839A; --faint:#454F60;
+    --green:#3DDC84; --cyan:#4CC2E8; --amber:#F5B54A; --red:#EF6A5A; --violet:#9B8CFB;
+    --mono:ui-monospace,'SF Mono','JetBrains Mono',Menlo,Consolas,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  }
+  body{ background:#1A1F27; font-family:var(--sans); color:var(--text); padding:28px; }
+  .browser{ max-width:1040px; margin:0 auto; border-radius:12px; overflow:hidden;
+    box-shadow:0 30px 80px rgba(0,0,0,.55); border:1px solid #2a313d; }
+  .bar{ height:40px; background:#141922; display:flex; align-items:center; padding:0 14px; gap:8px;
+    border-bottom:1px solid var(--grid); }
+  .dot{ width:11px; height:11px; border-radius:50%; }
+  .dot.r{background:#FF5F57;} .dot.y{background:#FEBC2E;} .dot.g{background:#28C840;}
+  .url{ margin-left:14px; background:var(--bg); color:var(--dim); font-size:12px;
+    padding:5px 14px; border-radius:7px; border:1px solid var(--grid); font-family:var(--mono); }
+  .page{ background:var(--bg); padding:22px; }
+  .head{ display:flex; align-items:baseline; gap:14px; margin:2px 4px 16px; flex-wrap:wrap; }
+  .head .id{ font-family:var(--mono); font-size:13px; color:var(--dim); }
+  .head .id b{ color:var(--green); font-weight:600; }
+  .head .status{ margin-left:auto; font-family:var(--mono); font-size:11px; color:var(--green);
+    border:1px solid rgba(61,220,132,.35); background:rgba(61,220,132,.08);
+    padding:3px 10px; border-radius:99px; letter-spacing:1px; }
+  .grid{ display:grid; grid-template-columns:repeat(12,1fr); gap:12px; }
+  .card{ background:var(--card); border:1px solid var(--grid); border-radius:10px; padding:16px 18px; position:relative; }
+  .card .cap{ font-family:var(--mono); font-size:10.5px; letter-spacing:1.4px; text-transform:uppercase; color:var(--dim); margin-bottom:10px; }
+  .card .big{ font-size:44px; font-weight:700; letter-spacing:-1px; line-height:1; }
+  .card .sub{ font-size:12px; color:var(--dim); margin-top:8px; }
+  .c-trend{ grid-column:span 8; }
+  .c-rail{ grid-column:span 4; display:flex; flex-direction:column; }
+  .c-3a{ grid-column:span 3; } .c-3b{ grid-column:span 3; } .c-3c{ grid-column:span 3; } .c-3d{ grid-column:span 3; }
+  .delta{ font-family:var(--mono); font-size:12px; color:var(--green); }
+  .delta.bad{ color:var(--red); }
+  /* sparkline: pure CSS bars */
+  .bars{ display:flex; align-items:flex-end; gap:6px; height:110px; margin-top:6px; }
+  .bars i{ flex:1; background:linear-gradient(180deg, rgba(61,220,132,.9), rgba(61,220,132,.25)); border-radius:3px 3px 0 0; }
+  .bars .ghost{ background:repeating-linear-gradient(45deg,#232B37 0 4px,#1A212B 4px 8px); }
+  .axis{ display:flex; justify-content:space-between; font-family:var(--mono); font-size:10px; color:var(--faint); margin-top:6px; }
+  .rail-line{ font-family:var(--mono); font-size:12.5px; line-height:1.9; color:var(--dim); }
+  .rail-line b{ color:var(--text); font-weight:600; }
+  .rail-line .k{ color:var(--cyan); }
+  .gauge{ display:flex; align-items:center; gap:14px; }
+  .ring{ width:64px; height:64px; border-radius:50%; flex:0 0 auto;
+    background:conic-gradient(var(--green) 0 89%, #232B37 89% 100%); display:grid; place-items:center; }
+  .ring i{ width:44px; height:44px; border-radius:50%; background:var(--card); }
+  .strip{ background:var(--card2); border:1px solid var(--grid); border-radius:10px; margin-top:12px;
+    padding:12px 18px; display:flex; gap:26px; align-items:center; flex-wrap:wrap; font-family:var(--mono); font-size:11.5px; color:var(--dim); }
+  .strip b{ color:var(--text); font-weight:600; }
+  .strip .pk{ color:var(--violet); }
+  .note{ max-width:1040px; margin:12px auto 0; font-size:12px; color:#8b93a5; font-family:var(--mono); }
+</style>
+</head>
+<body>
+  <div class="browser">
+    <div class="bar">
+      <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+      <span class="url">echowaves.com/ops</span>
+    </div>
+    <div class="page">
+      <div class="head">
+        <span class="id"><b>~/echowaves</b> · dmitry amelchenko — engineering transformation</span>
+        <span class="status">● SHIPPING</span>
+      </div>
+      <div class="grid">
+        <div class="card c-trend">
+          <div class="cap">lead time for change · liberty mutual mobile</div>
+          <div style="display:flex; align-items:flex-end; gap:18px;">
+            <div class="big">20<span style="font-size:18px;color:var(--dim)">d</span> → 10<span style="font-size:18px;color:var(--dim)">d</span></div>
+            <div class="delta" style="margin-bottom:8px;">▼ 50% cycle time · velocity 2×</div>
+          </div>
+          <div class="bars">
+            <i style="height:96%" class="ghost"></i><i style="height:88%" class="ghost"></i><i style="height:82%" class="ghost"></i>
+            <i style="height:70%"></i><i style="height:58%"></i><i style="height:47%"></i><i style="height:40%"></i>
+          </div>
+          <div class="axis"><span>2019 · quarterly cadence</span><span>today · continuous delivery</span></div>
+        </div>
+        <div class="card c-rail">
+          <div class="cap">the operator</div>
+          <div class="rail-line">
+            <b>Dmitry Amelchenko</b><br>
+            <span class="k">$</span> people leader · mobile eng<br>
+            <span class="k">$</span> fortune-100 regulated env<br>
+            <span class="k">$</span> 50+ engineers, 4 functions<br>
+            <span class="k">$</span> genAI · copilot · agentic
+          </div>
+        </div>
+        <div class="card c-3a">
+          <div class="cap">team eNPS</div>
+          <div class="gauge">
+            <div class="ring"><i></i></div>
+            <div><div class="big" style="font-size:30px;">89%</div><div class="sub">industry 2–25%</div></div>
+          </div>
+        </div>
+        <div class="card c-3b">
+          <div class="cap">prod defect rate</div>
+          <div class="big" style="color:var(--green)">&lt;1%</div>
+          <div class="sub">annual · SDLC + observability</div>
+        </div>
+        <div class="card c-3c">
+          <div class="cap">mobile app CSAT</div>
+          <div class="big">+47<span style="font-size:18px;color:var(--dim)">pts</span></div>
+          <div class="sub">JD Power · after modernization</div>
+        </div>
+        <div class="card c-3d">
+          <div class="cap">in production</div>
+          <div class="big">3</div>
+          <div class="sub"><span class="pk">expo-cached-image</span> · storage · masonry</div>
+        </div>
+      </div>
+      <div class="strip">
+        <span><b>$ npm install the-future</b> — open source, still shipping</span>
+        <span>lead time <b>−90%</b> @ ServiceChannel (VP SWE)</span>
+        <span>monolith → <b>microservices</b> + AWS</span>
+        <span>CTO @ Sober Grid · HIPAA @ American Well</span>
+      </div>
+    </div>
+  </div>
+  <p class="note">DIRECTION 02 — THE DASHBOARD · motion: numbers count up, bars draw in · proof as telemetry, narrative demoted to a rail.</p>
+</body>
+</html>
