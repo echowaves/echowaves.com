@@ -1,0 +1,79 @@
+---
+import { ctaLinkedIn, destinations } from '../../content/claims';
+// Contact (FR10): exactly one primary action per view — the committed LinkedIn CTA.
+// Email is a secondary button, never demoted to bare text.
+---
+
+<section id="contact" class="contact" aria-labelledby="contact-title">
+  <div class="sheet-label">
+    <span class="label-text">06 · contact — the journey's end</span>
+  </div>
+  <h2 id="contact-title">Bring me the hard transformation problem</h2>
+  <p class="pitch">
+    If you are assessing whether AI-native delivery can work at enterprise scale —
+    with numbers attached and regulated reality respected — that is a conversation worth having.
+  </p>
+
+  <p class="actions">
+    <a class="btn-primary" href={destinations.linkedin} rel="noopener" target="_blank">{ctaLinkedIn}</a>
+    <a class="btn-secondary" href={destinations.email}>dmitry@echowaves.com</a>
+  </p>
+
+  <p class="callout">replies measured in hours, not quarters</p>
+</section>
+
+<style>
+  .contact { padding-block: var(--section-gap) 0; }
+  .sheet-label {
+    border-bottom: 1px solid var(--hairline);
+    padding-bottom: var(--space-2);
+    margin-bottom: var(--space-8);
+  }
+  .label-text {
+    font-family: var(--type-label-font-family);
+    font-size: var(--type-label-font-size);
+    letter-spacing: var(--type-label-letter-spacing);
+    text-transform: uppercase;
+    color: var(--dim); /* on canvas */
+  }
+  h2 { margin: 0 0 var(--space-4); }
+  .pitch { color: var(--muted); max-width: 65ch; margin: 0 0 var(--space-8); }
+  .actions {
+    display: flex;
+    gap: var(--space-5);
+    flex-wrap: wrap;
+    margin: 0;
+  }
+  /* {components.button-primary} — canvas text on cyan, square-ish geometry */
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px; /* target size floor with generous padding */
+    background: var(--btn-primary-bg);
+    color: var(--btn-primary-text);
+    border-radius: var(--btn-primary-radius);
+    padding: var(--btn-primary-padding-block) var(--btn-primary-padding-inline);
+    font-weight: 650;
+    text-decoration: none;
+  }
+  /* {components.button-secondary} — quiet, but fully legible on canvas */
+  .btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    background: var(--btn-secondary-bg);
+    color: var(--btn-secondary-text);
+    border: 1px solid var(--btn-secondary-border);
+    border-radius: var(--btn-secondary-radius);
+    padding: var(--btn-secondary-padding-block) var(--btn-secondary-padding-inline);
+    text-decoration: none;
+  }
+  .callout {
+    font-family: var(--type-annotation-font-family);
+    font-size: var(--type-annotation-font-size);
+    color: var(--callout-text);
+    border-left: 2px solid var(--hairline);
+    padding-left: var(--callout-padding-inline);
+    margin-top: var(--space-8);
+  }
+</style>

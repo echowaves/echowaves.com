@@ -1,0 +1,102 @@
+---
+import { identity, thesis, revision } from '../../content/claims';
+// Title block per {components.title-block}. Hosts the sheet's single sanctioned
+// imperfection (the rotated revision stamp) and the decodable personal artifact.
+---
+
+<section id="title-block" class="title-block" aria-labelledby="thesis">
+  <div class="sheet-label">
+    <span class="label-text">echowaves · portfolio sheet · single page</span>
+    <span class="stamp" aria-hidden="true">{revision.stamp}</span>
+  </div>
+
+  <p class="handle">{identity.handle}</p>
+  <h1 id="thesis" class="thesis">{thesis}</h1>
+  <p class="who"><strong>{identity.name}</strong> — {identity.role}</p>
+  <p class="tagline">{identity.tagline}</p>
+
+  <p class="artifact">
+    <span class="artifact-hint" aria-hidden="true">; rot13 --&gt;</span>
+    <code aria-hidden="true">{revision.encoded}</code>
+    <span class="visually-hidden">Decoded: {revision.decoded}</span>
+  </p>
+
+  <p class="note margin-note">annotations load-bearing · decoration strictly optional</p>
+</section>
+
+<style>
+  .title-block {
+    padding: var(--space-20) 0 var(--section-gap);
+    background: var(--title-block-bg);
+    color: var(--title-block-text);
+  }
+  .sheet-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--space-4);
+    border-bottom: 1px solid var(--hairline);
+    padding-bottom: var(--space-2);
+    margin-bottom: var(--space-10);
+  }
+  .label-text,
+  .artifact-hint,
+  .margin-note {
+    font-family: var(--type-label-font-family);
+    font-size: var(--type-label-font-size);
+    font-weight: var(--type-label-font-weight);
+    letter-spacing: var(--type-label-letter-spacing);
+    text-transform: uppercase;
+    color: var(--dim); /* dim on canvas only */
+  }
+  /* the sheet's single sanctioned imperfection: rotation allowed here and only here */
+  .stamp {
+    font-family: var(--type-label-font-family);
+    font-size: var(--type-label-font-size);
+    letter-spacing: var(--type-label-letter-spacing);
+    color: var(--amber);
+    border: 1px solid var(--hairline);
+    padding: var(--space-1) var(--space-2);
+    transform: rotate(-1.4deg) translateY(1px);
+    white-space: nowrap;
+  }
+  .handle {
+    font-family: var(--type-annotation-font-family);
+    font-size: var(--type-annotation-font-size);
+    color: var(--title-block-annotation);
+    margin: 0 0 var(--space-4);
+  }
+  .thesis {
+    font-family: var(--type-display-font-family);
+    font-size: var(--type-display-font-size);
+    font-weight: var(--type-display-font-weight);
+    line-height: var(--type-display-line-height);
+    letter-spacing: var(--type-display-letter-spacing);
+    max-width: 22ch;
+    margin: 0 0 var(--space-6);
+  }
+  .who {
+    font-size: 1.125rem;
+    color: var(--muted);
+    margin: 0;
+  }
+  .tagline {
+    font-family: var(--type-annotation-font-family);
+    font-size: var(--type-annotation-font-size);
+    color: var(--dim); /* subordinate cue, still AA on canvas */
+    margin: var(--space-4) 0 0;
+  }
+  .artifact {
+    margin-top: var(--space-10);
+    display: flex;
+    gap: var(--space-2);
+    align-items: baseline;
+    flex-wrap: wrap;
+  }
+  .artifact code {
+    font-size: var(--type-annotation-font-size);
+    color: var(--muted);
+    border-bottom: 1px dashed var(--hairline);
+  }
+  .margin-note { margin-top: var(--space-8); }
+</style>

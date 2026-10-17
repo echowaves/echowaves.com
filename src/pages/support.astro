@@ -1,16 +1,68 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import Header from '../components/Header';
-import SupportComponent from '../components/Support';
-import Footer from '../components/Footer';
+import SheetChrome from '../components/regions/SheetChrome.astro';
+import { destinations } from '../content/claims';
+
+const title = 'Support — Echowaves';
+const description =
+  'Package support for expo-cached-image, expo-storage, and expo-masonry-layout: contact, GitHub issues, FAQ, and documentation links.';
 ---
 
-<BaseLayout
-  title="Support — Echowaves"
-  description="Get help with Echowaves open-source packages: expo-cached-image, expo-storage, expo-masonry-layout. Contact, FAQ, and resources."
-  canonicalUrl="https://echowaves.com/support"
->
-  <Header client:load />
-  <SupportComponent />
-  <Footer />
+<BaseLayout title={title} description={description} canonicalUrl="https://echowaves.com/support">
+  <SheetChrome slot="header" part="nav" />
+  <main slot="main" class="support-page">
+    <h1>Support</h1>
+    <p class="subtitle">Package help, kept honest and reachable.</p>
+
+    <h2>Contact</h2>
+    <p>
+      Questions about the packages? Use <a href={destinations.email}>dmitry@echowaves.com</a>
+      or open an issue on the relevant <a href={destinations.githubOrg} rel="noopener" target="_blank">GitHub repository</a>
+      — technical issues and feature requests are fastest there. Typical reply: 24–48 hours on business days.
+    </p>
+
+    <h2>Frequently asked</h2>
+    <dl>
+      <dt>How do I report a bug?</dt>
+      <dd>Open an issue on the relevant repository (or email) with steps to reproduce, expected behavior, and error messages.</dd>
+      <dt>Can I contribute?</dt>
+      <dd>Yes — everything is open source. Check the <a href={destinations.githubOrg} rel="noopener" target="_blank">GitHub organization</a> and send pull requests or start discussions.</dd>
+      <dt>Do you offer commercial support?</dt>
+      <dd>For enterprise support, custom development, or consulting, write to <a href={destinations.email}>dmitry@echowaves.com</a>.</dd>
+      <dt>How do I follow new releases?</dt>
+      <dd>Watch the repositories, follow <a href={destinations.npm} rel="noopener" target="_blank">npm ~echowaves</a>, or read updates on <a href={destinations.devto} rel="noopener" target="_blank">dev.to/dmitryame</a>.</dd>
+    </dl>
+
+    <h2>Documentation &amp; resources</h2>
+    <ul>
+      <li><a href={destinations.githubOrg} rel="noopener" target="_blank">GitHub repositories</a> — source code and READMEs</li>
+      <li><a href={destinations.npm} rel="noopener" target="_blank">npm packages</a> — published releases</li>
+      <li><a href={destinations.devto} rel="noopener" target="_blank">Blog &amp; tutorials</a> — articles and guides</li>
+      <li><a href="/">Homepage</a> — back to the sheet</li>
+    </ul>
+  </main>
+  <SheetChrome slot="footer" part="footer" />
 </BaseLayout>
+
+<style is:global>
+  .support-page h1 {
+    font-family: var(--type-display-font-family);
+    font-size: var(--type-display-font-size);
+    font-weight: var(--type-display-font-weight);
+    line-height: var(--type-display-line-height);
+    letter-spacing: var(--type-display-letter-spacing);
+    margin: var(--space-16) 0 var(--space-2);
+  }
+  .support-page .subtitle { color: var(--muted); margin-bottom: var(--space-12); }
+  .support-page h2 { margin-top: var(--space-12); }
+  .support-page dl { margin-bottom: var(--space-8); }
+  .support-page dt {
+    font-family: var(--type-annotation-font-family);
+    color: var(--ink);
+    font-weight: 600;
+    margin-top: var(--space-6);
+  }
+  .support-page dd { margin: var(--space-1) 0 0; color: var(--muted); max-width: 70ch; }
+  .support-page ul { padding-inline-start: var(--space-6); color: var(--muted); }
+  .support-page li { margin-bottom: var(--space-3); }
+</style>

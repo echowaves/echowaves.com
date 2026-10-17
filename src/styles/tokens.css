@@ -1,0 +1,136 @@
+/* Blueprint tokens — transcribed 1:1 from _bmad-output/echowaves-site/ux-site-redesign/DESIGN.md frontmatter.
+   AD-2: this is the ONLY file with hex literals or font stacks. To change a visual value, edit DESIGN.md first. */
+
+:root {
+  /* colors */
+  --canvas: #0F1620;
+  --canvas-deep: #0A0F16;
+  --panel: #121A25;
+  --ink: #C9D6E8;
+  --muted: #9AAAC0;
+  --dim: #6E8098;          /* text on canvas only — never on panel */
+  --faint: #42536A;        /* never carries text — decoration only */
+  --hairline: #2A3A4E;
+  --grid-minor: #172330;
+  --grid-major: #1D2B3A;
+  --cyan: #59D6E6;
+  --amber: #F0B54A;
+  --green: #63D6A0;
+  --focus: #59D6E6;        /* moves with --cyan by contract, not coincidence */
+
+  /* typography — body */
+  --type-body-font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --type-body-font-size: 16px;
+  --type-body-font-weight: 400;
+  --type-body-line-height: 1.65;
+  /* typography — display */
+  --type-display-font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --type-display-font-size: clamp(2rem, 5vw, 3.75rem);
+  --type-display-font-weight: 650;
+  --type-display-line-height: 1.08;
+  --type-display-letter-spacing: -0.035em;
+  /* typography — heading */
+  --type-heading-font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --type-heading-font-size: clamp(1.35rem, 2.5vw, 2rem);
+  --type-heading-font-weight: 620;
+  --type-heading-line-height: 1.2;
+  /* typography — annotation */
+  --type-annotation-font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  --type-annotation-font-size: 0.875rem;
+  --type-annotation-font-weight: 450;
+  --type-annotation-line-height: 1.55;
+  /* typography — label */
+  --type-label-font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  --type-label-font-size: 0.75rem;
+  --type-label-font-weight: 550;
+  --type-label-line-height: 1.45;
+  --type-label-letter-spacing: 0.08em;
+
+  /* rounded */
+  --rounded-default: 4px;
+  --rounded-sm: 4px;
+  --rounded-md: 8px;
+  --rounded-lg: 12px;
+  --rounded-xl: 16px;
+  --rounded-full: 9999px;
+
+  /* spacing */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+  --page-gutter: clamp(1rem, 5vw, 3.5rem);
+  --section-gap: clamp(3.5rem, 8vw, 7rem);
+  --content-max: 1200px;
+
+  /* components — page-grid */
+  --grid-bg: var(--canvas);
+  --grid-minor-line: var(--grid-minor);
+  --grid-major-line: var(--grid-major);
+  --grid-minor-cell: 24px;
+  --grid-major-cell: 120px;
+
+  /* components — title-block */
+  --title-block-bg: var(--canvas);
+  --title-block-text: var(--ink);
+  --title-block-annotation: var(--cyan);
+  --title-block-padding: var(--space-6);
+
+  /* components — career-schematic */
+  --schematic-surface: var(--canvas);
+  --schematic-line: var(--hairline);
+  --schematic-node-marker: var(--cyan);
+  --schematic-padding: var(--space-6);
+
+  /* components — annotation-callout */
+  --callout-text: var(--muted);
+  --callout-emphasis: var(--ink);
+  --callout-positive: var(--cyan);
+  --callout-secondary-accent: var(--amber);
+  --callout-padding-inline: var(--space-4);
+
+  /* components — metric-strip */
+  --strip-surface: var(--panel);
+  --strip-divider: var(--hairline);
+  --strip-label: var(--muted);
+  --strip-value: var(--ink);
+  --strip-highlight: var(--cyan);
+
+  /* components — button-primary */
+  --btn-primary-bg: var(--cyan);
+  --btn-primary-text: var(--canvas);
+  --btn-primary-radius: var(--rounded-sm);
+  --btn-primary-padding-inline: var(--space-5);
+  --btn-primary-padding-block: var(--space-3);
+
+  /* components — button-secondary */
+  --btn-secondary-bg: transparent;
+  --btn-secondary-text: var(--ink);
+  --btn-secondary-border: var(--hairline);
+  --btn-secondary-radius: var(--rounded-sm);
+  --btn-secondary-padding-inline: var(--space-5);
+  --btn-secondary-padding-block: var(--space-3);
+
+  /* components — inline-link */
+  --link-text: var(--cyan);
+  --link-underline: var(--cyan);
+
+  /* components — keyboard-focus */
+  --focus-outline: var(--focus);
+  --focus-outline-width: 2px;
+  --focus-outline-offset: 3px;
+
+  /* components — sheet-chrome */
+  --chrome-bg: var(--canvas-deep);
+  --chrome-text: var(--muted);
+  --chrome-active: var(--cyan);
+  --chrome-border: var(--hairline);
+  --chrome-radius: 0;
+}

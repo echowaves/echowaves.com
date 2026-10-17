@@ -30,7 +30,8 @@ const {
 
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#0d1117" />
+    <!-- canvas token value; the retired GitHub-Primer hex must not return (DESIGN.md Don'ts) -->
+    <meta name="theme-color" content="#0F1620" />
     <title>{title}</title>
     <meta name="description" content={description} />
 
@@ -58,28 +59,13 @@ const {
     <link rel="icon" type="image/webp" href="/favicon-32x32.webp" sizes="32x32" />
     <link rel="icon" type="image/webp" href="/favicon-16x16.webp" sizes="16x16" />
 
-    <!-- JSON-LD Organization (every page) -->
-    <script type="application/ld+json" set:html={JSON.stringify({
-      "@context": "https://schema.org",
-      "@type": "Organization",
-      "name": "Echowaves",
-      "url": "https://echowaves.com",
-      "logo": "https://echowaves.com/android-chrome-512x512.png",
-      "sameAs": [
-        "https://github.com/echowaves",
-        "https://www.linkedin.com/in/dmitryame",
-        "https://dev.to/dmitryame"
-      ],
-      "contactPoint": {
-        "@type": "ContactPoint",
-        "email": "dmitry@echowaves.com",
-        "contactType": "technical support"
-      }
-    })} />
-
     <slot name="head" />
   </head>
   <body>
-    <slot />
+    <!-- decorative blueprint grid: excluded from the accessibility tree -->
+    <div class="blueprint-grid" aria-hidden="true"></div>
+    <slot name="header" />
+    <slot name="main" />
+    <slot name="footer" />
   </body>
 </html>

@@ -1,0 +1,74 @@
+---
+import { identity } from '../../content/claims';
+// Operator profile — typographic/drawing-led, never a portrait (FR7).
+// LAYOUT BREAK #2 (DESIGN.md asymmetry mandate): an inset field-note block offset
+// from the grid columns rather than a centered column.
+---
+
+<section id="operator" class="operator" aria-labelledby="operator-title">
+  <div class="field-note">
+    <div class="sheet-label">
+      <span class="label-text">03 · operator — field notes</span>
+    </div>
+    <h2 id="operator-title">Who draws the sheet</h2>
+    <dl>
+      <dt>Based</dt><dd>{identity.location}</dd>
+      <dt>Education</dt><dd>{identity.education}</dd>
+      <dt>Credential</dt><dd>{identity.credential}</dd>
+      <dt>Published</dt>
+      <dd>
+        {identity.publications.join(' · ')} —
+        <a href="https://dev.to/dmitryame" rel="noopener" target="_blank">dev.to/dmitryame</a>
+      </dd>
+    </dl>
+    <p class="callout">no headshot: the record above is the face of this page</p>
+  </div>
+</section>
+
+<style>
+  .operator { padding-block: var(--section-gap) 0; }
+  /* inset field-note, offset to the trailing edge — not a centered column */
+  .field-note {
+    margin-inline-start: auto;
+    max-width: min(680px, 100%);
+    border: 1px solid var(--hairline);
+    background: var(--panel);
+    padding: var(--space-10) clamp(var(--space-6), 5vw, var(--space-16));
+  }
+  .sheet-label {
+    border-bottom: 1px solid var(--hairline);
+    padding-bottom: var(--space-2);
+    margin-bottom: var(--space-8);
+  }
+  .label-text {
+    font-family: var(--type-label-font-family);
+    font-size: var(--type-label-font-size);
+    letter-spacing: var(--type-label-letter-spacing);
+    text-transform: uppercase;
+    color: var(--muted); /* never --dim on a panel surface (AA) */
+  }
+  h2 { margin: 0 0 var(--space-8); font-size: var(--type-heading-font-size); }
+  dl {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: var(--space-3) var(--space-8);
+    margin: 0 0 var(--space-8);
+  }
+  dt {
+    font-family: var(--type-label-font-family);
+    font-size: var(--type-label-font-size);
+    letter-spacing: var(--type-label-letter-spacing);
+    text-transform: uppercase;
+    color: var(--muted);
+    padding-top: 3px;
+  }
+  dd { margin: 0; color: var(--ink); }
+  .callout {
+    font-family: var(--type-annotation-font-family);
+    font-size: var(--type-annotation-font-size);
+    color: var(--muted); /* muted, never dim, on panel */
+    border-left: 2px solid var(--amber);
+    padding-left: var(--callout-padding-inline);
+    margin: 0;
+  }
+</style>

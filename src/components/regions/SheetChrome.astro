@@ -1,0 +1,148 @@
+---
+import { identity, navRegions, destinations } from '../../content/claims';
+
+interface Props { part?: 'nav' | 'footer' }
+const { part = 'nav' } = Astro.props;
+
+// Sheet chrome per DESIGN.md sheet-chrome token: flat band on canvas-deep
+// with a hairline rule — never a floating card. Footer carries utility routes only.
+const year = new Date().getFullYear();
+---
+
+{part === 'nav' && (
+<header class="site-nav" id="top">
+  <div class="nav-inner">
+    <a href="#title-block" class="logo">{identity.handle}</a>
+    <details class="nav-disclosure">
+      <summary><span class="visually-hidden">Menu</span>regions</summary>
+      <nav aria-label="Sheet regions">
+        <ul>
+          {navRegions.map((r) => <li><a href={`#${r.id}`}>{r.label}</a></li>)}
+        </ul>
+      </nav>
+    </details>
+  </div>
+</header>
+)}
+
+{part === 'footer' && (
+<footer class="site-footer">
+  <nav aria-label="Sheet regions and utility routes">
+    <ul>
+      {navRegions.map((r) => <li><a href={`#${r.id}`}>{r.label}</a></li>)}
+    </ul>
+    <ul class="utility">
+      <li><a href="/support">Support</a></li>
+      <li><a href="/privacy">Privacy</a></li>
+      <li><a href={destinations.linkedin} rel="noopener" target="_blank">LinkedIn</a></li>
+      <li><a href={destinations.email}>Email</a></li>
+    </ul>
+  </nav>
+  <p class="fineprint">
+    © {year} {identity.name} · {identity.location} · sheet drawn by hand, no trackers beyond analytics
+  </p>
+</footer>
+)}
+
+<style>
+  .site-nav {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--chrome-bg);
+    border-bottom: 1px solid var(--chrome-border);
+    border-radius: var(--chrome-radius);
+  }
+  .nav-inner {
+    max-width: var(--content-max);
+    margin-inline: auto;
+    padding: var(--space-4) var(--page-gutter);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-6);
+  }
+  .logo,
+  .site-footer a {
+    font-family: var(--type-annotation-font-family);
+    color: var(--chrome-text);
+    text-decoration: none;
+  }
+  .logo {
+    font-size: var(--type-annotation-font-size);
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+  }
+  .logo:hover { color: var(--chrome-active); }
+
+  nav ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-5);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  nav a {
+    font-family: var(--type-label-font-family);
+    font-size: var(--type-label-font-size);
+    font-weight: var(--type-label-font-weight);
+    letter-spacing: var(--type-label-letter-spacing);
+    text-transform: uppercase;
+    color: var(--chrome-text);
+    text-decoration: none;
+  }
+  nav a:hover,
+  nav a:focus-visible { color: var(--chrome-active); }
+
+  /* narrow viewports collapse to identity + disclosure (native details, no JS) */
+  .nav-disclosure { display: none; position: relative; }
+  .nav-disclosure summary {
+    list-style: none;
+    cursor: pointer;
+    font-family: var(--type-label-font-family);
+    font-size: var(--type-label-font-size);
+    letter-spacing: var(--type-label-letter-spacing);
+    text-transform: uppercase;
+    color: var(--chrome-text);
+    padding: var(--space-2);
+  }
+  .nav-disclosure summary::-webkit-details-marker { display: none; }
+  .nav-disclosure[open] nav {
+    position: absolute;
+    right: 0;
+    top: calc(100% + var(--space-2));
+    background: var(--chrome-bg);
+    border: 1px solid var(--chrome-border);
+    padding: var(--space-4);
+  }
+  .nav-disclosure[open] nav ul { flex-direction: column; gap: var(--space-3); }
+  @media (max-width: 860px) {
+    .nav-disclosure { display: block; }
+    .nav-inner > nav { display: none; }
+  }
+
+  .site-footer {
+    border-top: 1px solid var(--chrome-border);
+    background: var(--chrome-bg);
+    margin-top: var(--section-gap);
+    padding: var(--space-10) var(--page-gutter) var(--space-8);
+  }
+  .site-footer nav {
+    max-width: var(--content-max);
+    margin-inline: auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--space-6);
+  }
+  .utility a { color: var(--link-text); }
+  .fineprint {
+    max-width: var(--content-max);
+    margin: var(--space-6) auto 0;
+    font-family: var(--type-label-font-family);
+    font-size: var(--type-label-font-size);
+    color: var(--dim); /* dim on canvas-deep band: decorative fine print, ink for links */
+  }
+</style>

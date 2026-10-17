@@ -1,0 +1,71 @@
+---
+import { aiPractice } from '../../content/claims';
+// AI practice — sits immediately after the schematic and stays prominent (FR1, FR6).
+// Practices and adoption are stated separately from outcomes; no invented ROI numbers.
+---
+
+<section id="ai-practice" class="ai-practice" aria-labelledby="ai-title">
+  <div class="sheet-label">
+    <span class="label-text">02 · ai practice — in use, not on a banner</span>
+  </div>
+  <h2 id="ai-title">{aiPractice.heading}</h2>
+
+  <ul class="practices">
+    {aiPractice.practices.map((p) => (
+      <li>
+        <h3>{p.name}</h3>
+        <p>{p.detail}</p>
+      </li>
+    ))}
+  </ul>
+
+  <p class="scope">{aiPractice.adoptionScope}</p>
+  <p class="callout">{aiPractice.note}</p>
+</section>
+
+<style>
+  .ai-practice { padding-block: var(--section-gap) 0; }
+  .sheet-label {
+    border-bottom: 1px solid var(--hairline);
+    padding-bottom: var(--space-2);
+    margin-bottom: var(--space-8);
+  }
+  .label-text {
+    font-family: var(--type-label-font-family);
+    font-size: var(--type-label-font-size);
+    letter-spacing: var(--type-label-letter-spacing);
+    text-transform: uppercase;
+    color: var(--dim);
+  }
+  h2 { margin: 0 0 var(--space-8); }
+  .practices {
+    list-style: none;
+    margin: 0 0 var(--space-6);
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1px;
+    background: var(--hairline);
+    border: 1px solid var(--hairline);
+  }
+  .practices li {
+    background: var(--canvas);
+    padding: var(--space-6);
+  }
+  .practices h3 {
+    font-family: var(--type-annotation-font-family);
+    font-size: 1rem;
+    color: var(--cyan);
+    margin: 0 0 var(--space-2);
+  }
+  .practices p { color: var(--muted); margin: 0; }
+  .scope { color: var(--muted); max-width: 70ch; }
+  .callout {
+    font-family: var(--type-annotation-font-family);
+    font-size: var(--type-annotation-font-size);
+    color: var(--callout-text);
+    border-left: 2px solid var(--callout-positive);
+    padding: var(--space-2) var(--callout-padding-inline);
+    margin: var(--space-6) 0 0;
+  }
+</style>

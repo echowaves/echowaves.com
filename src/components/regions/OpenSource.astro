@@ -1,0 +1,92 @@
+---
+import { packages, destinations } from '../../content/claims';
+// Open-source evidence (FR8): individually identifiable repo + npm links; no usage stats.
+---
+
+<section id="open-source" class="open-source" aria-labelledby="oss-title">
+  <div class="sheet-label">
+    <span class="label-text">04 · open source — still shipping</span>
+  </div>
+  <h2 id="oss-title">Production packages, maintained by hand</h2>
+
+  <table class="packages">
+    <caption class="visually-hidden">Echowaves open-source packages with repository and npm links</caption>
+    <thead>
+      <tr>
+        <th scope="col">Package</th>
+        <th scope="col">What it does</th>
+        <th scope="col">Links</th>
+      </tr>
+    </thead>
+    <tbody>
+      {packages.map((p) => (
+        <tr>
+          <td><code>{p.name}</code></td>
+          <td>{p.description}</td>
+          <td>
+            <a href={p.repo} rel="noopener" target="_blank">repository</a>
+            <span aria-hidden="true"> · </span>
+            <a href={p.npm} rel="noopener" target="_blank">npm</a>
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+
+  <p class="elsewhere">
+    More: <a href={destinations.githubProfile} rel="noopener" target="_blank">github.com/dmitryame</a> ·
+    <a href={destinations.githubOrg} rel="noopener" target="_blank">github.com/echowaves</a> ·
+    <a href={destinations.npm} rel="noopener" target="_blank">npm ~echowaves</a> ·
+    WiSaw: <a href={destinations.wisaw} rel="noopener" target="_blank">wisaw.com</a>
+  </p>
+
+  <p class="callout">no download counters here — links to code beat vanity metrics</p>
+</section>
+
+<style>
+  .open-source { padding-block: var(--section-gap) 0; }
+  .sheet-label {
+    border-bottom: 1px solid var(--hairline);
+    padding-bottom: var(--space-2);
+    margin-bottom: var(--space-8);
+  }
+  .label-text {
+    font-family: var(--type-label-font-family);
+    font-size: var(--type-label-font-size);
+    letter-spacing: var(--type-label-letter-spacing);
+    text-transform: uppercase;
+    color: var(--dim); /* on canvas */
+  }
+  h2 { margin: 0 0 var(--space-8); }
+  .packages {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid var(--hairline);
+    margin-bottom: var(--space-8);
+  }
+  .packages th,
+  .packages td {
+    text-align: left;
+    padding: var(--space-4) var(--space-5);
+    border-bottom: 1px solid var(--hairline);
+    vertical-align: top;
+  }
+  .packages th {
+    font-family: var(--type-label-font-family);
+    font-size: var(--type-label-font-size);
+    letter-spacing: var(--type-label-letter-spacing);
+    text-transform: uppercase;
+    color: var(--muted);
+    background: var(--panel);
+  }
+  .packages td { color: var(--muted); }
+  .packages code { font-size: var(--type-annotation-font-size); color: var(--ink); }
+  .elsewhere { color: var(--muted); margin: 0 0 var(--space-6); }
+  .callout {
+    font-family: var(--type-annotation-font-family);
+    font-size: var(--type-annotation-font-size);
+    color: var(--callout-text);
+    border-left: 2px solid var(--hairline);
+    padding-left: var(--callout-padding-inline);
+  }
+</style>

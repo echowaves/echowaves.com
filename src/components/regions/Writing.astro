@@ -1,0 +1,86 @@
+---
+import { destinations } from '../../content/claims';
+import type { DevToSnapshot } from '../../utils/devto';
+
+// Writing feed (FR9): a build-time snapshot, never live. States: available / empty-or-error.
+// No client fetch path exists; nothing can render a synthetic count.
+interface Props { snapshot: DevToSnapshot | null }
+const { snapshot } = Astro.props;
+const posts = snapshot?.posts ?? [];
+const asOf = snapshot?.fetchedAt
+  ? new Date(snapshot.fetchedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
+  : null;
+---
+
+<section id="writing" class="writing" aria-labelledby="writing-title">
+  <div class="sheet-label">
+    <span class="label-text">05 · writing — field notes</span>
+    {asOf && posts.length > 0 && (
+      <span class="asof">feed refreshed with this build · snapshot {asOf}</span>
+    )}
+  </div>
+  <h2 id="writing-title">From the shell and the field</h2>
+
+  {posts.length > 0 ? (
+    <ul class="posts" aria-live="polite">
+      {posts.map((post) => (
+        <li>
+          <a class="post-title" href={post.url} rel="noopener" target="_blank">{post.title}</a>
+          <span class="meta">
+            {post.readable_publish_date}
+            {' · '}{post.reading_time_minutes} min read
+            {post.pinned ? ' · pinned' : ''}
+          </span>
+        </li>
+      ))}
+    </ul>
+  ) : (
+    <p class="unavailable" role="status">
+      The dev.to snapshot is unavailable in this build — the writing itself did not move.
+    </p>
+  )}
+
+  <p class="devto-link">
+    All articles: <a href={destinations.devto} rel="noopener" target="_blank">dev.to/dmitryame</a>
+  </p>
+</section>
+
+<style>
+  .writing { padding-block: var(--section-gap) 0; }
+  .sheet-label {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-4);
+    flex-wrap: wrap;
+    border-bottom: 1px solid var(--hairline);
+    padding-bottom: var(--space-2);
+    margin-bottom: var(--space-8);
+  }
+  .label-text,
+  .asof {
+    font-family: var(--type-label-font-family);
+    font-size: var(--type-label-font-size);
+    letter-spacing: var(--type-label-letter-spacing);
+    text-transform: uppercase;
+    color: var(--dim); /* on canvas */
+  }
+  h2 { margin: 0 0 var(--space-8); }
+  .posts { list-style: none; margin: 0 0 var(--space-6); padding: 0; }
+  .posts li {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--space-6);
+    flex-wrap: wrap;
+    border-bottom: 1px solid var(--hairline);
+    padding: var(--space-4) 0;
+  }
+  .post-title { font-weight: 600; text-decoration-thickness: 1px; }
+  .meta {
+    font-family: var(--type-annotation-font-family);
+    font-size: var(--type-annotation-font-size);
+    color: var(--muted);
+  }
+  .unavailable { color: var(--muted); max-width: 65ch; }
+  .devto-link { color: var(--muted); margin-top: var(--space-6); }
+</style>

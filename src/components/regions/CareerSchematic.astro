@@ -1,0 +1,201 @@
+---
+import { roles } from '../../content/claims';
+
+// Career schematic per {components.career-schematic}: the semantic <ol> below IS the
+// content; connector rules and node markers are decorative drawing (aria-hidden).
+// Metric strip is this schematic's anchored legend ({components.metric-strip}),
+// never a standalone stat band: one primary reading, the rest subordinate.
+const legend = [
+  { value: '20 → 10 days', unit: 'release cycle', anchor: 'role-libertymutual', primary: true },
+  { value: '<1%', unit: 'annual defects', anchor: 'role-libertymutual', primary: false },
+  { value: '89%', unit: 'eNPS', anchor: 'role-libertymutual', primary: false },
+  { value: '−90%', unit: 'lead time', anchor: 'role-servicechannel', primary: false },
+  { value: '50+', unit: 'engineers led', anchor: 'role-servicechannel', primary: false },
+];
+---
+
+<section id="career-schematic" class="schematic full-bleed" aria-labelledby="schematic-title">
+  <div class="sheet-label">
+    <span class="label-text">01 · career schematic — measured</span>
+  </div>
+  <h2 id="schematic-title">The record, dimensioned</h2>
+
+  <!-- legend: every figure names the row it measures and links to it -->
+  <div class="metric-strip" role="list" aria-label="Headline metrics, linked to their rows in the schematic">
+    {legend.map((m) => (
+      <a role="listitem" href={`#${m.anchor}`} class={`figure${m.primary ? ' primary' : ''}`}>
+        <span class="fig-value">{m.value}</span>
+        <span class="fig-unit">{m.unit}</span>
+      </a>
+    ))}
+  </div>
+
+  <ol class="roles">
+    {roles.map((role) => (
+      <li id={`role-${role.id}`} class="role">
+        <span class="node" aria-hidden="true"></span>
+        <div class="role-head">
+          <h3>{role.title}</h3>
+          <p class="org">{role.org} · {role.dates} <span class="period">— {role.period}</span></p>
+        </div>
+        <p class="summary">{role.summary}</p>
+
+        {role.metrics.length > 0 && (
+          <ul class="metrics">
+            {role.metrics.map((m) => (
+              <li>
+                <strong>{m.value}</strong> · {m.unit} <span class="ctx">· {m.context}</span>
+              </li>
+            ))}
+          </ul>
+        )}
+
+        {role.note && (
+          <p class="callout">{role.note}</p>
+        )}
+      </li>
+    ))}
+  </ol>
+
+  <p class="callout margin-note">numbers from the report, not the retro</p>
+</section>
+
+<style>
+  /* LAYOUT BREAK #1 (DESIGN.md asymmetry mandate): the schematic runs full-bleed
+     while surrounding regions stay inside {spacing.content-max}. */
+  .full-bleed {
+    margin-inline: calc(50% - 50vw);
+    padding-inline: max(var(--page-gutter), calc(50vw - 50% + 0rem));
+    border-block: 1px solid var(--hairline);
+  }
+  .full-bleed > :not(.metric-strip) {
+    max-width: var(--content-max);
+    margin-inline: auto;
+  }
+  .schematic {
+    padding-block: var(--section-gap);
+    background: var(--schematic-surface);
+  }
+  .sheet-label {
+    border-bottom: 1px solid var(--hairline);
+    padding-bottom: var(--space-2);
+    margin-bottom: var(--space-8);
+  }
+  .label-text,
+  .margin-note {
+    font-family: var(--type-label-font-family);
+    font-size: var(--type-label-font-size);
+    letter-spacing: var(--type-label-letter-spacing);
+    text-transform: uppercase;
+    color: var(--dim);
+  }
+  h2 { margin: 0 0 var(--space-8); }
+
+  /* metric strip — legend on a panel band, unequal weights by design */
+  .metric-strip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-10);
+    background: var(--strip-surface);
+    border: 1px solid var(--strip-divider);
+    padding: var(--space-5) var(--space-6);
+    margin-bottom: var(--space-12);
+  }
+  .figure {
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .fig-value {
+    font-family: var(--type-heading-font-family);
+    font-weight: 600;
+    color: var(--strip-value);
+    font-size: 1.05rem;
+  }
+  .figure.primary .fig-value {
+    font-size: 1.75rem;
+    color: var(--strip-highlight);
+  }
+  .fig-unit {
+    font-family: var(--type-label-font-family);
+    font-size: var(--type-label-font-size);
+    letter-spacing: var(--type-label-letter-spacing);
+    text-transform: uppercase;
+    color: var(--strip-label);
+  }
+
+  /* the drawing: hairline spine + node markers; content lives in the <ol> */
+  .roles {
+    list-style: none;
+    margin: 0;
+    padding: 0 var(--schematic-padding) 0 calc(var(--schematic-padding) * 2.5);
+    position: relative;
+  }
+  .roles::before {
+    content: '';
+    position: absolute;
+    left: var(--space-4);
+    top: var(--space-2);
+    bottom: var(--space-2);
+    width: 1px;
+    background: var(--schematic-line);
+  }
+  .role { position: relative; padding-bottom: var(--space-16); }
+  .role:last-child { padding-bottom: 0; }
+  .node {
+    position: absolute;
+    left: calc(var(--schematic-padding) * 2.5 - var(--space-4) - 5px);
+    top: 8px;
+    width: 9px;
+    height: 9px;
+    background: var(--canvas);
+    border: 2px solid var(--schematic-node-marker);
+    border-radius: 0; /* square geometry per DESIGN.md Shapes */
+  }
+  .role h3 { margin: 0; font-size: 1.25rem; }
+  .org {
+    font-family: var(--type-annotation-font-family);
+    font-size: var(--type-annotation-font-size);
+    color: var(--cyan);
+    margin: var(--space-1) 0 var(--space-4);
+  }
+  .period { color: var(--muted); }
+  .summary { color: var(--muted); max-width: 65ch; margin: 0 0 var(--space-4); }
+  .metrics {
+    list-style: none;
+    margin: 0 0 var(--space-4);
+    padding: 0;
+    display: grid;
+    gap: var(--space-2);
+  }
+  .metrics li {
+    font-family: var(--type-annotation-font-family);
+    font-size: var(--type-annotation-font-size);
+    line-height: var(--type-annotation-line-height);
+    color: var(--muted);
+    border-left: 2px solid var(--hairline);
+    padding-left: var(--callout-padding-inline);
+  }
+  .metrics strong { color: var(--ink); font-weight: 600; }
+  .ctx { color: var(--muted); }
+  /* annotation callout per {components.annotation-callout} */
+  .callout {
+    font-family: var(--type-annotation-font-family);
+    font-size: var(--type-annotation-font-size);
+    line-height: var(--type-annotation-line-height);
+    color: var(--callout-text);
+    background: color-mix(in srgb, var(--panel) 70%, transparent);
+    border-left: 2px solid var(--callout-secondary-accent);
+    padding: var(--space-4) var(--callout-padding-inline);
+    max-width: 75ch;
+    margin: 0;
+  }
+  .margin-note { margin-top: var(--space-10); }
+
+  @media (max-width: 768px) {
+    /* stacked chronology with a simple vertical guide; no horizontal scroll */
+    .roles { padding-left: calc(var(--schematic-padding) * 2); }
+    .figure.primary .fig-value { font-size: 1.4rem; }
+  }
+</style>
