@@ -1,14 +1,23 @@
+/*
+ * Design tokens for the whole site.
+ *
+ * Support, Privacy and Blog carry no colour of their own beyond hovers, so they
+ * inherit this palette. Keep new tokens additive and few: one background, two
+ * text tones, one rule colour, and a signal colour per meaning.
+ */
 :root {
-  --bg-primary: #0d1117;
-  --bg-secondary: #161b22;
-  --bg-tertiary: #1c2128;
-  --border-color: #30363d;
-  --text-primary: #e6edf3;
-  --text-secondary: #8b949e;
-  --accent-blue: #58a6ff;
-  --accent-green: #39d353;
-  --accent-red: #f85149;
-  --accent-purple: #bc8cff;
+  --bg-primary: #fbfaf7;
+  --bg-secondary: #f3f0e9;
+  --bg-tertiary: #e8e4da;
+  --border-color: #d6d1c5;
+  --text-primary: #191a17;
+  --text-secondary: #5c594f;
+  --accent-blue: #0b4fcc;
+  --accent-green: #12633a;
+  --accent-red: #a3271d;
+  --accent-purple: #5c3d91;
+  --accent-hover: #0a3f9e;
+  --ink-on-accent: #fbfaf7;
   --font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'SF Mono', 'Consolas', monospace;
   --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
@@ -31,6 +40,8 @@ body {
   -moz-osx-font-smoothing: grayscale;
   background-color: var(--bg-primary);
   color: var(--text-primary);
+  font-size: 17px;
+  line-height: 1.65;
 }
 
 code {
@@ -44,22 +55,67 @@ a {
 }
 
 a:hover {
-  color: #79c0ff;
+  color: var(--accent-hover);
 }
 
-section {
-  max-width: 1200px;
+/* One readable column: the page is meant to be read, not scanned for cards. */
+main > section {
+  max-width: 720px;
   margin: 0 auto;
-  padding: 80px 20px;
+  padding: 64px 20px;
 }
+
+/* Keep a section heading clear of the sticky header when reached by anchor. */
+section[id] {
+  scroll-margin-top: 64px;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  line-height: 1.25;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent-blue);
+  outline-offset: 3px;
+}
+
+::selection {
+  background-color: var(--bg-tertiary);
+}
+
+/* --- accessibility ------------------------------------------------------- */
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 10;
+  background-color: var(--accent-blue);
+  color: var(--ink-on-accent);
+  padding: 10px 16px;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+}
+
+.skip-link:focus {
+  left: 12px;
+  top: 12px;
+  color: var(--ink-on-accent);
+}
+
+/* --- buttons ------------------------------------------------------------- */
 
 .btn {
   display: inline-block;
   padding: 12px 28px;
   background-color: var(--accent-blue);
-  color: var(--bg-primary);
+  color: var(--ink-on-accent);
   border: 1px solid var(--accent-blue);
-  border-radius: 6px;
   font-weight: 600;
   font-size: 0.95rem;
   cursor: pointer;
@@ -68,10 +124,9 @@ section {
 }
 
 .btn:hover {
-  background-color: #79c0ff;
-  border-color: #79c0ff;
-  color: var(--bg-primary);
-  transform: translateY(-1px);
+  background-color: var(--accent-hover);
+  border-color: var(--accent-hover);
+  color: var(--ink-on-accent);
 }
 
 .btn-outline {
@@ -87,7 +142,11 @@ section {
 }
 
 @media (max-width: 768px) {
-  section {
-    padding: 50px 16px;
+  main > section {
+    padding: 48px 16px;
+  }
+
+  body {
+    font-size: 16px;
   }
 }

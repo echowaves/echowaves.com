@@ -1,0 +1,145 @@
+---
+import { claimById, headlineClaims, hero, identity } from '../../data/site.ts';
+
+const stats = headlineClaims
+  .map((id) => claimById(id))
+  .filter((claim) => claim !== undefined);
+
+// The leading `$` is styled separately so the prompt still reads as a prompt.
+const promptText = hero.prompt.replace(/^\$\s*/, '');
+---
+
+<section class="hero" id="top">
+  <h1>{hero.headline}</h1>
+
+  {hero.body.map((paragraph) => <p class="lead">{paragraph}</p>)}
+
+  <p class="prompt" aria-hidden="true">
+    <span class="prompt-dollar">$</span> {promptText}<span class="caret"></span>
+  </p>
+
+  <dl class="stats">
+    {
+      stats.map((stat) => (
+        <div>
+          <dt>{stat.label}</dt>
+          <dd>{stat.metric}</dd>
+        </div>
+      ))
+    }
+  </dl>
+
+  <p class="who">
+    <strong>{identity.name}</strong>
+    <span>{identity.location}</span>
+    {
+      identity.links.map((link) => (
+        <a href={link.href} rel="noopener noreferrer" target="_blank">
+          {link.label}
+        </a>
+      ))
+    }
+    <a href={`mailto:${identity.email}`}>Email</a>
+  </p>
+</section>
+
+<style>
+  .hero {
+    padding: 72px 20px 56px;
+  }
+
+  h1 {
+    font-size: clamp(2.25rem, 8vw, 3.5rem);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    margin-bottom: 28px;
+  }
+
+  .lead {
+    font-size: 1.125rem;
+    color: var(--text-secondary);
+    max-width: 62ch;
+  }
+
+  .lead + .lead {
+    margin-top: 16px;
+  }
+
+  .prompt {
+    margin-top: 32px;
+    font-family: var(--font-mono);
+    font-size: 0.9375rem;
+  }
+
+  .prompt-dollar {
+    color: var(--accent-green);
+  }
+
+  .caret {
+    display: inline-block;
+    width: 8px;
+    height: 1.05em;
+    margin-left: 4px;
+    background-color: var(--accent-green);
+    vertical-align: text-bottom;
+    animation: blink 1.1s steps(1) infinite;
+  }
+
+  @keyframes blink {
+    50% {
+      opacity: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .caret {
+      animation: none;
+    }
+  }
+
+  .stats {
+    display: grid;
+    gap: 0 28px;
+    margin-top: 44px;
+  }
+
+  .stats > div {
+    padding: 12px 0;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 20px;
+  }
+
+  dt {
+    font-size: 0.9375rem;
+    color: var(--text-secondary);
+    max-width: 46ch;
+  }
+
+  dd {
+    font-family: var(--font-mono);
+    font-size: 1.3125rem;
+    white-space: nowrap;
+  }
+
+  .who {
+    margin-top: 36px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 6px 18px;
+    font-size: 0.9375rem;
+  }
+
+  .who span {
+    color: var(--text-secondary);
+  }
+
+  @media (min-width: 720px) {
+    .stats {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+</style>
