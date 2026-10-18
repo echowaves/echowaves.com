@@ -1,0 +1,129 @@
+---
+import { openSource, packages } from '../../data/site.ts';
+import {
+  FIGURES_NOTE,
+  OFFLINE_NOTE,
+  formatCount,
+  formatReleaseDate,
+  statsFor,
+  type RegistrySnapshot,
+} from '../../utils/registry.ts';
+
+interface Props {
+  snapshot: RegistrySnapshot | null;
+}
+
+const { snapshot } = Astro.props;
+---
+
+<section id="code">
+  <h2>{openSource.heading}</h2>
+  <p class="lead">{openSource.lead}</p>
+
+  <ul class="packages">
+    {
+      packages.map((pkg) => {
+        const stats = statsFor(snapshot, pkg.name);
+        const figures = [
+          formatCount(stats?.weeklyDownloads ?? null) &&
+            `${formatCount(stats?.weeklyDownloads ?? null)} downloads last week`,
+          formatCount(stats?.stars ?? null) && `${formatCount(stats?.stars ?? null)} stars on GitHub`,
+          formatReleaseDate(stats?.lastRelease ?? null) &&
+            `last release ${formatReleaseDate(stats?.lastRelease ?? null)}`,
+        ].filter(Boolean) as string[];
+
+        return (
+          <li>
+            <div class="head">
+              <h3>{pkg.name}</h3>
+              <code class="install">npm i {pkg.npmPackage}</code>
+            </div>
+            <p class="summary">{pkg.summary}</p>
+            <p class="figures">
+              {figures.length > 0 ? figures.join(' · ') : 'Figures unavailable for this build'}
+            </p>
+            <p class="links">
+              <a href={stats?.npmUrl ?? `https://www.npmjs.com/package/${pkg.npmPackage}`} rel="noopener noreferrer" target="_blank">
+                npm
+              </a>
+              <a
+                href={stats?.repositoryUrl ?? `https://github.com/echowaves/${pkg.repo}`}
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                GitHub
+              </a>
+            </p>
+          </li>
+        );
+      })
+    }
+  </ul>
+
+  <p class="note">{snapshot === null || snapshot.offline || !snapshot.hasFigures ? OFFLINE_NOTE : FIGURES_NOTE}</p>
+</section>
+
+<style>
+  h2 {
+    font-size: 1.5rem;
+    margin-bottom: 12px;
+  }
+
+  .lead {
+    color: var(--text-secondary);
+    max-width: 64ch;
+    margin-bottom: 8px;
+  }
+
+  .packages {
+    list-style: none;
+  }
+
+  .packages > li {
+    padding: 22px 0;
+    border-top: 1px solid var(--border-color);
+  }
+
+  .head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px 20px;
+  }
+
+  h3 {
+    font-family: var(--font-mono);
+    font-size: 1rem;
+  }
+
+  .install {
+    font-size: 0.8125rem;
+    color: var(--text-secondary);
+  }
+
+  .summary {
+    margin-top: 6px;
+    max-width: 64ch;
+  }
+
+  .figures {
+    margin-top: 6px;
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    color: var(--text-secondary);
+  }
+
+  .links {
+    margin-top: 8px;
+    display: flex;
+    gap: 16px;
+    font-size: 0.9375rem;
+  }
+
+  .note {
+    margin-top: 20px;
+    font-size: 0.8125rem;
+    color: var(--text-secondary);
+  }
+</style>

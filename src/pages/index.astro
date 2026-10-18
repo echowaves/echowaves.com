@@ -1,13 +1,18 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { getBlogData } from '../utils/devto';
-import Header from '../components/Header';
-import Hero from '../components/Hero';
-import About from '../components/About';
-import Projects from '../components/Projects';
-import Packages from '../components/Packages';
+import { identity, packages, buildAppsJsonLd } from '../data/site.ts';
+import { collectRegistryStats } from '../utils/registry.ts';
+import SiteHeader from '../components/site/SiteHeader.astro';
+import Hero from '../components/site/Hero.astro';
+import Work from '../components/site/Work.astro';
+import Results from '../components/site/Results.astro';
+import Products from '../components/site/Products.astro';
+import HowIWork from '../components/site/HowIWork.astro';
+import OpenSource from '../components/site/OpenSource.astro';
+import Contact from '../components/site/Contact.astro';
+import SiteFooter from '../components/site/SiteFooter.astro';
 import Blog from '../components/Blog';
-import Footer from '../components/Footer';
 
 let blogData = null;
 try {
@@ -15,69 +20,69 @@ try {
 } catch (e) {
   console.warn('Could not fetch blog data at build time:', e);
 }
+
+// Registry figures are fetched once, here, and passed down. A provider failure
+// leaves that figure out of the page rather than failing the build.
+let registry = null;
+try {
+  registry = await collectRegistryStats(packages);
+} catch (e) {
+  console.warn('Could not collect registry figures at build time:', e);
+}
+
+const personJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: identity.name,
+  url: 'https://echowaves.com',
+  email: `mailto:${identity.email}`,
+  knowsAbout: [
+    'Agentic software engineering',
+    'Engineering leadership',
+    'Delivery measurement',
+    'Release management',
+    'React Native and Expo',
+  ],
+  sameAs: identity.links.map((link) => link.href),
+};
+
+const codeJsonLd = packages.map((pkg) => ({
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareSourceCode',
+  name: pkg.name,
+  description: pkg.summary,
+  codeRepository: `https://github.com/echowaves/${pkg.repo}`,
+  programmingLanguage: 'TypeScript',
+  runtimePlatform: 'React Native',
+}));
+
 ---
 
 <BaseLayout
-  title="Echowaves — Open-Source React Native & Expo Packages | expo-cached-image, expo-storage"
-  description="Open-source Expo & React Native tools by Dmitry Amelchenko. High-performance packages: expo-cached-image, expo-storage, expo-masonry-layout. Used in production apps."
+  title="Dmitry Amelchenko — agentic software engineering for engineering organizations"
+  description="Twenty years shipping software in hard environments: Fortune 100 insurance, HIPAA telehealth, enterprise SaaS. Now helping engineering organizations turn agentic software engineering into delivery they can measure."
   canonicalUrl="https://echowaves.com/"
 >
   <Fragment slot="head">
-    <!-- JSON-LD Person -->
-    <script type="application/ld+json" set:html={JSON.stringify({
-      "@context": "https://schema.org",
-      "@type": "Person",
-      "name": "Dmitry Amelchenko",
-      "jobTitle": "CTO",
-      "worksFor": {
-        "@type": "Organization",
-        "name": "Echowaves"
-      },
-      "url": "https://echowaves.com",
-      "sameAs": [
-        "https://github.com/dmitryame",
-        "https://www.linkedin.com/in/dmitryame",
-        "https://dev.to/dmitryame"
-      ]
-    })} />
-
-    <!-- JSON-LD SoftwareSourceCode for packages -->
-    <script type="application/ld+json" set:html={JSON.stringify([
-      {
-        "@context": "https://schema.org",
-        "@type": "SoftwareSourceCode",
-        "name": "expo-cached-image",
-        "description": "Super fast cached image component for react-native applications powered by expo",
-        "codeRepository": "https://github.com/echowaves/expo-cached-image",
-        "programmingLanguage": "TypeScript",
-        "runtimePlatform": "React Native"
-      },
-      {
-        "@context": "https://schema.org",
-        "@type": "SoftwareSourceCode",
-        "name": "expo-storage",
-        "description": "Simple way to store persistent data without size limitations of react-native async-storage",
-        "codeRepository": "https://github.com/echowaves/expo-storage",
-        "programmingLanguage": "TypeScript",
-        "runtimePlatform": "React Native"
-      },
-      {
-        "@context": "https://schema.org",
-        "@type": "SoftwareSourceCode",
-        "name": "expo-masonry-layout",
-        "description": "High-performance masonry layout component for React Native and Expo applications",
-        "codeRepository": "https://github.com/echowaves/expo-masonry-layout",
-        "programmingLanguage": "TypeScript",
-        "runtimePlatform": "React Native"
-      }
-    ])} />
+    <!-- Person schema without job titles or employers. -->
+    <script type="application/ld+json" set:html={JSON.stringify(personJsonLd)} />
+    <script type="application/ld+json" set:html={JSON.stringify(codeJsonLd)} />
+    <script type="application/ld+json" set:html={JSON.stringify(buildAppsJsonLd())} />
   </Fragment>
 
-  <Header client:load />
-  <Hero />
-  <About />
-  <Projects />
-  <Packages />
-  <Blog client:load blogData={blogData} />
-  <Footer />
+  <a class="skip-link" href="#main">Skip to content</a>
+  <SiteHeader />
+
+  <main id="main">
+    <Hero />
+    <Work />
+    <Results />
+    <Products />
+    <HowIWork />
+    <OpenSource snapshot={registry} />
+    <Blog client:load blogData={blogData} />
+    <Contact />
+  </main>
+
+  <SiteFooter />
 </BaseLayout>

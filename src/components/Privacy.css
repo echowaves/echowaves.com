@@ -77,7 +77,7 @@
 }
 
 .privacy-content a:hover {
-  color: #79c0ff;
+  color: var(--accent-hover);
 }
 
 .contact-info {
