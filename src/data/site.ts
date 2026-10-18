@@ -184,8 +184,6 @@ export const engagement = {
   name: 'Delivery Baseline',
   summary:
     'Six weeks. I measure how delivery actually works where you are, put one gate into the path your teams already ship through, and hand back a plan with owners and sequence.',
-  priceNote: 'Price agreed before any discovery work, by scope and team size.',
-  capacity: 'Capacity is deliberately small. If I am not free, I say so and give you a date.',
   disqualifiers: [
     'Do not hire me to validate a decision that has already been made.',
     'Do not hire me if the pilot gets to stay a pilot; good practice spreads or it is decoration.',
