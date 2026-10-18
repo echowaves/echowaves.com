@@ -1,0 +1,72 @@
+---
+import { engagement, identity } from '../../data/site.ts';
+---
+
+<section id="contact">
+  <h2>{engagement.heading}</h2>
+
+  <p class="lead">
+    <strong>{engagement.name}.</strong> {engagement.summary}
+  </p>
+
+  <ul class="rules">
+    {engagement.disqualifiers.map((rule) => <li>{rule}</li>)}
+  </ul>
+
+  <p class="terms">{engagement.priceNote} {engagement.capacity}</p>
+
+  <p class="cta">
+    <a class="btn" href={engagement.cta.href}>
+      {engagement.cta.label}
+    </a>
+    <a class="alt" href={`mailto:${identity.email}`}>{identity.email}</a>
+  </p>
+</section>
+
+<style>
+  h2 {
+    font-size: 1.5rem;
+    margin-bottom: 12px;
+  }
+
+  .lead {
+    font-size: 1.125rem;
+    max-width: 64ch;
+  }
+
+  .rules {
+    list-style: none;
+    margin-top: 24px;
+    display: grid;
+    gap: 10px;
+  }
+
+  .rules li {
+    color: var(--text-secondary);
+    max-width: 68ch;
+    padding-left: 20px;
+    position: relative;
+  }
+
+  .rules li::before {
+    content: '×';
+    position: absolute;
+    left: 0;
+    color: var(--accent-red);
+  }
+
+  .terms {
+    margin-top: 24px;
+    font-size: 0.9375rem;
+    color: var(--text-secondary);
+    max-width: 64ch;
+  }
+
+  .cta {
+    margin-top: 28px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 12px 24px;
+  }
+</style>

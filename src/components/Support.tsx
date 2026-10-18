@@ -18,7 +18,6 @@ const Support: React.FC = () => {
             
             <div className="contact-methods">
               <div className="contact-method">
-                <div className="contact-icon">✉️</div>
                 <h3>Email Support</h3>
                 <p>
                   <a href="mailto:dmitry@echowaves.com">dmitry@echowaves.com</a>
@@ -29,7 +28,6 @@ const Support: React.FC = () => {
               </div>
 
               <div className="contact-method">
-                <div className="contact-icon">💬</div>
                 <h3>GitHub Issues</h3>
                 <p>
                   Report bugs or request features on our{' '}
@@ -43,7 +41,6 @@ const Support: React.FC = () => {
               </div>
 
               <div className="contact-method">
-                <div className="contact-icon">🐦</div>
                 <h3>Social Media</h3>
                 <p>
                   Follow us on{' '}
@@ -105,25 +102,21 @@ const Support: React.FC = () => {
             <h2>Documentation & Resources</h2>
             <div className="resources-grid">
               <a href="https://github.com/echowaves" target="_blank" rel="noopener noreferrer" className="resource-card">
-                <div className="resource-icon">📚</div>
                 <h3>GitHub Repositories</h3>
                 <p>View source code and documentation</p>
               </a>
 
               <a href="https://www.npmjs.com/~echowaves" target="_blank" rel="noopener noreferrer" className="resource-card">
-                <div className="resource-icon">📦</div>
                 <h3>NPM Packages</h3>
                 <p>Browse our published packages</p>
               </a>
 
               <a href="https://dev.to/dmitryame" target="_blank" rel="noopener noreferrer" className="resource-card">
-                <div className="resource-icon">✍️</div>
                 <h3>Blog & Tutorials</h3>
                 <p>Read our latest articles and guides</p>
               </a>
 
               <a href="/" className="resource-card">
-                <div className="resource-icon">🏠</div>
                 <h3>Homepage</h3>
                 <p>Back to main site</p>
               </a>
