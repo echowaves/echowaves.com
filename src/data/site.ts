@@ -65,21 +65,12 @@ export const hero = {
 
 /** Three figures a skimmer should get in five seconds. */
 export const headlineClaims = [
-  'jd-power-mobile-satisfaction',
   'release-cycle-20-to-10',
   'enps-89',
+  'defect-rate-under-one-percent',
 ] as const;
 
 export const claims: Claim[] = [
-  {
-    id: 'jd-power-mobile-satisfaction',
-    metric: '+47 pts',
-    label: 'Mobile app satisfaction, year over year',
-    detail:
-      'The same program moved overall digital customer satisfaction up 27 points and lifted the firm to fourth in its industry. Login scored 32 points above the industry average after multi-factor authentication shipped.',
-    source: 'J.D. Power report, publicly reported. Wording pending sign-off.',
-    needsReview: true,
-  },
   {
     id: 'release-cycle-20-to-10',
     metric: '20 → 10 days',
