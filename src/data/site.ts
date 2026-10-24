@@ -170,7 +170,19 @@ export const notes = [
   },
 ];
 
-export const engagement = {
+export interface Engagement {
+  heading: string;
+  name: string;
+  summary: string;
+  disqualifiers: string[];
+  /** Price wording. Dmitry's to write — the site never invents a figure. */
+  priceNote?: string;
+  /** Capacity wording, e.g. how many engagements are open. */
+  capacity?: string;
+  cta: Link;
+}
+
+export const engagement: Engagement = {
   heading: 'Working together',
   name: 'Delivery Baseline',
   summary:
@@ -192,6 +204,11 @@ export const engagement = {
       ),
   },
 };
+
+/** Price and capacity lines, empty until Dmitry writes them. Never padded. */
+export function engagementTerms(eng: Partial<Engagement> = engagement): string[] {
+  return [eng.priceNote, eng.capacity].filter((line): line is string => Boolean(line?.trim()));
+}
 
 // Figures themselves are fetched in src/utils/registry.ts, which also owns the
 // notes shown beside them.

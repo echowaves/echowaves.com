@@ -1,5 +1,7 @@
 ---
-import { engagement, identity } from '../../data/site.ts';
+import { engagement, engagementTerms, identity } from '../../data/site.ts';
+
+const terms = engagementTerms();
 ---
 
 <section id="contact">
@@ -13,7 +15,13 @@ import { engagement, identity } from '../../data/site.ts';
     {engagement.disqualifiers.map((rule) => <li>{rule}</li>)}
   </ul>
 
-  <p class="terms">{engagement.priceNote} {engagement.capacity}</p>
+  {
+    terms.length > 0 && (
+      <p class="terms">
+        {terms.join(' ')}
+      </p>
+    )
+  }
 
   <p class="cta">
     <a class="btn" href={engagement.cta.href}>

@@ -62,17 +62,30 @@ async function check(label, fn) {
   }
 }
 
-function walk(dir) {
+function walk(dir, extensions = COPY_EXTENSIONS) {
   const out = [];
   for (const entry of readdirSync(dir, { withFileTypes: true })) {
     const abs = path.join(dir, entry.name);
     if (entry.isDirectory()) {
-      out.push(...walk(abs));
-    } else if (COPY_EXTENSIONS.includes(path.extname(entry.name))) {
+      out.push(...walk(abs, extensions));
+    } else if (extensions.includes(path.extname(entry.name))) {
       out.push(abs);
     }
   }
   return out;
+}
+
+// A section that reads a field nobody filled in renders an empty element: markup
+// that says nothing at the exact spot where copy was promised. `engagementTerms`
+// exists so the data module, not the component, decides when a line is absent.
+const BLOCK_ELEMENT = /<(p|li|dd|dt|h1|h2|h3|ul|ol|blockquote)((?:\s[^>]*)?)>([\s\S]{0,200}?)<\/\1>/g;
+
+function findEmptyBlocks(html) {
+  const empty = [];
+  for (const match of html.matchAll(BLOCK_ELEMENT)) {
+    if (match[3].trim() === '') empty.push(`${match[1]}${match[2] || ''}`.slice(0, 60));
+  }
+  return empty;
 }
 
 /** Human-visible strings only: literals in data modules, text nodes in components. */
@@ -226,7 +239,7 @@ function validateProducts(list) {
 }
 
 await check('site copy is free of hype, emoji, titles and date ranges', () => {
-  const files = COPY_DIRS.flatMap(walk);
+  const files = COPY_DIRS.flatMap((dir) => walk(dir));
   const violations = files.flatMap((file) =>
     findCopyViolations(copyStrings(file)).map((violation) => `${path.relative(ROOT, file)}: ${violation}`)
   );
@@ -303,6 +316,42 @@ await check('/impact.json matches the content the page renders', () => {
   const absent = site.claims.filter((claim) => !html.includes(inMarkup(claim.metric)));
   assert.equal(absent.length, 0, `rendered page missing figures: ${absent.map((c) => c.id).join(', ')}`);
   return `${payload.claims.length} claims identical in payload and rendered page`;
+});
+
+await check('terms lines render only when written', () => {
+  assert.deepEqual(site.engagementTerms({}), []);
+  assert.deepEqual(site.engagementTerms({ priceNote: ' ', capacity: '  ' }), []);
+  assert.deepEqual(site.engagementTerms({ priceNote: 'Quote after the first call.', capacity: '' }), [
+    'Quote after the first call.',
+  ]);
+  const written = site.engagementTerms({ priceNote: 'Fixed fee.', capacity: 'Two engagements at a time.' });
+  assert.equal(written.length, 2, 'both lines should render when both are written');
+  return 'empty and missing wording both render nothing';
+});
+
+await check('built pages render no empty text elements', () => {
+  const built = path.join(ROOT, 'dist', 'index.html');
+  if (!existsSync(built)) {
+    return 'page scan skipped: no dist/ build yet — run `npm run build`';
+  }
+  if (statSync(built).mtimeMs < statSync(path.join(SRC, 'data', 'site.ts')).mtimeMs) {
+    return 'page scan skipped: rebuild — dist/ predates src/data/site.ts';
+  }
+  const pages = walk(path.join(ROOT, 'dist'), ['.html']);
+  const problems = pages.flatMap((page) =>
+    findEmptyBlocks(readFileSync(page, 'utf8')).map(
+      (element) => `${path.relative(ROOT, page)}: empty <${element.split(/[ ]/)[0]}>`
+    )
+  );
+  assert.deepEqual(problems, [], `\n     ${problems.join('\n     ')}`);
+  return `${pages.length} built pages scanned`;
+});
+
+await check('an empty rendered element is detected', () => {
+  const fixture = '<section><p class="terms"> </p><h2>Kept</h2><ul><li>a rule</li></ul></section>';
+  const found = findEmptyBlocks(fixture);
+  assert.deepEqual(found, ['p class="terms"'], `fixture slipped through: ${found.join(' | ')}`);
+  return 'fixture empty paragraph rejected';
 });
 
 // ---------------------------------------------------------------------------
