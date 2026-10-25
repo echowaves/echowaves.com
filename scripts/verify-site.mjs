@@ -49,6 +49,13 @@ const EMPLOYMENT_RANGE = /\b(?:19\d{2}|20\d{2})\s*[–—-]\s*(?:19\d{2}|20\d{2}
 
 const results = [];
 
+/** Thrown by a check that has nothing to prove yet — reported as SKIP, not PASS. */
+class Skip extends Error {}
+
+const skip = (reason) => {
+  throw new Skip(reason);
+};
+
 async function check(label, fn) {
   try {
     const note = await fn();
@@ -56,10 +63,37 @@ async function check(label, fn) {
     console.log(note ? `PASS ${label} — ${note}` : `PASS ${label}`);
     return note;
   } catch (error) {
+    if (error instanceof Skip) {
+      results.push({ label, ok: true, skipped: true });
+      console.log(`SKIP ${label} — ${error.message}`);
+      return null;
+    }
     results.push({ label, ok: false });
     console.error(`FAIL ${label}\n     ${error instanceof Error ? error.message : String(error)}`);
     return null;
   }
+}
+
+/** Every built page, so a check can speak about the site rather than one route. */
+function builtPages() {
+  const dist = path.join(ROOT, 'dist');
+  if (!existsSync(dist)) {
+    skip('no dist/ build yet — run `npm run build`');
+  }
+  const pages = walk(dist, ['.html']);
+  // A dist/ from before the current copy proves nothing about it.
+  const stale = pages.filter(
+    (page) => statSync(page).mtimeMs < statSync(path.join(SRC, 'data', 'site.ts')).mtimeMs
+  );
+  if (stale.length > 0) {
+    skip('rebuild — dist/ predates src/data/site.ts');
+  }
+  return pages;
+}
+
+/** One string holding the markup of the whole built site. */
+function builtMarkup() {
+  return builtPages().map((page) => readFileSync(page, 'utf8')).join('\n');
 }
 
 function walk(dir, extensions = COPY_EXTENSIONS) {
@@ -292,7 +326,7 @@ await check('every link in the WiSaw story resolves', () => {
   return `${hrefs.length} links across ${paragraphs.length} passages`;
 });
 
-await check('/impact.json matches the content the page renders', () => {
+await check('/impact.json matches the content the site renders', () => {
   const payload = site.buildImpactPayload();
   assert.deepEqual(
     payload.claims.map((claim) => claim.metric),
@@ -301,21 +335,55 @@ await check('/impact.json matches the content the page renders', () => {
   );
   assert.equal(payload.asOf, site.asOf);
 
-  const rendered = path.join(ROOT, 'dist', 'index.html');
-  if (!existsSync(rendered)) {
-    return `${payload.claims.length} claims (page parity skipped: no dist/ build yet)`;
-  }
-  // A dist/ from before the current copy proves nothing about it.
-  if (statSync(rendered).mtimeMs < statSync(path.join(SRC, 'data', 'site.ts')).mtimeMs) {
-    return `${payload.claims.length} claims (page parity skipped: rebuild — dist/ predates src/data/site.ts)`;
-  }
-  const html = readFileSync(rendered, 'utf8');
+  const html = builtMarkup();
   // Compared as the markup holds it: a figure like `<1%` is written `&lt;1%`.
   const inMarkup = (value) =>
     value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   const absent = site.claims.filter((claim) => !html.includes(inMarkup(claim.metric)));
-  assert.equal(absent.length, 0, `rendered page missing figures: ${absent.map((c) => c.id).join(', ')}`);
-  return `${payload.claims.length} claims identical in payload and rendered page`;
+  assert.equal(absent.length, 0, `rendered pages missing figures: ${absent.map((c) => c.id).join(', ')}`);
+  return `${payload.claims.length} claims identical in payload and rendered pages`;
+});
+
+await check('every tab leads to a built page', () => {
+  const built = new Set(
+    builtPages().map((page) => {
+      const rel = path.relative(path.join(ROOT, 'dist'), page);
+      const dir = rel === 'index.html' ? '/' : `/${rel.replace(/\/?index\.html$/, '/')}`;
+      return dir;
+    })
+  );
+  const missing = site.nav.filter((item) => !built.has(item.href));
+  assert.deepEqual(missing.map((item) => `${item.label} -> ${item.href}`), [], 'tabs with no page');
+  // A tab that renders nothing but the chrome would be a dead end. Pages with no
+  // main at all are redirects (see `redirects` in astro.config.mjs), not routes.
+  const thin = [];
+  for (const page of builtPages()) {
+    const body = readFileSync(page, 'utf8').match(/<main id="main">([\s\S]*?)<\/main>/);
+    if (!body) continue;
+    const text = body[1].replace(/<[^>]*>/g, '').trim();
+    if (text.length < 80) thin.push(path.relative(ROOT, page));
+  }
+  assert.deepEqual(thin, [], `routes that render almost no content: ${thin.join(', ')}`);
+  return `${site.nav.length} tabs resolve to built pages with content`;
+});
+
+await check('every built page renders the window chrome exactly once', () => {
+  const problems = [];
+  for (const page of builtPages()) {
+    const html = readFileSync(page, 'utf8');
+    if (!html.includes('<main id="main">')) continue; // redirects carry no document
+    const counts = {
+      window: (html.match(/class="window"/g) ?? []).length,
+      main: (html.match(/<main[ >]/g) ?? []).length,
+      header: (html.match(/aria-label="Primary"/g) ?? []).length,
+      skip: (html.match(/class="skip-link"/g) ?? []).length,
+    };
+    for (const [part, count] of Object.entries(counts)) {
+      if (count !== 1) problems.push(`${path.relative(ROOT, page)}: ${count} ${part}`);
+    }
+  }
+  assert.deepEqual(problems, [], `\n     ${problems.join('\n     ')}`);
+  return 'one window, one main, one tab strip per page';
 });
 
 await check('terms lines render only when written', () => {
@@ -330,14 +398,7 @@ await check('terms lines render only when written', () => {
 });
 
 await check('built pages render no empty text elements', () => {
-  const built = path.join(ROOT, 'dist', 'index.html');
-  if (!existsSync(built)) {
-    return 'page scan skipped: no dist/ build yet — run `npm run build`';
-  }
-  if (statSync(built).mtimeMs < statSync(path.join(SRC, 'data', 'site.ts')).mtimeMs) {
-    return 'page scan skipped: rebuild — dist/ predates src/data/site.ts';
-  }
-  const pages = walk(path.join(ROOT, 'dist'), ['.html']);
+  const pages = builtPages();
   const problems = pages.flatMap((page) =>
     findEmptyBlocks(readFileSync(page, 'utf8')).map(
       (element) => `${path.relative(ROOT, page)}: empty <${element.split(/[ ]/)[0]}>`
@@ -372,4 +433,11 @@ if (failed.length > 0) {
   console.error(`\nverify: ${failed.length} of ${results.length} checks failed.`);
   process.exit(1);
 }
-console.log(`verify: all ${results.length} checks passed.`);
+const skipped = results.filter((result) => result.skipped);
+if (skipped.length > 0) {
+  console.log(
+    `verify: ${results.length - skipped.length} of ${results.length} checks passed, ${skipped.length} skipped (build the site to run them).`
+  );
+} else {
+  console.log(`verify: all ${results.length} checks passed.`);
+}

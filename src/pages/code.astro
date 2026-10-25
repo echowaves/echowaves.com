@@ -1,0 +1,36 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHead from '../components/site/PageHead.astro';
+import OpenSource from '../components/site/OpenSource.astro';
+import { packages, pages } from '../data/site.ts';
+import { collectRegistryStats } from '../utils/registry.ts';
+
+const route = pages.find((page) => page.href === '/code/')!;
+
+// Fetched once, here, at build time. A provider failure leaves that figure out of
+// the page rather than failing the build.
+let registry = null;
+try {
+  registry = await collectRegistryStats(packages);
+} catch (error) {
+  console.warn('Could not collect registry figures at build time:', error);
+}
+
+const codeJsonLd = packages.map((pkg) => ({
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareSourceCode',
+  name: pkg.name,
+  description: pkg.summary,
+  codeRepository: `https://github.com/echowaves/${pkg.repo}`,
+  programmingLanguage: 'TypeScript',
+  runtimePlatform: 'React Native',
+}));
+---
+
+<BaseLayout title={route.title} description={route.description} canonicalUrl={`https://echowaves.com${route.href}`}>
+  <Fragment slot="head">
+    <script type="application/ld+json" set:html={JSON.stringify(codeJsonLd)} />
+  </Fragment>
+  <PageHead route={route} />
+  <OpenSource snapshot={registry} />
+</BaseLayout>

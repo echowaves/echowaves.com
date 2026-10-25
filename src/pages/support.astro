@@ -1,19 +1,15 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import SiteHeader from '../components/site/SiteHeader.astro';
-import SiteFooter from '../components/site/SiteFooter.astro';
 import SupportComponent from '../components/Support';
+import { utilityPages } from '../data/site.ts';
+
+const route = utilityPages.support;
 ---
 
 <BaseLayout
-  title="Support — Echowaves"
-  description="Get help with Echowaves open-source packages: expo-cached-image, expo-storage, expo-masonry-layout. Contact, FAQ, and resources."
-  canonicalUrl="https://echowaves.com/support"
+  title={route.title}
+  description={route.description}
+  canonicalUrl={`https://echowaves.com${route.href}`}
 >
-  <a class="skip-link" href="#main">Skip to content</a>
-  <SiteHeader />
-  <main id="main">
-    <SupportComponent />
-  </main>
-  <SiteFooter />
+  <SupportComponent />
 </BaseLayout>

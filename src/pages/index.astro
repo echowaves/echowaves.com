@@ -1,35 +1,12 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { getBlogData } from '../utils/devto';
-import { identity, packages, buildAppsJsonLd } from '../data/site.ts';
-import { collectRegistryStats } from '../utils/registry.ts';
-import SiteHeader from '../components/site/SiteHeader.astro';
 import Hero from '../components/site/Hero.astro';
 import Work from '../components/site/Work.astro';
-import Results from '../components/site/Results.astro';
-import Products from '../components/site/Products.astro';
-import HowIWork from '../components/site/HowIWork.astro';
-import OpenSource from '../components/site/OpenSource.astro';
-import Contact from '../components/site/Contact.astro';
-import SiteFooter from '../components/site/SiteFooter.astro';
-import Blog from '../components/Blog';
+import { identity, pages } from '../data/site.ts';
 
-let blogData = null;
-try {
-  blogData = await getBlogData();
-} catch (e) {
-  console.warn('Could not fetch blog data at build time:', e);
-}
+const route = pages.find((page) => page.href === '/')!;
 
-// Registry figures are fetched once, here, and passed down. A provider failure
-// leaves that figure out of the page rather than failing the build.
-let registry = null;
-try {
-  registry = await collectRegistryStats(packages);
-} catch (e) {
-  console.warn('Could not collect registry figures at build time:', e);
-}
-
+// Person schema without job titles or employers.
 const personJsonLd = {
   '@context': 'https://schema.org',
   '@type': 'Person',
@@ -45,44 +22,13 @@ const personJsonLd = {
   ],
   sameAs: identity.links.map((link) => link.href),
 };
-
-const codeJsonLd = packages.map((pkg) => ({
-  '@context': 'https://schema.org',
-  '@type': 'SoftwareSourceCode',
-  name: pkg.name,
-  description: pkg.summary,
-  codeRepository: `https://github.com/echowaves/${pkg.repo}`,
-  programmingLanguage: 'TypeScript',
-  runtimePlatform: 'React Native',
-}));
-
 ---
 
-<BaseLayout
-  title="Dmitry Amelchenko — agentic software engineering for engineering organizations"
-  description="Twenty years shipping software in hard environments: Fortune 100 insurance, HIPAA telehealth, enterprise SaaS. Now helping engineering organizations turn agentic software engineering into delivery they can measure."
-  canonicalUrl="https://echowaves.com/"
->
+<BaseLayout title={route.title} description={route.description} canonicalUrl="https://echowaves.com/">
   <Fragment slot="head">
-    <!-- Person schema without job titles or employers. -->
     <script type="application/ld+json" set:html={JSON.stringify(personJsonLd)} />
-    <script type="application/ld+json" set:html={JSON.stringify(codeJsonLd)} />
-    <script type="application/ld+json" set:html={JSON.stringify(buildAppsJsonLd())} />
   </Fragment>
 
-  <a class="skip-link" href="#main">Skip to content</a>
-  <SiteHeader />
-
-  <main id="main">
-    <Hero />
-    <Work />
-    <Results />
-    <Products />
-    <HowIWork />
-    <OpenSource snapshot={registry} />
-    <Blog client:load blogData={blogData} />
-    <Contact />
-  </main>
-
-  <SiteFooter />
+  <Hero />
+  <Work />
 </BaseLayout>
