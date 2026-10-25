@@ -240,3 +240,91 @@ h4 {
     background-color: CanvasText;
   }
 }
+
+/* ------------------------------------------------------------------
+ * Print. Paper is not a terminal and does not pretend to be one: the
+ * window chrome goes, the palette collapses to black on white, and the
+ * type scale is restated in points because a pixel means nothing to a
+ * printer. Tokens are redefined here rather than overridden per rule,
+ * so this stays the only place where print values live.
+ * ------------------------------------------------------------------ */
+
+@page {
+  margin: 16mm;
+}
+
+@media print {
+  :root {
+    --background: #ffffff;
+    --desk: #ffffff;
+    --panel: #ffffff;
+    --panel-raised: #ffffff;
+    --foreground: #000000;
+    --muted: #444444;
+    --faint: #666666;
+    --accent: #000000;
+    --ink-on-accent: #ffffff;
+    --border: #999999;
+    --ok: #000000;
+
+    /* points, because that is the unit paper answers to */
+    --text-fine: 8pt;
+    --text-meta: 9pt;
+    --text-body: 10pt;
+    --text-lede: 12pt;
+    --text-title: 13pt;
+    --text-heading: 15pt;
+    --text-figure: 14pt;
+    --text-display: 20pt;
+  }
+
+  /* the window frame is the one thing that must not reach paper */
+  .window {
+    max-width: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    background: #fff;
+  }
+
+  .chrome,
+  .skip-link,
+  .site-footer .links {
+    display: none;
+  }
+
+  /*
+   * A printed page cannot click, so say where the links go. Email links are
+   * excluded because on this site the address is always the visible label.
+   */
+  main a[href^='https://']::after {
+    content: ' (' attr(href) ')';
+    font-size: var(--text-fine);
+    color: var(--muted);
+    word-break: break-all;
+  }
+
+  /* keep headings with their content and rows whole */
+  h1,
+  h2,
+  h3 {
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+
+  main li,
+  main dl > div,
+  .clause,
+  .metric,
+  .man-body {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  /* the fake shell line is decoration on screen and noise on paper */
+  .prompt {
+    display: none;
+  }
+}

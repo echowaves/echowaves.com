@@ -408,12 +408,16 @@ await check('every tab leads to a built page', () => {
   );
   const missing = site.nav.filter((item) => !built.has(item.href));
   assert.deepEqual(missing.map((item) => `${item.label} -> ${item.href}`), [], 'tabs with no page');
-  // A tab that renders nothing but the chrome would be a dead end. Pages with no
-  // main at all are redirects (see `redirects` in astro.config.mjs), not routes.
+  // A tab that renders nothing but the chrome would be a dead end. Every built page
+  // is a real document now, so one without a main is itself a finding, not an exemption:
+  // headless stubs are exactly what used to slip past these checks unexamined.
   const thin = [];
   for (const page of builtPages()) {
     const body = readFileSync(page, 'utf8').match(/<main id="main">([\s\S]*?)<\/main>/);
-    if (!body) continue;
+    if (!body) {
+      thin.push(`${path.relative(ROOT, page)} (no main element)`);
+      continue;
+    }
     const text = body[1].replace(/<[^>]*>/g, '').trim();
     if (text.length < 80) thin.push(path.relative(ROOT, page));
   }
@@ -435,7 +439,6 @@ await check('every built page renders the window chrome exactly once', () => {
   const problems = [];
   for (const page of builtPages()) {
     const html = readFileSync(page, 'utf8');
-    if (!html.includes('<main id="main">')) continue; // redirects carry no document
     const counts = {
       window: (html.match(/class="window"/g) ?? []).length,
       main: (html.match(/<main[ >]/g) ?? []).length,
@@ -555,9 +558,6 @@ await check('every page advertises the social card that exists', () => {
   for (const page of builtPages()) {
     const where = path.relative(ROOT, page);
     const html = readFileSync(page, 'utf8');
-    // Astro's redirect stubs are plumbing, not destinations: they carry no chrome and no
-    // metadata beyond the refresh, canonical and noindex. Same exemption the tab check uses.
-    if (!html.includes('<main id="main"')) continue;
     const images = [...html.matchAll(/property="og:image" content="([^"]*)"/g)].map((m) => m[1]);
     if (images.length !== 1) problems.push(`${where}: ${images.length} og:image tags`);
     for (const href of images) {
@@ -590,7 +590,6 @@ await check('no page ships first-party JavaScript', () => {
   const offenders = [];
   for (const page of builtPages()) {
     const html = readFileSync(page, 'utf8');
-    if (!html.includes('<main id="main"')) continue; // redirect stubs carry no document
     for (const match of html.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/g)) {
       const [, body] = match;
       const ok =
@@ -638,6 +637,39 @@ await check('an empty rendered element is detected', () => {
   const found = findEmptyBlocks(fixture);
   assert.deepEqual(found, ['p class="availability"'], `fixture slipped through: ${found.join(' | ')}`);
   return 'fixture empty paragraph rejected';
+});
+
+await check('print rules style only classes the site renders', () => {
+  // A print stylesheet is small enough to be wrong quietly: a rule against a class
+  // nothing renders costs nothing at build time and changes nothing on paper. The
+  // rest of index.css is the only honest list of what exists to style.
+  const cssPath = path.join(SRC, 'index.css');
+  const css = readFileSync(cssPath, 'utf8');
+  const start = css.indexOf('@media print {');
+  assert.ok(start !== -1, 'index.css has no @media print block at all');
+  let depth = 0;
+  let end = start;
+  for (let i = css.indexOf('{', start); i < css.length; i++) {
+    if (css[i] === '{') depth++;
+    if (css[i] === '}') depth--;
+    if (depth === 0) {
+      end = i;
+      break;
+    }
+  }
+  const block = css.slice(start, end).replace(/\/\*[\s\S]*?\*\//g, '');
+  // only the parts before each brace are selectors; a class name inside a
+  // declaration value is a coincidence, not a rule
+  const selectors = block.split('{').map((chunk) => chunk.slice(chunk.lastIndexOf('}') + 1));
+  const classes = [...new Set(selectors.flatMap((sel) => sel.match(/\.[a-z][a-z0-9-]*/g) ?? []))];
+  assert.ok(classes.length >= 5, `only ${classes.length} print selectors found; block looks mis-parsed`);
+  const rendered = [
+    css.slice(0, start),
+    ...walk(SRC, ['.astro']).map((file) => readFileSync(file, 'utf8')),
+  ].join('\n');
+  const orphans = classes.filter((cls) => !rendered.includes(cls));
+  assert.deepEqual(orphans, [], `print rules for classes nothing renders: ${orphans.join(', ')}`);
+  return `${classes.length} print selectors, none orphaned`;
 });
 
 // ---------------------------------------------------------------------------
