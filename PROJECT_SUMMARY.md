@@ -145,13 +145,9 @@ The application is fully responsive with breakpoints for:
 
 ## Next Steps
 
-To deploy this application, you can:
-1. Run `npm run build` to create production build
-2. Deploy to GitHub Pages, Netlify, Vercel, or any static hosting
-3. Connect custom domain (echowaves.com)
-4. Add analytics (Google Analytics, Plausible)
-5. Implement SEO optimization
-6. Add more interactive features
+- Add analytics (Google Analytics, Plausible)
+- Implement SEO optimization
+- Add more interactive features
 
 ## Technologies Used
 

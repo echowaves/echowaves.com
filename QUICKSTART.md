@@ -56,12 +56,6 @@ npm test
 npm run build
 ```
 
-## 📂 Project Location
-
-```
-[project-root]/echowaves-showcase/
-```
-
 ## 🌟 Highlighted Packages
 
 ### expo-cached-image
@@ -109,21 +103,6 @@ High-performance layout component with:
 3. **Check responsiveness**: Resize browser window
 4. **Review links**: Click external links to verify
 5. **Customize**: Edit components in `src/components/`
-
-## 🚢 Ready to Deploy
-
-When ready to deploy:
-
-```bash
-npm run build
-```
-
-Then deploy the `build/` folder to:
-- GitHub Pages
-- Netlify
-- Vercel
-- AWS S3
-- Any static hosting service
 
 ## 💡 Pro Tips
 
