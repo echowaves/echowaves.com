@@ -296,6 +296,7 @@ export const products: Product[] = [
       'About a hundred lines of my own code, and almost a week to get those hundred lines right. Simple is not easy: most of the work was deleting features.',
     links: [
       { label: 'App Store', href: 'https://apps.apple.com/us/app/chimingclock/id6446005837' },
+      { label: 'Google Play', href: 'https://play.google.com/store/apps/details?id=com.echowaves.chimingclock' },
       { label: 'Why another clock app', href: 'https://dev.to/dmitryame/turning-old-tablet-into-chiming-clock-or-why-do-we-need-more-clock-apps-4p08' },
       { label: 'GitHub', href: 'https://github.com/echowaves/chimingClock' },
     ],
@@ -310,6 +311,7 @@ export const products: Product[] = [
       'The same minimalism as the clock: open it, answer, pass the phone around. Used in team meetings and offsites, which is where I tested it.',
     links: [
       { label: 'App Store', href: 'https://apps.apple.com/us/app/get-to-know-you/id6445826843' },
+      { label: 'Google Play', href: 'https://play.google.com/store/apps/details?id=com.echowaves.get2knowu' },
       { label: 'GitHub', href: 'https://github.com/echowaves/get2knowu' },
     ],
   },
