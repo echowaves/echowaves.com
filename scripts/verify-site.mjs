@@ -415,13 +415,19 @@ await check('every built page renders the window chrome exactly once', () => {
 
 await check('terms lines render only when written', () => {
   assert.deepEqual(site.engagementTerms({}), []);
-  assert.deepEqual(site.engagementTerms({ priceNote: ' ', capacity: '  ' }), []);
-  assert.deepEqual(site.engagementTerms({ priceNote: 'Quote after the first call.', capacity: '' }), [
-    'Quote after the first call.',
+  assert.deepEqual(site.engagementTerms({ capacity: '   ' }), []);
+  assert.deepEqual(site.engagementTerms({ capacity: 'Two engagements at a time.' }), [
+    'Two engagements at a time.',
   ]);
-  const written = site.engagementTerms({ priceNote: 'Fixed fee.', capacity: 'Two engagements at a time.' });
-  assert.equal(written.length, 2, 'both lines should render when both are written');
-  return 'empty and missing wording both render nothing';
+  return 'blank and missing availability wording both render nothing';
+});
+
+await check('no price slot has crept back into the engagement model', () => {
+  // Dmitry removed pricing from the site on 2026-10-25. If a field named for money
+  // reappears, that was a decision to revisit rather than an oversight to fix quietly.
+  const priced = Object.keys(site.engagement).filter((key) => /price|cost|rate|fee/i.test(key));
+  assert.deepEqual(priced, [], `pricing fields present on the engagement model: ${priced.join(', ')}`);
+  return 'engagement carries no pricing field, by decision';
 });
 
 await check('built pages render no empty text elements', () => {
