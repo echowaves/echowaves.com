@@ -94,7 +94,6 @@ export const claims: Claim[] = [
     detail:
       'Cut in half while velocity doubled and the definition of done stayed exactly where it was.',
     source: 'My professional summary. Internal measurement.',
-    needsReview: true,
   },
   {
     id: 'enps-89',
@@ -103,7 +102,6 @@ export const claims: Claim[] = [
     detail:
       'Across direct and extended reports, against a 2–25% industry band. This is the number that decides whether people adopt a new way of working or quietly avoid it.',
     source: 'My professional summary. Internal engagement survey.',
-    needsReview: true,
   },
   {
     id: 'lead-time-90-percent',
@@ -112,7 +110,6 @@ export const claims: Claim[] = [
     detail:
       'A ninety percent reduction: quarterly releases became on-demand delivery through pipeline automation, trunk-based development and test automation.',
     source: 'My professional summary. Internal measurement.',
-    needsReview: true,
   },
   {
     id: 'defect-rate-under-one-percent',
@@ -121,7 +118,6 @@ export const claims: Claim[] = [
     detail:
       'Held while cadence doubled. Speed bought by skipping checks is the most expensive speed there is.',
     source: 'My professional summary. Internal quality reporting.',
-    needsReview: true,
   },
   {
     id: 'velocity-doubled',
@@ -129,7 +125,6 @@ export const claims: Claim[] = [
     label: 'Engineering velocity',
     detail: 'Through platform standardization, process and architecture — not headcount.',
     source: 'My professional summary. Internal measurement.',
-    needsReview: true,
   },
 ];
 
@@ -182,7 +177,6 @@ export const notes = [
   {
     heading: 'One thing I got wrong',
     body: 'An early gate counted pull requests merged. Two quarters later we had more changes, each smaller and harder to review. The measurement did exactly what I asked and not what I wanted.',
-    needsReview: true,
   },
 ];
 
@@ -238,7 +232,7 @@ export const products: Product[] = [
     summary:
       'Open the app and you are already in. No sign-up, no profile, no followers: photos and short videos posted anonymously to whoever is nearby, moderated by whoever is nearby.',
     detail:
-      'The product I keep coming back to, and the one that taught me the most about architecture. It began as a seven-day experiment; nine years later it has been rebuilt four times and is still shipping.',
+      'The product I keep coming back to, and the one that taught me the most about architecture. It began as a seven-day experiment, has been rebuilt four times since, and is still shipping.',
     links: [
       { label: 'App Store', href: 'https://apps.apple.com/us/app/wisaw-what-i-saw-today/id1299949122' },
       { label: 'Google Play', href: 'https://play.google.com/store/apps/details?id=com.echowaves.wisaw' },

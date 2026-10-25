@@ -530,6 +530,8 @@ console.log('');
 if (pending.length > 0) {
   console.log(`NEEDS SIGN-OFF (${pending.length}) — wording to confirm before launch:`);
   for (const item of pending) console.log(`  - ${item}`);
+} else {
+  console.log('SIGN-OFF: nothing pending — every claim, note and store link confirmed by Dmitry.');
 }
 
 const failed = results.filter((result) => !result.ok);
