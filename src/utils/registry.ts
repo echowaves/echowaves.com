@@ -142,11 +142,22 @@ async function collectOne(pkg: Package, fetchImpl: FetchLike): Promise<PackageSt
   return stats;
 }
 
+/** Build runs get the real environment; a browser or an edge runtime has none. */
+function resolveEnv(override?: Record<string, string | undefined>): Record<string, string | undefined> {
+  if (override) return override;
+  return typeof process !== 'undefined' ? process.env : {};
+}
+
+/** Worth rendering only if at least one third party confirmed something concrete. */
+function hasFigure(stats: PackageStats): boolean {
+  return stats.weeklyDownloads !== null || stats.stars !== null || stats.lastRelease !== null;
+}
+
 export async function collectRegistryStats(
   packages: Package[],
   options: CollectOptions = {}
 ): Promise<RegistrySnapshot> {
-  const env = options.env ?? (typeof process !== 'undefined' ? process.env : {});
+  const env = resolveEnv(options.env);
   const now = options.now ?? (() => new Date());
 
   if (isOffline(env)) {
@@ -168,9 +179,7 @@ export async function collectRegistryStats(
     offline: false,
     collectedAt: now().toISOString(),
     packages: collected,
-    hasFigures: collected.some(
-      (p) => p.weeklyDownloads !== null || p.stars !== null || p.lastRelease !== null
-    ),
+    hasFigures: collected.some(hasFigure),
   };
 }
 
