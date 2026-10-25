@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import SupportComponent from '../components/Support';
+import Support from '../components/site/Support.astro';
 import { utilityPages } from '../data/site.ts';
 
 const route = utilityPages.support;
@@ -11,5 +11,5 @@ const route = utilityPages.support;
   description={route.description}
   canonicalUrl={`https://echowaves.com${route.href}`}
 >
-  <SupportComponent />
+  <Support />
 </BaseLayout>

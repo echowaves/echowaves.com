@@ -513,7 +513,6 @@ await check('type and rhythm come from the scale', () => {
   // The colour rule above stops a hex appearing twice; this one stops a size or a
   // padding appearing once too often. Six type steps and nine rhythm steps exist so
   // that "roughly 13px" cannot silently become an eighteenth font size again.
-  const ISLANDS = ['Blog.css', 'Privacy.css', 'Support.css'];
   const SPACE_DECL = /(?<![\w-])(padding|margin|gap|row-gap|column-gap)(?:-(?:top|right|bottom|left|block|inline)(?:-(?:start|end))?)?\s*:\s*([^;{}]+);/g;
   const FS_DECL = /(?<![\w-])font-size\s*:\s*([^;!{}]+);/g;
   const UNIT = /\b\d+(?:\.\d+)?(?:px|rem)\b/g;
@@ -521,7 +520,6 @@ await check('type and rhythm come from the scale', () => {
   const offenders = [];
   for (const file of walk(SRC, ['.css', '.astro'])) {
     if (file === path.join(SRC, 'index.css')) continue; // the scale itself lives here
-    if (ISLANDS.includes(path.basename(file))) continue; // React islands die with their styles
     const text = readFileSync(file, 'utf8');
     const bodies = path.extname(file) === '.css'
       ? [text]
@@ -578,6 +576,35 @@ await check('every page advertises the social card that exists', () => {
   return `${width}x${height} card, one tag and a described alt per page`;
 });
 
+await check('no page ships first-party JavaScript', () => {
+  // The site's contract: everything is generated at build time and runs on the reader's
+  // side only as HTML and CSS. React used to ride along here as a 191KB bundle that no
+  // page referenced. The single tolerated exception is the analytics tag in BaseLayout,
+  // which is disclosed on /privacy and is Dmitry's call to remove, not mine.
+  const dist = path.join(ROOT, 'dist');
+  if (!existsSync(dist)) skip('no dist/ build yet — run `npm run build`');
+  const assets = walk(dist, ['.js']);
+  assert.deepEqual(assets.map((f) => path.relative(ROOT, f)), [], 'bundles shipped to the browser');
+
+  const offenders = [];
+  for (const page of builtPages()) {
+    const html = readFileSync(page, 'utf8');
+    if (!html.includes('<main id="main"')) continue; // redirect stubs carry no document
+    for (const match of html.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/g)) {
+      const [, body] = match;
+      const ok =
+        match[0].includes('application/ld+json') ||
+        match[0].includes('googletagmanager.com/gtag/js') ||
+        // Astro strips attributes from an `is:inline` block, so the gtag bootstrap is
+        // identified by what it does rather than by anything written on its tag.
+        /window\.dataLayer|function gtag\(\)/.test(body);
+      if (!ok) offenders.push(`${path.relative(ROOT, page)}: ${match[0].slice(0, 80)}`);
+    }
+  }
+  assert.deepEqual(offenders, [], `unexpected scripts:\n     ${offenders.join('\n     ')}`);
+  return 'no bundles in dist; only JSON-LD and the analytics tag';
+});
+
 await check('the copy model carries no commercial terms', () => {
   // Removed deliberately on 2026-10-25: the site demonstrates what I can do, so it says
   // nothing about pricing, capacity, availability, who to contact me about, or who I turn
@@ -618,6 +645,7 @@ const pending = [
   ...site.claims.filter((claim) => claim.needsReview).map((claim) => `claim ${claim.id}`),
   ...site.notes.filter((note) => note.needsReview).map((note) => `note "${note.heading}"`),
   ...platformLinksToConfirm(site.products),
+  ...(site.utilityPages.privacy.needsReview ? ['page /privacy — the privacy statement is attributed to Dmitry personally'] : []),
 ];
 
 console.log('');

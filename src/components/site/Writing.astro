@@ -1,0 +1,152 @@
+---
+import { identity, writing } from '../../data/site.ts';
+import type { DevToBlogData } from '../../utils/devto.ts';
+
+interface Props {
+  data: DevToBlogData | null;
+}
+
+const { data } = Astro.props;
+const posts = data?.posts ?? [];
+const profile = identity.links.find((link) => link.label === 'Dev.to');
+---
+
+<section id="writing">
+  <h2>{writing.heading}</h2>
+  <p class="lead">{writing.lead}</p>
+
+  {
+    data ? (
+      <p class="figures">{writing.statsLine(data)}</p>
+    ) : null
+  }
+
+  <h3 class="subhead">{writing.latestLabel}</h3>
+
+  {
+    posts.length > 0 ? (
+      <ul class="posts">
+        {posts.map((post) => (
+          <li>
+            <div class="head">
+              <h4>{post.title}</h4>
+              <span class="read-time">{writing.readTime(post.reading_time_minutes)}</span>
+            </div>
+            <p class="summary">{post.description}</p>
+            {post.tag_list.length > 0 && (
+              <p class="tags">
+                {post.tag_list.map((tag) => (
+                  <span class="tag">{tag}</span>
+                ))}
+              </p>
+            )}
+            <p class="foot">
+              <time datetime={post.published_at}>{post.readable_publish_date}</time>
+              <a href={post.url} rel="noopener noreferrer" target="_blank">Read on dev.to</a>
+            </p>
+          </li>
+        ))}
+      </ul>
+    ) : (
+      <p class="unavailable">{writing.unavailableNote}</p>
+    )
+  }
+
+  {
+    profile && (
+      <p class="all">
+        <a href={profile.href} rel="noopener noreferrer" target="_blank">
+          {writing.allLink(data?.totalPosts ?? null)}
+        </a>
+      </p>
+    )
+  }
+</section>
+
+<style>
+  h2 {
+    font-size: var(--text-heading);
+    margin-bottom: var(--space-3);
+  }
+
+  .lead {
+    color: var(--text-dim);
+    max-width: var(--reading-column);
+    margin-bottom: var(--space-2);
+  }
+
+  .figures {
+    color: var(--text-dim);
+    font-size: var(--text-meta);
+    margin-bottom: var(--space-6);
+  }
+
+  .subhead {
+    font-size: var(--text-lede);
+    margin-bottom: var(--space-4);
+  }
+
+  /* One row per article, separated by a rule: the site has no cards. */
+  .posts > li {
+    padding: var(--space-5) 0;
+    border-top: 1px solid var(--border);
+  }
+
+  .head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-4);
+  }
+
+  h4 {
+    font-size: var(--text-lede);
+    font-weight: 600;
+  }
+
+  .read-time {
+    color: var(--text-dim);
+    font-size: var(--text-meta);
+    white-space: nowrap;
+  }
+
+  .summary {
+    margin-top: var(--space-2);
+    max-width: var(--reading-column);
+  }
+
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-top: var(--space-3);
+  }
+
+  .tag {
+    font-size: var(--text-fine);
+    color: var(--text-dim);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-control);
+    padding: 0 var(--space-2);
+  }
+
+  .foot {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+    margin-top: var(--space-3);
+    font-size: var(--text-meta);
+    color: var(--text-dim);
+  }
+
+  .unavailable {
+    border-left: 3px solid var(--accent);
+    padding-left: var(--space-4);
+    max-width: var(--reading-column);
+  }
+
+  .all {
+    margin-top: var(--space-6);
+  }
+</style>

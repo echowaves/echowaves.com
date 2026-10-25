@@ -187,6 +187,20 @@ export const openSource = {
   lead: 'Maintenance is the honest proof of engineering judgment: these ship, break, get issues filed against them, and still work in someone else\'s app.',
 };
 
+/** dev.to is read at build time; nothing here hydrates. */
+export const writing = {
+  heading: 'Technical writing',
+  lead: 'Articles I have published on dev.to, read from their API while this page was being built. The list is a snapshot: a post written after this build appears at the next deploy.',
+  latestLabel: 'Latest articles',
+  readTime: (minutes: number): string => `${minutes} min read`,
+  statsLine: (stats: { totalPosts: number; totalComments: number; totalReactions: number; yearsActive: string }): string =>
+    `${stats.totalPosts} articles · ${stats.totalComments} comments · ${stats.totalReactions} reactions · ${stats.yearsActive} years`,
+  allLink: (totalPosts: number | null): string =>
+    totalPosts ? `All ${totalPosts} articles on dev.to` : 'All articles on dev.to',
+  unavailableNote:
+    'dev.to was not reachable while this page was built, so no articles are listed here. The next build either lists them or says the same thing.',
+};
+
 export const packages: Package[] = [
   {
     name: 'expo-cached-image',
@@ -426,26 +440,103 @@ export const pages: Route[] = [
 /** Tab strip labels and hrefs, derived so the two can never drift apart. */
 export const nav = pages.map(({ label, href }) => ({ label, href }));
 
-/** Footer-only pages: reachable from the footer, never from the tab strip. */
+/** Date the delivery figures were checked against their sources. */
+export const asOf = '2026-10-17';
+
 export const utilityPages = {
   support: {
     href: '/support',
     title: 'Support — Echowaves',
     description:
-      'Get help with Echowaves open-source packages: expo-cached-image, expo-storage, expo-masonry-layout. Contact, FAQ, and resources.',
+      'How to get help with the Echowaves packages and apps: email, GitHub issues, npm and dev.to. What to include in a bug report, and what happens to it.',
+    heading: 'Support',
+    // Counted from the model rather than written down, so the sentence cannot go stale.
+    lead: (packageCount: number): string =>
+      `Everything on this page is something I ship: ${packageCount} open-source packages, WiSaw and ChimingClock. There is no ticket system and no queue — the routes below are how you reach me.`,
+    channels: [
+      {
+        name: 'Email',
+        href: `mailto:${identity.email}`,
+        detail: 'One address, and it is mine. Anything that does not fit an issue tracker starts here.',
+      },
+      {
+        name: 'GitHub issues',
+        href: 'https://github.com/echowaves',
+        detail: 'Bugs and feature requests belong against the repository they came from, where the answer is useful to the next person too.',
+      },
+      {
+        name: 'npm',
+        href: 'https://www.npmjs.com/~echowaves',
+        detail: 'Published packages, versions and the issue link for each one.',
+      },
+      {
+        name: 'Dev.to',
+        href: 'https://dev.to/dmitryame',
+        detail: 'Where the longer explanations of the same work live.',
+      },
+    ],
+    faq: [
+      {
+        question: 'How do I report a bug?',
+        answer:
+          'Open an issue on the repository the package lives in, or email it. Include what you ran, what happened, what you expected and the version you are on. A reproducible report beats an urgent one every time.',
+      },
+      {
+        question: 'Can I contribute?',
+        answer:
+          'The packages are open source; pull requests are welcome. If the change is large, file an issue first so the shape is agreed before anyone has written it.',
+      },
+      {
+        question: 'How quickly will it be fixed?',
+        answer:
+          'No promise on this page, because I have never kept one. What moves the queue is a failing test I can run and an issue that explains why it matters to something real.',
+      },
+      {
+        question: 'Is there paid support?',
+        answer:
+          'This site does not sell anything, so it does not offer a support contract either. If you depend on a package in production, say so in the issue — that is genuinely how I prioritise.',
+      },
+    ],
   },
   privacy: {
     href: '/privacy',
-    title: 'Privacy Policy — Echowaves',
+    title: 'Privacy — echowaves.com',
     description:
-      'Privacy policy for Echowaves and its open-source projects. Learn how we handle data, cookies, and your privacy rights.',
+      'What echowaves.com does with a visitor: no accounts, no forms, no cookies, one analytics page-view tag. What I hold if you email me.',
+    heading: 'Privacy',
+    lead: `Written for this site rather than adapted from a template. Current as of ${asOf}.`,
+    // Dmitry has to put his name behind a privacy statement; verify lists these
+    // until he clears them, the same way it lists an unsigned claim.
+    needsReview: true,
+    sections: [
+      {
+        heading: 'What the site does while you read it',
+        body: 'echowaves.com is static HTML generated from files in a public repository. It has no accounts, no forms, no comments and no search, so there is nothing for it to send anywhere. It sets no cookies and stores nothing in your browser.',
+      },
+      {
+        heading: 'The one third party',
+        body: 'The pages of this site load Google Analytics (gtag.js) for aggregate page counts. That means Google sees the page you are on, your IP address and its usual request metadata. Nothing else about you is sent, and nothing on this site identifies you to Google beyond that request.',
+      },
+      {
+        heading: 'Links out',
+        body: 'The pages link to GitHub, npm, dev.to, the App Store and Google Play. Nothing is shared when the page loads; the destination only sees the ordinary request your browser makes when you click.',
+      },
+      {
+        heading: 'If you email me',
+        body: 'I receive your address and whatever you write, and I keep the thread so I can answer it. That is the whole collection: no newsletter, no list, no third-party CRM, nothing sold or shared. Ask me to delete it and it goes.',
+      },
+      {
+        heading: 'The apps are a different question',
+        body: 'WiSaw and ChimingClock are covered by their own store listings, which is where their data handling is stated. This page is about echowaves.com only.',
+      },
+    ],
+    contactNote: 'Questions about any of this: dmitry@echowaves.com — the same address as everywhere else on the site.',
   },
 };
 
 /** Shown in the window title bar as a path, so the chrome shows where you are. */
 export const shellPrompt = 'dmitry@echowaves';
 
-export const asOf = '2026-10-17';
 
 /** Machine-readable read of the same content the page renders (GET /impact.json). */export function buildImpactPayload() {
   return {

@@ -1,0 +1,55 @@
+---
+import { utilityPages } from '../../data/site.ts';
+
+const privacy = utilityPages.privacy;
+---
+
+<section id="privacy">
+  <h2>{privacy.heading}</h2>
+  <p class="lead">{privacy.lead}</p>
+
+  {
+    privacy.sections.map((section) => (
+      <div class="clause">
+        <h3>{section.heading}</h3>
+        <p>{section.body}</p>
+      </div>
+    ))
+  }
+
+  <p class="contact">{privacy.contactNote}</p>
+</section>
+
+<style>
+  h2 {
+    font-size: var(--text-heading);
+    margin-bottom: var(--space-3);
+  }
+
+  .lead {
+    color: var(--text-dim);
+    max-width: var(--reading-column);
+    margin-bottom: var(--space-5);
+  }
+
+  .clause {
+    padding: var(--space-4) 0;
+    border-top: 1px solid var(--border);
+  }
+
+  h3 {
+    font-size: var(--text-lede);
+    margin-bottom: var(--space-2);
+  }
+
+  .clause p,
+  .contact {
+    max-width: var(--reading-column);
+  }
+
+  .contact {
+    margin-top: var(--space-5);
+    border-left: 3px solid var(--accent);
+    padding-left: var(--space-4);
+  }
+</style>

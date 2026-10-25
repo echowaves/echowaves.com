@@ -1,12 +1,16 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PageHead from '../components/site/PageHead.astro';
-import Blog from '../components/Blog';
+import Writing from '../components/site/Writing.astro';
 import { getBlogData } from '../utils/devto';
 import { pages } from '../data/site.ts';
 
 const route = pages.find((page) => page.href === '/writing/')!;
 
+// Fetched once, here, at build time — the same shape /code/ uses for registry
+// figures. A provider failure leaves the articles off the page rather than
+// failing the build, and the page says so out loud instead of showing a spinner
+// that never resolves. Nothing on this page runs in the browser.
 let blogData = null;
 try {
   blogData = await getBlogData();
@@ -17,5 +21,5 @@ try {
 
 <BaseLayout title={route.title} description={route.description} canonicalUrl={`https://echowaves.com${route.href}`}>
   <PageHead route={route} />
-  <Blog client:load blogData={blogData} />
+  <Writing data={blogData} />
 </BaseLayout>
