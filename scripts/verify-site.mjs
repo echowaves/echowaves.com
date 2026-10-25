@@ -295,6 +295,23 @@ await check('banned copy is detected', () => {
   return `${fixtures.length} fixture strings all rejected`;
 });
 
+/** A product naming a store must link to that store; guessing one is worse than none. */
+function platformLinksToConfirm(list) {
+  const stores = [
+    [/\biOS\b/i, 'apps.apple.com', 'App Store'],
+    [/android/i, 'play.google.com', 'Google Play'],
+  ];
+  const missing = [];
+  for (const product of list) {
+    for (const [pattern, host, label] of stores) {
+      const claims = pattern.test(product.kind);
+      const linked = product.links.some((link) => link.href.includes(host));
+      if (claims && !linked) missing.push(`${product.id}: advertises ${label} with no ${label} link`);
+    }
+  }
+  return missing;
+}
+
 await check('every product has a real install or source link', () => {
   const problems = validateProducts(site.products);
   assert.deepEqual(problems, [], `\n     ${problems.join('\n     ')}`);
@@ -367,6 +384,16 @@ await check('every tab leads to a built page', () => {
   return `${site.nav.length} tabs resolve to built pages with content`;
 });
 
+await check('a platform claim without its store link is detected', () => {
+  const fixture = [
+    { id: 'ok', kind: 'iOS · Android', links: [{ href: 'https://apps.apple.com/x' }, { href: 'https://play.google.com/y' }] },
+    { id: 'gap', kind: 'iOS · Android', links: [{ href: 'https://apps.apple.com/x' }] },
+  ];
+  const found = platformLinksToConfirm(fixture);
+  assert.deepEqual(found, ['gap: advertises Google Play with no Google Play link'], `fixture slipped through: ${found}`);
+  return 'fixture missing-store-link rejected';
+});
+
 await check('every built page renders the window chrome exactly once', () => {
   const problems = [];
   for (const page of builtPages()) {
@@ -420,6 +447,7 @@ await check('an empty rendered element is detected', () => {
 const pending = [
   ...site.claims.filter((claim) => claim.needsReview).map((claim) => `claim ${claim.id}`),
   ...site.notes.filter((note) => note.needsReview).map((note) => `note "${note.heading}"`),
+  ...platformLinksToConfirm(site.products),
 ];
 
 console.log('');
