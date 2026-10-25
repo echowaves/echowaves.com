@@ -97,6 +97,15 @@ function builtMarkup() {
   return builtPages().map((page) => readFileSync(page, 'utf8')).join('\n');
 }
 
+/** Width and height from a PNG's IHDR chunk, without pulling in an image library. */
+function pngSize(file) {
+  const bytes = readFileSync(file);
+  if (bytes.subarray(0, 8).toString('hex') !== '89504e470d0a1a0a') {
+    throw new Error(`${path.relative(ROOT, file)} is not a PNG`);
+  }
+  return { width: bytes.readUInt32BE(16), height: bytes.readUInt32BE(20) };
+}
+
 function walk(dir, extensions = COPY_EXTENSIONS) {
   const out = [];
   for (const entry of readdirSync(dir, { withFileTypes: true })) {
@@ -413,6 +422,40 @@ await check('every built page renders the window chrome exactly once', () => {
   }
   assert.deepEqual(problems, [], `\n     ${problems.join('\n     ')}`);
   return 'one window, one main, one tab strip per page';
+});
+
+await check('every page advertises the social card that exists', () => {
+  // A shared link is the most-visited version of this site and the one nobody looks at.
+  // The card is generated from the hero copy (`npm run og`), so this checks the wiring:
+  // right file, right size, exactly one tag per page, and an alt that is not empty.
+  const card = path.join(ROOT, 'public', 'og.png');
+  assert.ok(existsSync(card), 'public/og.png is missing — run `npm run og`');
+  const { width, height } = pngSize(card);
+  assert.equal(`${width}x${height}`, '1200x630', 'Facebook and LinkedIn reserve the large card only at 1200x630');
+
+  const problems = [];
+  for (const page of builtPages()) {
+    const where = path.relative(ROOT, page);
+    const html = readFileSync(page, 'utf8');
+    // Astro's redirect stubs are plumbing, not destinations: they carry no chrome and no
+    // metadata beyond the refresh, canonical and noindex. Same exemption the tab check uses.
+    if (!html.includes('<main id="main"')) continue;
+    const images = [...html.matchAll(/property="og:image" content="([^"]*)"/g)].map((m) => m[1]);
+    if (images.length !== 1) problems.push(`${where}: ${images.length} og:image tags`);
+    for (const href of images) {
+      const local = href.replace(/^https?:\/\/[^/]+/, '');
+      if (!existsSync(path.join(ROOT, 'dist', local.replace(/^\//, '')))) {
+        problems.push(`${where}: og:image points at ${href}, which is not in dist/`);
+      }
+    }
+    const alt = /property="og:image:alt" content="([^"]*)"/.exec(html)?.[1] ?? '';
+    if (alt.trim().length === 0) problems.push(`${where}: og:image:alt is empty — the card carries real text, so name it`);
+    if (/property="og:image" content="[^"]*android-chrome/.test(html)) {
+      problems.push(`${where}: og:image still points at an app icon`);
+    }
+  }
+  assert.deepEqual(problems, [], `\n     ${problems.join('\n     ')}`);
+  return `${width}x${height} card, one tag and a described alt per page`;
 });
 
 await check('the copy model carries no commercial terms', () => {

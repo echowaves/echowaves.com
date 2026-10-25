@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#060606"/>
+  <g font-family="'Menlo','SF Mono',ui-monospace,monospace">
+    <rect x="56" y="42" width="1088" height="546" rx="14" fill="#0d0d0d" stroke="#2b7a3a" stroke-width="2"/>
+    <circle cx="90" cy="70" r="8" fill="#ff5f57"/>
+    <circle cx="116" cy="70" r="8" fill="#febc2e"/>
+    <circle cx="142" cy="70" r="8" fill="#33d24b"/>
+    <text x="172.0" y="77" font-size="21" fill="#33d24b">dmitry@echowaves</text>
+    <text x="374.3" y="77" font-size="21" fill="#2b7a3a"> — </text>
+    <text x="413.0" y="77" font-size="21" fill="#3fa852">~/echowaves</text>
+    <line x1="56" y1="98" x2="1144" y2="98" stroke="#2b7a3a" stroke-width="2"/>
+    <rect x="76.0" y="98" width="84.6" height="60" fill="#060606"/>
+    <text x="93.0" y="135" font-size="21" fill="#8dfa9c">work</text>
+    <rect x="76.0" y="155" width="84.6" height="3" fill="#33d24b"/>
+    <text x="179.6" y="135" font-size="21" fill="#3fa852">results</text>
+    <text x="304.1" y="135" font-size="21" fill="#3fa852">method</text>
+    <text x="415.9" y="135" font-size="21" fill="#3fa852">builds</text>
+    <text x="527.8" y="135" font-size="21" fill="#3fa852">code</text>
+    <text x="614.3" y="135" font-size="21" fill="#3fa852">writing</text>
+    <text x="738.8" y="135" font-size="21" fill="#3fa852">contact</text>
+    <line x1="56" y1="158" x2="1144" y2="158" stroke="#2b7a3a" stroke-width="2"/>
+    <text x="100.0" y="240" font-size="26" fill="#33d24b" font-weight="bold">dmitry@echowaves</text>
+    <text x="350.4" y="240" font-size="26" fill="#3fa852">(1)</text>
+    <text x="397.4" y="240" font-size="26" fill="#3fa852"> — </text>
+    <text x="445.3" y="240" font-size="26" fill="#8dfa9c" font-weight="bold">teams · collaboration · AI capacity</text>
+    <text x="100.0" y="302" font-size="19" fill="#33d24b" letter-spacing="2.4">DESCRIPTION</text>
+    <text x="100.0" y="348" font-size="25" fill="#8dfa9c">I help engineering organizations absorb agentic software</text>
+    <text x="100.0" y="388" font-size="25" fill="#8dfa9c">engineering without losing control of what they ship: the</text>
+    <text x="100.0" y="428" font-size="25" fill="#8dfa9c">practices, the measurement and the handover that let a team run it</text>
+    <text x="100.0" y="468" font-size="25" fill="#8dfa9c">after I leave.</text>
+    <text x="100.0" y="542" font-size="24" fill="#33d24b">echowaves.com</text>
+  </g>
+</svg>
