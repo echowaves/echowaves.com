@@ -1,0 +1,54 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { wisawStory } from '../data/site.ts';
+
+/*
+ * /wisaw was published for years — in LinkedIn posts, app store listings and email
+ * signatures — before the case study moved under /builds. Astro's `redirects` config
+ * served a headless meta-refresh stub there, which browsers followed but scrapers
+ * read as an empty document: no title, no description, no card. This page keeps the
+ * forwarding behaviour and carries the metadata, while the canonical stays on the
+ * story so nothing is duplicated in the index.
+ */
+---
+
+<BaseLayout
+  title={wisawStory.title}
+  description={wisawStory.pageDescription}
+  canonicalUrl="https://echowaves.com/builds/wisaw"
+>
+  <Fragment slot="head">
+    <meta http-equiv="refresh" content="0;url=/builds/wisaw" />
+    <meta name="robots" content="noindex" />
+  </Fragment>
+
+  <section class="forward">
+    <h1>{wisawStory.title}</h1>
+    <p>
+      The case study lives at <a href="/builds/wisaw">/builds/wisaw</a>, which is the address to
+      cite. This page exists so links published before the move still arrive, and so sharing the
+      old one shows something worth clicking.
+    </p>
+    <p class="continue"><a href="/builds/wisaw">Continue to the story</a></p>
+  </section>
+</BaseLayout>
+
+<style>
+  .forward {
+    padding-block-start: var(--space-6);
+  }
+
+  h1 {
+    font-size: var(--text-display);
+    margin-bottom: var(--space-4);
+  }
+
+  .forward p,
+  .continue {
+    max-width: var(--reading-column);
+  }
+
+  .continue {
+    margin-block-start: var(--space-5);
+  }
+</style>

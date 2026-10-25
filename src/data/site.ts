@@ -307,6 +307,9 @@ export interface WisawPhase {
 
 export const wisawStory = {
   title: 'WiSaw: how a seven-day app was rebuilt four times',
+  // Shared by /builds/wisaw and the /wisaw card page: one sentence, one home.
+  pageDescription:
+    'The architecture history of WiSaw — from a seven-day MVP with native clients and a Koa REST API to Expo, GraphQL and serverless infrastructure — including the production-only iOS crash that taught the most, and where coding agents changed the work.',
   lede: 'WiSaw is the app I keep returning to, so it is the honest record of my architecture decisions. Each rewrite was forced by something real: traffic I could not afford to serve, a platform shift I did not want to fight, a crash that only happened on other people\'s phones.',
   originHeading: 'That is how it all began',
   originBody: [
