@@ -33,62 +33,62 @@ import { notes, steps } from '../../data/site.ts';
 
 <style>
   h2 {
-    font-size: 1.5rem;
-    margin-bottom: 20px;
+    font-size: var(--text-heading);
+    margin-bottom: var(--space-5);
   }
 
   .steps {
     list-style: none;
     display: grid;
-    gap: 4px;
+    gap: var(--space-1);
   }
 
   .steps > li {
     display: grid;
     grid-template-columns: 34px minmax(0, 1fr);
-    gap: 0 16px;
-    padding: 20px 0;
+    gap: 0 var(--space-4);
+    padding: var(--space-5) 0;
     border-top: 1px solid var(--border);
   }
 
   .num {
     font-family: var(--font-mono);
-    font-size: 0.8125rem;
+    font-size: var(--text-meta);
     color: var(--text-dim);
-    padding-top: 3px;
+    padding-top: var(--space-1);
   }
 
   h3 {
-    font-size: 1.0625rem;
+    font-size: var(--text-lede);
   }
 
   .steps p {
     color: var(--text-dim);
-    margin-top: 4px;
+    margin-top: var(--space-1);
     max-width: 64ch;
   }
 
   .notes {
-    margin-top: 40px;
+    margin-top: var(--space-7);
     display: grid;
-    gap: 24px;
+    gap: var(--space-6);
   }
 
   h4 {
-    font-size: 0.9375rem;
-    margin-bottom: 4px;
+    font-size: var(--text-body);
+    margin-bottom: var(--space-1);
   }
 
   .notes p {
     color: var(--text-dim);
-    font-size: 0.9375rem;
+    font-size: var(--text-body);
     max-width: 64ch;
   }
 
   @media (min-width: 720px) {
     .notes {
       grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 24px 32px;
+      gap: var(--space-6) var(--space-7);
     }
   }
 </style>

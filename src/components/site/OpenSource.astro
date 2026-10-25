@@ -65,14 +65,14 @@ const { snapshot } = Astro.props;
 
 <style>
   h2 {
-    font-size: 1.5rem;
-    margin-bottom: 12px;
+    font-size: var(--text-heading);
+    margin-bottom: var(--space-3);
   }
 
   .lead {
     color: var(--text-dim);
     max-width: 64ch;
-    margin-bottom: 8px;
+    margin-bottom: var(--space-2);
   }
 
   .packages {
@@ -80,7 +80,7 @@ const { snapshot } = Astro.props;
   }
 
   .packages > li {
-    padding: 22px 0;
+    padding: var(--space-5) 0;
     border-top: 1px solid var(--border);
   }
 
@@ -89,41 +89,41 @@ const { snapshot } = Astro.props;
     flex-wrap: wrap;
     align-items: baseline;
     justify-content: space-between;
-    gap: 8px 20px;
+    gap: var(--space-2) var(--space-5);
   }
 
   h3 {
     font-family: var(--font-mono);
-    font-size: 1rem;
+    font-size: var(--text-lede);
   }
 
   .install {
-    font-size: 0.8125rem;
+    font-size: var(--text-meta);
     color: var(--text-dim);
   }
 
   .summary {
-    margin-top: 6px;
+    margin-top: var(--space-1);
     max-width: 64ch;
   }
 
   .figures {
-    margin-top: 6px;
+    margin-top: var(--space-1);
     font-family: var(--font-mono);
-    font-size: 0.8125rem;
+    font-size: var(--text-meta);
     color: var(--text-dim);
   }
 
   .links {
-    margin-top: 8px;
+    margin-top: var(--space-2);
     display: flex;
-    gap: 16px;
-    font-size: 0.9375rem;
+    gap: var(--space-4);
+    font-size: var(--text-body);
   }
 
   .note {
-    margin-top: 20px;
-    font-size: 0.8125rem;
+    margin-top: var(--space-5);
+    font-size: var(--text-meta);
     color: var(--text-dim);
   }
 </style>

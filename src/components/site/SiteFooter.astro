@@ -27,28 +27,28 @@ const year = new Date().getFullYear();
   .site-footer {
     border-top: 1px solid var(--border);
     background-color: var(--panel);
-    margin-top: 40px;
+    margin-top: var(--space-7);
   }
 
   .inner {
     max-width: 720px;
     margin: 0 auto;
-    padding: 48px 20px 64px;
+    padding: var(--space-8) var(--space-5) var(--space-9);
     display: grid;
-    gap: 28px;
+    gap: var(--space-6);
   }
 
   .statement {
     max-width: 68ch;
-    font-size: 0.95rem;
+    font-size: var(--text-body);
   }
 
   .links {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px 22px;
+    gap: var(--space-2) var(--space-5);
     font-family: var(--font-mono);
-    font-size: 0.75rem;
+    font-size: var(--text-fine);
     text-transform: uppercase;
     letter-spacing: 0.06em;
   }
@@ -63,10 +63,10 @@ const year = new Date().getFullYear();
 
   .fine {
     font-family: var(--font-mono);
-    font-size: 0.6875rem;
+    font-size: var(--text-fine);
     color: var(--text-dim);
     border-top: 1px solid var(--border);
-    padding-top: 14px;
+    padding-top: var(--space-3);
   }
 
 </style>

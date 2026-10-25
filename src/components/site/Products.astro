@@ -37,8 +37,8 @@ import { products } from '../../data/site.ts';
 
 <style>
   h2 {
-    font-size: 1.5rem;
-    margin-bottom: 12px;
+    font-size: var(--text-heading);
+    margin-bottom: var(--space-3);
   }
 
   .lead {
@@ -51,7 +51,7 @@ import { products } from '../../data/site.ts';
   }
 
   .list > li {
-    padding: 26px 0;
+    padding: var(--space-6) 0;
     border-top: 1px solid var(--border);
   }
 
@@ -60,37 +60,37 @@ import { products } from '../../data/site.ts';
     flex-wrap: wrap;
     align-items: baseline;
     justify-content: space-between;
-    gap: 4px 20px;
+    gap: var(--space-1) var(--space-5);
   }
 
   h3 {
-    font-size: 1.0625rem;
+    font-size: var(--text-lede);
     font-weight: 600;
   }
 
   .kind {
     font-family: var(--font-mono);
-    font-size: 0.75rem;
+    font-size: var(--text-fine);
     color: var(--text-dim);
     white-space: nowrap;
   }
 
   .summary {
-    margin-top: 8px;
+    margin-top: var(--space-2);
     max-width: 66ch;
   }
 
   .detail {
-    margin-top: 8px;
+    margin-top: var(--space-2);
     color: var(--text-dim);
     max-width: 66ch;
   }
 
   .links {
-    margin-top: 12px;
+    margin-top: var(--space-3);
     display: flex;
     flex-wrap: wrap;
-    gap: 8px 20px;
-    font-size: 0.9375rem;
+    gap: var(--space-2) var(--space-5);
+    font-size: var(--text-body);
   }
 </style>

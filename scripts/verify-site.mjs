@@ -509,6 +509,41 @@ await check('styles speak only in tokens', () => {
   return `${defined.size} tokens declared; ${styleSources.length} style sources read only tokens`;
 });
 
+await check('type and rhythm come from the scale', () => {
+  // The colour rule above stops a hex appearing twice; this one stops a size or a
+  // padding appearing once too often. Six type steps and nine rhythm steps exist so
+  // that "roughly 13px" cannot silently become an eighteenth font size again.
+  const ISLANDS = ['Blog.css', 'Privacy.css', 'Support.css'];
+  const SPACE_DECL = /(?<![\w-])(padding|margin|gap|row-gap|column-gap)(?:-(?:top|right|bottom|left|block|inline)(?:-(?:start|end))?)?\s*:\s*([^;{}]+);/g;
+  const FS_DECL = /(?<![\w-])font-size\s*:\s*([^;!{}]+);/g;
+  const UNIT = /\b\d+(?:\.\d+)?(?:px|rem)\b/g;
+
+  const offenders = [];
+  for (const file of walk(SRC, ['.css', '.astro'])) {
+    if (file === path.join(SRC, 'index.css')) continue; // the scale itself lives here
+    if (ISLANDS.includes(path.basename(file))) continue; // React islands die with their styles
+    const text = readFileSync(file, 'utf8');
+    const bodies = path.extname(file) === '.css'
+      ? [text]
+      : [...text.matchAll(/<style[^>]*>([\s\S]*?)<\/style>/g)].map((m) => m[1]);
+    for (const raw of bodies) {
+      const body = raw.replace(/\/\*[\s\S]*?\*\//g, '');
+      const matches = [
+        ...[...body.matchAll(SPACE_DECL)].map((m) => ({ decl: m[0], value: m[2] })),
+        ...[...body.matchAll(FS_DECL)].map((m) => ({ decl: m[0], value: m[1] })),
+      ];
+      for (const { decl, value } of matches) {
+        const literal = value.match(UNIT);
+        if (literal && literal.some((v) => v !== '0' && !/^0(?:px|rem)$/.test(v))) {
+          offenders.push(`${path.relative(ROOT, file)}: ${decl.trim()}`);
+        }
+      }
+    }
+  }
+  assert.deepEqual(offenders, [], `raw sizes outside the scale:\n     ${offenders.join('\n     ')}`);
+  return 'every size and rhythm value in the theme resolves to a token';
+});
+
 await check('every page advertises the social card that exists', () => {
   // A shared link is the most-visited version of this site and the one nobody looks at.
   // The card is generated from the hero copy (`npm run og`), so this checks the wiring:

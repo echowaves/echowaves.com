@@ -32,6 +32,32 @@
   --radius-window: 12px;
   --radius-control: 6px;
   --reading-column: 74ch;
+
+  /* Type. Six sizes doing the work of eighteen, chosen from the values already in
+     use rather than a ratio imposed on them; every substitution moved at most 2px.
+     --text-figure shares a size with --text-heading because DESIGN.md treats them as
+     different roles: one carries the metrics and is the only weight-600 size on the
+     page, so it must not follow a future heading change. */
+  --text-fine: 12px;      /* micro metadata: path line, metric labels */
+  --text-meta: 13px;      /* section labels, tabs, notes, footer */
+  --text-body: 15px;      /* the base measure */
+  --text-lede: 17px;      /* intro paragraphs and h3 subheads */
+  --text-title: 20px;     /* the man page Name block */
+  --text-heading: 24px;   /* h2, page titles */
+  --text-figure: 24px;    /* every metric */
+  --text-display: clamp(1.875rem, 6vw, 2.5rem); /* one h1 per page */
+
+  /* Rhythm on a 4px grid: nine steps because that is where the measurements fall.
+     DESIGN.md numbered seven; it now records nine and what each one is for. */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 32px;
+  --space-8: 48px;
+  --space-9: 64px;
 }
 
 * {
@@ -53,7 +79,7 @@ body {
   -webkit-font-smoothing: antialiased;
   background-color: var(--desk);
   color: var(--text-dim);
-  font-size: 15px;
+  font-size: var(--text-body);
   line-height: 1.65;
 }
 
@@ -61,7 +87,7 @@ body {
    flat and takes depth from tonal steps only -- never blur, glow or gradient. */
 .window {
   max-width: 1040px;
-  margin: 24px auto;
+  margin: var(--space-6) auto;
   background-color: var(--background);
   border: 1px solid var(--border);
   border-radius: var(--radius-window);
@@ -91,7 +117,7 @@ a:hover {
 main > section {
   max-width: var(--reading-column);
   margin: 0 auto;
-  padding: 46px 20px;
+  padding: var(--space-8) var(--space-5);
 }
 
 section[id] {
@@ -127,8 +153,8 @@ h4 {
   z-index: 10;
   background-color: var(--accent);
   color: var(--ink-on-accent);
-  padding: 10px 16px;
-  font-size: 0.85rem;
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--text-meta);
 }
 
 .skip-link:focus {
@@ -150,12 +176,12 @@ h4 {
 
 .btn {
   display: inline-block;
-  padding: 9px 16px;
+  padding: var(--space-2) var(--space-4);
   background-color: transparent;
   color: var(--text);
   border: 1px solid var(--accent);
   border-radius: var(--radius-control);
-  font-size: 0.95rem;
+  font-size: var(--text-body);
   cursor: pointer;
   text-decoration: none;
 }
@@ -172,7 +198,7 @@ h4 {
 
 @media (max-width: 768px) {
   main > section {
-    padding: 32px 16px;
+    padding: var(--space-7) var(--space-4);
   }
 
   .window {
