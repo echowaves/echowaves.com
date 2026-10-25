@@ -186,37 +186,6 @@ export const notes = [
   },
 ];
 
-export interface Engagement {
-  heading: string;
-  name: string;
-  summary: string;
-  disqualifiers: string[];
-  cta: Link;
-}
-
-export const engagement: Engagement = {
-  heading: 'Working together',
-  name: 'Delivery Baseline',
-  summary:
-    'Six weeks. I measure how delivery actually works where you are, put one gate into the path your teams already ship through, and hand back a plan with owners and sequence.',
-  disqualifiers: [
-    'Do not hire me to validate a decision that has already been made.',
-    'Do not hire me if the pilot gets to stay a pilot; good practice spreads or it is decoration.',
-    'Do not hire me for a deck. The output is a running gate and a measurement.',
-    'Do not hire me if nobody who owns the pipeline will be in the room.',
-  ],
-  cta: {
-    label: 'Start a conversation',
-    href:
-      'mailto:dmitry@echowaves.com?subject=' +
-      encodeURIComponent('Delivery Baseline') +
-      '&body=' +
-      encodeURIComponent(
-        'Team size and what it builds:\nWhat agents are doing there today:\nCurrent release cadence and lead time:\nWhat you want to end up being able to prove:\n'
-      ),
-  },
-};
-
 // Figures themselves are fetched in src/utils/registry.ts, which also owns the
 // notes shown beside them.
 export const openSource = {
@@ -454,9 +423,9 @@ export const pages: Route[] = [
     label: 'contact',
     href: '/contact/',
     h1: 'Contact',
-    lede: '',
-    title: 'Contact — Delivery Baseline, disqualifiers and how to reach me',
-    description: 'How the engagement works, what I will not take on, and how to start a conversation.',
+    lede: 'Where to reach me and where the rest of the work is visible.',
+    title: 'Contact — email, GitHub, LinkedIn and Dev.to',
+    description: 'How to reach me and where the rest of the work lives.',
   },
 ];
 
