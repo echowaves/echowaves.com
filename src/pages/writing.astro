@@ -1,0 +1,21 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHead from '../components/site/PageHead.astro';
+import Blog from '../components/Blog';
+import { getBlogData } from '../utils/devto';
+import { pages } from '../data/site.ts';
+
+const route = pages.find((page) => page.href === '/writing/')!;
+
+let blogData = null;
+try {
+  blogData = await getBlogData();
+} catch (error) {
+  console.warn('Could not fetch blog data at build time:', error);
+}
+---
+
+<BaseLayout title={route.title} description={route.description} canonicalUrl={`https://echowaves.com${route.href}`}>
+  <PageHead route={route} />
+  <Blog client:load blogData={blogData} />
+</BaseLayout>

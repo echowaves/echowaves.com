@@ -1,0 +1,13 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHead from '../components/site/PageHead.astro';
+import Contact from '../components/site/Contact.astro';
+import { pages } from '../data/site.ts';
+
+const route = pages.find((page) => page.href === '/contact/')!;
+---
+
+<BaseLayout title={route.title} description={route.description} canonicalUrl={`https://echowaves.com${route.href}`}>
+  <PageHead route={route} />
+  <Contact />
+</BaseLayout>

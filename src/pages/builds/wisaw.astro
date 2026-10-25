@@ -1,0 +1,157 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { products, wisawStory } from '../../data/site.ts';
+
+const wisaw = products.find((product) => product.id === 'wisaw');
+const installLinks = (wisaw?.links ?? []).filter((link) => link.href !== '/wisaw');
+---
+
+<BaseLayout
+  title="WiSaw: how a seven-day app was rebuilt four times"
+  description="The architecture history of WiSaw — from a seven-day MVP with native clients and a Koa REST API to Expo, GraphQL and serverless infrastructure — including the production-only iOS crash that taught the most, and where coding agents changed the work."
+  canonicalUrl="https://echowaves.com/builds/wisaw"
+>
+  <section class="story">
+      <h1>{wisawStory.title}</h1>
+      <p class="lede">{wisawStory.lede}</p>
+
+      <p class="install">
+        {wisawStory.installNote}
+        {
+          installLinks.map((link) => (
+            <a href={link.href} rel="noopener noreferrer" target="_blank">
+              {link.label}
+            </a>
+          ))
+        }
+      </p>
+
+      <h2>{wisawStory.originHeading}</h2>
+      {wisawStory.originBody.map((paragraph) => <p set:html={paragraph} />)}
+
+      <h2>The architecture, in the order it happened</h2>
+      <ol class="phases">
+        {
+          wisawStory.phases.map((phase) => (
+            <li>
+              <p class="when">{phase.when}</p>
+              <div>
+                <h3>{phase.title}</h3>
+                <p set:html={phase.body} />
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+
+      <h2>{wisawStory.bugHeading}</h2>
+      {wisawStory.bugBody.map((paragraph) => <p set:html={paragraph} />)}
+
+      <h2>{wisawStory.aiHeading}</h2>
+      <p class="lede">{wisawStory.aiLede}</p>
+      {
+        wisawStory.aiPoints.map((point) => (
+          <div class="point">
+            <h3>{point.title}</h3>
+            <p set:html={point.body} />
+          </div>
+        ))
+      }
+
+      <p class="back">
+        <a href="/builds/">All builds</a>
+        <a href="/">Home</a>
+      </p>
+    </section>
+</BaseLayout>
+
+<style>
+  .story {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 64px 20px;
+  }
+
+  h1 {
+    font-size: clamp(1.875rem, 6vw, 2.5rem);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    margin-bottom: 20px;
+  }
+
+  h2 {
+    font-size: 1.375rem;
+    margin-top: 48px;
+    margin-bottom: 12px;
+  }
+
+  h3 {
+    font-size: 1.0625rem;
+    font-weight: 600;
+  }
+
+  p {
+    max-width: 68ch;
+  }
+
+  p + p {
+    margin-top: 16px;
+  }
+
+  .lede {
+    font-size: 1.125rem;
+    color: var(--text-secondary);
+  }
+
+  .install {
+    margin-top: 24px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 6px 18px;
+    font-size: 0.9375rem;
+    color: var(--text-secondary);
+  }
+
+  .phases {
+    list-style: none;
+    margin-top: 8px;
+  }
+
+  .phases > li {
+    display: grid;
+    gap: 2px 20px;
+    padding: 22px 0;
+    border-top: 1px solid var(--border-color);
+  }
+
+  .when {
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    color: var(--accent-green);
+    padding-top: 3px;
+    margin-top: 0;
+  }
+
+  .point {
+    margin-top: 26px;
+  }
+
+  .point p {
+    margin-top: 6px;
+  }
+
+  .back {
+    margin-top: 56px;
+    padding-top: 18px;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    gap: 24px;
+  }
+
+  @media (min-width: 640px) {
+    .phases > li {
+      grid-template-columns: 110px minmax(0, 1fr);
+    }
+  }
+</style>

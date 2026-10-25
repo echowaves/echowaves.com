@@ -1,0 +1,188 @@
+---
+import { availability, claimById, headlineClaims, hero, identity } from '../../data/site.ts';
+
+const stats = headlineClaims
+  .map((id) => claimById(id))
+  .filter((claim) => claim !== undefined);
+
+// The leading `$` is styled separately so the prompt still reads as a prompt.
+const promptText = hero.prompt.replace(/^\$\s*/, '');
+---
+
+<section class="man" id="top">
+  <h1 class="name-block">
+    <span class="command">{hero.name}</span><span class="synopsis">{hero.synopsis}</span>
+    <span class="dash" aria-hidden="true">&mdash;</span>
+    <span class="summary">{hero.headline}</span>
+  </h1>
+
+  <h2 class="section-label">{hero.sections.name}</h2>
+  <p class="man-body">
+    {hero.name} &mdash; {hero.headline}
+  </p>
+
+  <h2 class="section-label">{hero.sections.description}</h2>
+  <p class="man-body">{hero.description}</p>
+
+  <h2 class="section-label">{availability.heading}</h2>
+  <ul class="man-body applies">
+    {availability.items.map((item) => <li>{item}</li>)}
+  </ul>
+
+  <dl class="stats">
+    {
+      stats.map((stat) => (
+        <div>
+          <dd>{stat.metric}</dd>
+          <dt>{stat.label}</dt>
+        </div>
+      ))
+    }
+  </dl>
+
+  <p class="prompt" aria-hidden="true">
+    <span class="prompt-dollar">$</span> {promptText}<span class="caret"></span>
+  </p>
+
+  <p class="who">
+    <strong>{identity.name}</strong>
+    <span>{identity.location}</span>
+    {
+      identity.links.map((link) => (
+        <a href={link.href} rel="noopener noreferrer" target="_blank">
+          {link.label}
+        </a>
+      ))
+    }
+    <a href={`mailto:${identity.email}`}>Email</a>
+  </p>
+</section>
+
+<style>
+  .man {
+    padding: 40px 20px 56px;
+  }
+
+  /* The NAME block. Size comes from position and colour, not scale. */
+  .name-block {
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 1.4;
+    color: var(--text);
+    margin-bottom: 30px;
+  }
+
+  .command {
+    color: var(--accent);
+  }
+
+  .synopsis,
+  .dash {
+    color: var(--text-dim);
+  }
+
+  .summary {
+    color: var(--text);
+  }
+
+  .section-label {
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: 1.6px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+
+  .man-body {
+    max-width: var(--reading-column);
+    margin-bottom: 30px;
+    background-color: var(--panel-raised);
+    padding: 16px;
+    border-left: 2px solid var(--border);
+  }
+
+  .applies {
+    list-style: none;
+  }
+
+  .applies li::before {
+    content: '\\2014';
+    color: var(--decoration-green);
+    margin-right: 8px;
+  }
+
+  /* Sourced figures, kept on the first screen for the five-second skim. */
+  .stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0;
+    margin: 30px 0;
+  }
+
+  .stats > div {
+    border-left: 2px solid var(--border);
+    padding: 0 16px;
+  }
+
+  .stats dd {
+    font-size: 23px;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.3;
+  }
+
+  .stats dt {
+    font-size: 12px;
+    color: var(--text-dim);
+  }
+
+  .prompt {
+    font-size: 0.9375rem;
+    color: var(--text);
+  }
+
+  .prompt-dollar {
+    color: var(--accent);
+  }
+
+  .caret {
+    display: inline-block;
+    width: 8px;
+    height: 1.1em;
+    margin-left: 3px;
+    background-color: var(--accent);
+    vertical-align: text-bottom;
+  }
+
+  /* Blink is a motion affordance: static unless the reader asks for motion. */
+  @media (prefers-reduced-motion: no-preference) {
+    .caret {
+      animation: blink 1.06s steps(2, start) infinite;
+    }
+  }
+
+  @keyframes blink {
+    to {
+      visibility: hidden;
+    }
+  }
+
+  .who {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 16px;
+    align-items: baseline;
+    margin-top: 24px;
+    font-size: 0.9375rem;
+    color: var(--text-dim);
+  }
+
+  .who strong {
+    color: var(--text);
+  }
+
+  .who a {
+    color: var(--accent);
+  }
+</style>

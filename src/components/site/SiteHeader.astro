@@ -1,0 +1,136 @@
+---
+import { nav, shellPrompt } from '../../data/site.ts';
+
+/*
+ * The window chrome: title bar plus one tab per route. Tabs are plain links, so
+ * navigation needs no JavaScript and every view stays deep-linkable. They are not
+ * ARIA tabs and must not claim the tablist role.
+ */
+const path = Astro.url.pathname.replace(/\/$/, '') || '/';
+const current = (href: string) => {
+  const target = href.replace(/\/$/, '') || '/';
+  if (target === '/') return path === '/';
+  return path === target || path.startsWith(`${target}/`);
+};
+const shellPath = path === '/' ? '~/echowaves' : `~/echowaves${path}`;
+---
+
+<header class="chrome">
+  <div class="titlebar">
+    <span class="lights" aria-hidden="true"><i></i><i></i><i></i></span>
+    <p class="path">
+      <span class="host">{shellPrompt}</span><span class="sep"> &mdash; </span>{shellPath}
+    </p>
+  </div>
+
+  <nav class="tabs" aria-label="Primary">
+    {
+      nav.map((item) => (
+        <a
+          href={item.href}
+          aria-current={current(item.href) ? 'page' : undefined}
+          class:list={{ tab: true, active: current(item.href) }}
+        >
+          {item.label}
+        </a>
+      ))
+    }
+  </nav>
+</header>
+
+<style>
+  .chrome {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    background-color: var(--panel);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .titlebar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 9px 14px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .lights {
+    display: inline-flex;
+    gap: 7px;
+    flex: none;
+  }
+
+  /* Paint, not controls: never focusable, never clickable, hidden from AT. */
+  .lights i {
+    width: 11px;
+    height: 11px;
+    border-radius: 9999px;
+    display: block;
+  }
+
+  .lights i:nth-child(1) {
+    background-color: var(--danger);
+  }
+
+  .lights i:nth-child(2) {
+    background-color: var(--emphasis);
+  }
+
+  .lights i:nth-child(3) {
+    background-color: var(--accent);
+  }
+
+  .path {
+    font-size: 12px;
+    color: var(--text-dim);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .host {
+    color: var(--accent);
+  }
+
+  .sep {
+    color: var(--decoration-green);
+  }
+
+  /*
+   * Seven tabs never fit 375px. The strip scrolls horizontally instead of hiding
+   * navigation behind a disclosure, which keeps every route one tab away and needs
+   * no script. The active tab is scrolled into view by the browser on focus.
+   */
+  .tabs {
+    display: flex;
+    gap: 2px;
+    overflow-x: auto;
+    scrollbar-width: thin;
+    background-color: var(--panel);
+    padding: 0 6px;
+  }
+
+  .tab {
+    display: inline-block;
+    padding: 9px 14px;
+    font-size: 13px;
+    color: var(--text-dim);
+    text-decoration: none;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+    min-height: 44px;
+    line-height: 24px;
+  }
+
+  .tab:hover {
+    color: var(--text);
+  }
+
+  /* aria-current carries the state for assistive tech; the underline is the paint. */
+  .tab.active {
+    color: var(--text);
+    background-color: var(--background);
+    border-bottom-color: var(--accent);
+  }
+</style>

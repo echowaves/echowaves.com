@@ -7,12 +7,12 @@ interface BlogProps {
 }
 
 const topicAreas = [
-  { icon: '🤖', name: 'AI & Agentic Coding' },
-  { icon: '📱', name: 'React Native & Expo' },
-  { icon: '🏗️', name: 'Architecture' },
-  { icon: '🎸', name: 'Vibe Coding' },
-  { icon: '☁️', name: 'AWS & Cloud' },
-  { icon: '🚀', name: 'Engineering Leadership' }
+  'AI & Agentic Coding',
+  'React Native & Expo',
+  'Architecture',
+  'Vibe Coding',
+  'AWS & Cloud',
+  'Engineering Leadership'
 ];
 
 const Blog: React.FC<BlogProps> = ({ blogData: initialBlogData }) => {
@@ -74,9 +74,8 @@ const Blog: React.FC<BlogProps> = ({ blogData: initialBlogData }) => {
         <h3>Topics Covered</h3>
         <div className="topics-grid">
           {topicAreas.map((topic) => (
-            <div key={topic.icon} className="topic-card">
-              <span className="topic-icon">{topic.icon}</span>
-              <span className="topic-name">{topic.name}</span>
+            <div key={topic} className="topic-card">
+              <span className="topic-name">{topic}</span>
             </div>
           ))}
         </div>

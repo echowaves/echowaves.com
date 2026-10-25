@@ -75,11 +75,6 @@
   border-color: var(--accent-blue);
 }
 
-.contact-icon {
-  font-size: 2.5rem;
-  margin-bottom: 12px;
-}
-
 .contact-method h3 {
   font-size: 1.2rem;
   color: var(--text-primary);
@@ -105,7 +100,7 @@
 }
 
 .contact-method a:hover {
-  color: #79c0ff;
+  color: var(--accent-hover);
 }
 
 .faq-item {
@@ -135,7 +130,7 @@
 }
 
 .faq-item a:hover {
-  color: #79c0ff;
+  color: var(--accent-hover);
 }
 
 .resources-grid {
@@ -158,11 +153,6 @@
 
 .resource-card:hover {
   border-color: var(--accent-blue);
-}
-
-.resource-icon {
-  font-size: 2rem;
-  margin-bottom: 12px;
 }
 
 .resource-card h3 {

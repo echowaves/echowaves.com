@@ -1,16 +1,15 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import Header from '../components/Header';
 import PrivacyComponent from '../components/Privacy';
-import Footer from '../components/Footer';
+import { utilityPages } from '../data/site.ts';
+
+const route = utilityPages.privacy;
 ---
 
 <BaseLayout
-  title="Privacy Policy — Echowaves"
-  description="Privacy policy for Echowaves and its open-source projects. Learn how we handle data, cookies, and your privacy rights."
-  canonicalUrl="https://echowaves.com/privacy"
+  title={route.title}
+  description={route.description}
+  canonicalUrl={`https://echowaves.com${route.href}`}
 >
-  <Header client:load />
   <PrivacyComponent />
-  <Footer />
 </BaseLayout>

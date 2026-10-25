@@ -1,0 +1,37 @@
+---
+import type { Route } from '../../data/site.ts';
+
+/*
+ * The heading block every routed page opens with. Copy arrives whole from the
+ * route table: a component holding no literals is what lets `npm run verify`
+ * check the words against their sources.
+ */
+interface Props {
+  route: Route;
+}
+
+const { route } = Astro.props;
+---
+
+{
+  route.h1 ? <h1 class="page-title">{route.h1}</h1> : null
+}
+
+{
+  route.lede ? <p class="lede">{route.lede}</p> : null
+}
+
+<style>
+  .page-title {
+    font-size: 23px;
+    font-weight: 400;
+    color: var(--text);
+    margin-bottom: 12px;
+  }
+
+  .lede {
+    max-width: var(--reading-column);
+    color: var(--text-dim);
+    margin-bottom: 30px;
+  }
+</style>
