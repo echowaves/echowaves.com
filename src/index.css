@@ -192,3 +192,34 @@ h4 {
     border-radius: 0;
   }
 }
+
+/*
+ * Forced-colors mode (Windows High Contrast, forced dark in browsers) replaces the
+ * background we author while leaving our green text in place: #8dfa9c on a system
+ * white canvas measures 1.29:1, which is unreadable rather than merely unpretty.
+ * Hand colouring back to the system and keep only structure.
+ */
+@media (forced-colors: active) {
+  :root {
+    --background: Canvas;
+    --panel: Canvas;
+    --panel-raised: Canvas;
+    --border: CanvasText;
+    --text: CanvasText;
+    --text-dim: CanvasText;
+    --decoration-green: CanvasText;
+    --accent: LinkText;
+    --emphasis: CanvasText;
+    --danger: CanvasText;
+    --ink-on-accent: Canvas;
+  }
+
+  .window {
+    box-shadow: none;
+  }
+
+  /* The traffic lights carry no meaning, so they must not survive as colour blobs. */
+  .lights i {
+    background-color: CanvasText;
+  }
+}
