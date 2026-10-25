@@ -8,6 +8,8 @@
 # printing), and `astro.config.mjs` is an ESM config file Astro loads with import(). Both
 # would have to be rewritten in require() style to satisfy a ruleset that does not apply
 # to them, which would make them worse code to keep honest about the site.
+# Listed as files, not directories: on PR #2 the `scripts/` form excluded nothing while
+# `astro.config.mjs` was honoured, so a new tooling script has to be added here too.
 exclude_paths:
-  - scripts/
   - astro.config.mjs
+  - scripts/verify-site.mjs
