@@ -191,8 +191,6 @@ export interface Engagement {
   name: string;
   summary: string;
   disqualifiers: string[];
-  /** Availability wording, e.g. how many engagements are open. Dmitry's to write. */
-  capacity?: string;
   cta: Link;
 }
 
@@ -218,15 +216,6 @@ export const engagement: Engagement = {
       ),
   },
 };
-
-/**
- * The availability line under the Delivery Baseline heading, empty until Dmitry writes
- * it and never padded. Pricing is deliberately absent from the site: stated on 2026-10-25,
- * so do not reintroduce a price slot as a "completeness" fix.
- */
-export function engagementTerms(eng: Partial<Engagement> = engagement): string[] {
-  return [eng.capacity].filter((line): line is string => Boolean(line?.trim()));
-}
 
 // Figures themselves are fetched in src/utils/registry.ts, which also owns the
 // notes shown beside them.
@@ -466,7 +455,7 @@ export const pages: Route[] = [
     href: '/contact/',
     h1: 'Contact',
     lede: '',
-    title: 'Contact — engagement terms and disqualifiers',
+    title: 'Contact — Delivery Baseline, disqualifiers and how to reach me',
     description: 'How the engagement works, what I will not take on, and how to start a conversation.',
   },
 ];
