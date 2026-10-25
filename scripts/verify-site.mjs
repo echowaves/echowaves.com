@@ -450,6 +450,65 @@ await check('every built page renders the window chrome exactly once', () => {
   return 'one window, one main, one tab strip per page';
 });
 
+await check('styles speak only in tokens', () => {
+  // DESIGN.md: "Every token has one home: src/index.css. Nothing else defines a
+  // value." The aliases that used to live beside the tokens (--bg-primary,
+  // --accent-blue, --text-secondary) were how a component could quietly disagree
+  // with the palette, so they are gone and this check keeps them gone.
+  const cssPath = path.join(SRC, 'index.css');
+  const tokens = readFileSync(cssPath, 'utf8');
+  const rootStart = tokens.indexOf(':root {');
+  const rootBlock = tokens.slice(rootStart, tokens.indexOf('\n}', rootStart));
+  const defined = new Set([...rootBlock.matchAll(/(--[a-z0-9-]+)\s*:/g)].map((m) => m[1]));
+  assert.ok(defined.size >= 15, `the token block looks truncated: ${defined.size} definitions`);
+
+  const undeclared = [];
+  const literals = [];
+  const styleSources = walk(SRC, ['.css', '.astro', '.tsx']);
+  for (const file of styleSources) {
+    if (file === cssPath) continue;
+    const text = readFileSync(file, 'utf8');
+    // Only declarations are scanned. An .astro head may legitimately name a colour
+    // because a meta tag cannot read a variable.
+    // The React islands carry no <style> block of their own; they style through the
+    // .css files above, so scanning them whole catches an inline colour before it lands.
+    const blocks =
+      path.extname(file) !== '.astro'
+        ? [{ where: file, body: text }]
+        : [...text.matchAll(/<style[^>]*>([\s\S]*?)<\/style>/g)].map((m) => ({
+            where: `${file} <style>`,
+            body: m[1],
+          }));
+    for (const block of blocks) {
+      // A comment cannot style anything, so a hex written there is documentation.
+      const body = block.body.replace(/\/\*[\s\S]*?\*\//g, '');
+      for (const match of body.matchAll(/var\((--[a-z0-9-]+)/g)) {
+        if (!defined.has(match[1])) {
+          undeclared.push(`${path.relative(ROOT, block.where)}: var(${match[1]})`);
+        }
+      }
+      for (const match of body.matchAll(/#[0-9a-fA-F]{3,8}\b|\brgba?\(|\bhsla?\(/g)) {
+        literals.push(`${path.relative(ROOT, block.where)}: ${match[0]}`);
+      }
+    }
+  }
+  assert.deepEqual(undeclared, [], `used but never defined in src/index.css:\n     ${undeclared.join('\n     ')}`);
+  assert.deepEqual(literals, [], `colour written outside the token block:\n     ${literals.join('\n     ')}`);
+
+  // The theme-color meta tag is the one literal that has to stay a literal, so at
+  // least make sure it still paints the same colour as the window.
+  const layout = readFileSync(path.join(SRC, 'layouts', 'BaseLayout.astro'), 'utf8');
+  const themeColor = /name="theme-color" content="(#[0-9a-fA-F]{3,8})"/.exec(layout)?.[1];
+  const background = /--background:\s*(#[0-9a-fA-F]{3,8})/.exec(tokens)?.[1];
+  assert.equal(
+    themeColor?.toLowerCase(),
+    background?.toLowerCase(),
+    'the theme-color meta tag disagrees with --background',
+  );
+
+  return `${defined.size} tokens declared; ${styleSources.length} style sources read only tokens`;
+});
+
 await check('every page advertises the social card that exists', () => {
   // A shared link is the most-visited version of this site and the one nobody looks at.
   // The card is generated from the hero copy (`npm run og`), so this checks the wiring:
