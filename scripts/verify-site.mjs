@@ -110,8 +110,9 @@ function walk(dir, extensions = COPY_EXTENSIONS) {
 }
 
 // A section that reads a field nobody filled in renders an empty element: markup
-// that says nothing at the exact spot where copy was promised. `engagementTerms`
-// exists so the data module, not the component, decides when a line is absent.
+// that says nothing at the exact spot where copy was promised. This caught a real
+// paragraph built from wording that had since been deleted from the data module, so
+// optional copy slots stay out of the model instead of being rendered conditionally.
 const BLOCK_ELEMENT = /<(p|li|dd|dt|h1|h2|h3|ul|ol|blockquote)((?:\s[^>]*)?)>([\s\S]{0,200}?)<\/\1>/g;
 
 function findEmptyBlocks(html) {
@@ -413,21 +414,13 @@ await check('every built page renders the window chrome exactly once', () => {
   return 'one window, one main, one tab strip per page';
 });
 
-await check('terms lines render only when written', () => {
-  assert.deepEqual(site.engagementTerms({}), []);
-  assert.deepEqual(site.engagementTerms({ capacity: '   ' }), []);
-  assert.deepEqual(site.engagementTerms({ capacity: 'Two engagements at a time.' }), [
-    'Two engagements at a time.',
-  ]);
-  return 'blank and missing availability wording both render nothing';
-});
-
-await check('no price slot has crept back into the engagement model', () => {
-  // Dmitry removed pricing from the site on 2026-10-25. If a field named for money
-  // reappears, that was a decision to revisit rather than an oversight to fix quietly.
-  const priced = Object.keys(site.engagement).filter((key) => /price|cost|rate|fee/i.test(key));
-  assert.deepEqual(priced, [], `pricing fields present on the engagement model: ${priced.join(', ')}`);
-  return 'engagement carries no pricing field, by decision';
+await check('the engagement model states no commercial terms', () => {
+  // Removed deliberately on 2026-10-25: no price line and no availability line. A field
+  // named for money or capacity is a decision to revisit, not an omission to repair —
+  // and an empty one of these is what shipped an empty <p> in the first place.
+  const slots = Object.keys(site.engagement).filter((key) => /price|cost|rate|fee|capacity|availability/i.test(key));
+  assert.deepEqual(slots, [], `commercial-terms fields present on the engagement model: ${slots.join(', ')}`);
+  return 'no pricing or availability slot exists to leave empty';
 });
 
 await check('built pages render no empty text elements', () => {
@@ -442,9 +435,9 @@ await check('built pages render no empty text elements', () => {
 });
 
 await check('an empty rendered element is detected', () => {
-  const fixture = '<section><p class="terms"> </p><h2>Kept</h2><ul><li>a rule</li></ul></section>';
+  const fixture = '<section><p class="availability"> </p><h2>Kept</h2><ul><li>a rule</li></ul></section>';
   const found = findEmptyBlocks(fixture);
-  assert.deepEqual(found, ['p class="terms"'], `fixture slipped through: ${found.join(' | ')}`);
+  assert.deepEqual(found, ['p class="availability"'], `fixture slipped through: ${found.join(' | ')}`);
   return 'fixture empty paragraph rejected';
 });
 
