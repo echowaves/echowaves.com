@@ -579,8 +579,9 @@ await check('every page advertises the social card that exists', () => {
 await check('no page ships first-party JavaScript', () => {
   // The site's contract: everything is generated at build time and runs on the reader's
   // side only as HTML and CSS. React used to ride along here as a 191KB bundle that no
-  // page referenced. The single tolerated exception is the analytics tag in BaseLayout,
-  // which is disclosed on /privacy and is Dmitry's call to remove, not mine.
+  // page referenced. The one exception is deliberate: Google Analytics (gtag.js) in
+  // BaseLayout, confirmed by Dmitry on 2026-10-25 for aggregate page counts and
+  // disclosed on /privacy. Everything else in this list stays forbidden.
   const dist = path.join(ROOT, 'dist');
   if (!existsSync(dist)) skip('no dist/ build yet — run `npm run build`');
   const assets = walk(dist, ['.js']);
@@ -645,7 +646,11 @@ const pending = [
   ...site.claims.filter((claim) => claim.needsReview).map((claim) => `claim ${claim.id}`),
   ...site.notes.filter((note) => note.needsReview).map((note) => `note "${note.heading}"`),
   ...platformLinksToConfirm(site.products),
-  ...(site.utilityPages.privacy.needsReview ? ['page /privacy — the privacy statement is attributed to Dmitry personally'] : []),
+  // Utility-page copy carries the flag only while it is unsigned, so test for the
+  // property rather than assuming it.
+  ...('needsReview' in site.utilityPages.privacy
+    ? ['page /privacy — the privacy statement is attributed to Dmitry personally']
+    : []),
 ];
 
 console.log('');
