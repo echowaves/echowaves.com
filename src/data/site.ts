@@ -340,7 +340,7 @@ export const wisawStory = {
   lede: 'WiSaw is the app I keep returning to, so it is the honest record of my architecture decisions. Each rewrite was forced by something real: traffic I could not afford to serve, a platform shift I did not want to fight, a crash that only happened on other people\'s phones.',
   originHeading: 'That is how it all began',
   originBody: [
-    'Before WiSaw there was Echowaves, a minimalistic social sharing platform built on the theory that most of what makes social apps heavy is also what makes them miserable. In 2018 I stripped the idea down far enough to test whether it could survive without accounts at all. The first version took seven days: <a href="https://www.linkedin.com/pulse/minimalistic-social-app-few-days-dmitryame/">Minimalistic Social App in few days</a>.',
+    'Before WiSaw there was Echowaves, a minimalistic social sharing platform built on the theory that most of what makes social apps heavy is also what makes them miserable. In 2018 I stripped the idea down far enough to test whether it could survive without accounts at all. The first version took seven days: <a href="https://www.linkedin.com/pulse/minimalistic-social-app-few-days-dmitry-amelchenko/">Minimalistic Social App in few days</a>.',
     'The rule that came out of it has not changed since: if a feature does not earn its complexity, the app does not get the feature. <a href="https://dev.to/dmitryame/minimalistic-architecture-for-minimalistic-product-ffd">Minimalistic architecture for Minimalistic product</a> is the longer argument.',
   ],
   phases: [
