@@ -55,12 +55,28 @@ export const identity: Identity = {
 };
 
 export const hero = {
-  headline: 'I solve hard problems.',
-  body: [
-    'The ones where the code is the easy part: a release that takes three weeks, an AI pilot that never reaches production, engineers who route around every new gate.',
-    'Twenty years of that — Fortune 100 insurance, HIPAA-regulated telehealth, enterprise SaaS, a consumer social platform built from a prototype. Since 2023 the hard problem has usually been the same one: turning agentic software engineering into something an organization can actually run.',
-  ],
+  name: 'dmitry@echowaves',
+  synopsis: '(1)',
+  // The NAME block of a man page: what this is, in the fewest tokens. It names the
+  // offer rather than a reputation, and carries no adjective that needs proving.
+  headline: 'teams \u00b7 collaboration \u00b7 AI capacity',
+  description:
+    'I help engineering organizations absorb agentic software engineering without losing control of what they ship: the practices, the measurement and the handover that let a team run it after I leave.',
+  sections: {
+    name: 'NAME',
+    description: 'DESCRIPTION',
+  },
   prompt: '$ npm install the-future',
+};
+
+/** Where the work happens, shown under the NAME block instead of a bio paragraph. */
+export const availability = {
+  heading: 'WHERE THIS APPLIES',
+  items: [
+    'Platform and developer-productivity groups that own a pipeline, a release train or an internal toolchain.',
+    'Organizations running agentic development that cannot yet tell leadership what it changed.',
+    'React Native and Expo teams whose release cycle is the constraint.',
+  ],
 };
 
 /** Three figures a skimmer should get in five seconds. */
@@ -267,7 +283,7 @@ export const products: Product[] = [
       { label: 'App Store', href: 'https://apps.apple.com/us/app/wisaw-what-i-saw-today/id1299949122' },
       { label: 'Google Play', href: 'https://play.google.com/store/apps/details?id=com.echowaves.wisaw' },
       { label: 'wisaw.com', href: 'https://www.wisaw.com' },
-      { label: 'How it was built', href: '/wisaw' },
+      { label: 'How it was built', href: '/builds/wisaw' },
     ],
   },
   {
@@ -375,15 +391,103 @@ export const wisawStory = {
   installNote: 'WiSaw is free and has no accounts; version 7.x ships on iOS, Android and the web.',
 };
 
-export const nav = [
-  { label: 'Results', href: '/#results' },
-  { label: 'Products', href: '/#products' },
-  { label: 'How I work', href: '/#how' },
-  { label: 'Open source', href: '/#code' },
-  { label: 'Writing', href: '/#blog' },
-  { label: 'Contact', href: '/#contact' },
+export interface Route {
+  label: string;
+  href: string;
+  h1: string;
+  lede: string;
+  title: string;
+  description: string;
+}
+
+/**
+ * The whole route table, and the only source for it. One tab per route: the tabs
+ * are links, not in-page anchors, which is what lets the terminal frame navigate
+ * with no JavaScript at all. Titles and descriptions live here too, so a page can
+ * never ship a heading that contradicts its content.
+ */
+export const pages: Route[] = [
+  {
+    label: 'work',
+    href: '/',
+    h1: 'dmitry@echowaves',
+    lede: '',
+    title: 'Dmitry Amelchenko — teams, collaboration, AI capacity',
+    description:
+      'I help engineering organizations absorb agentic software engineering without losing control of what they ship.',
+  },
+  {
+    label: 'results',
+    href: '/results/',
+    h1: 'Results',
+    lede: 'Numbers from work I led, each with the source it came from. Figures still pending sign-off are marked as such rather than smoothed over.',
+    title: 'Results — sourced delivery figures',
+    description:
+      'Delivery figures with their sources and review state, current as of 2026-10-17.',
+  },
+  {
+    label: 'method',
+    href: '/method/',
+    h1: 'Method',
+    lede: 'Four steps, in order, and what each one refuses to be.',
+    title: 'Method — how the work actually goes',
+    description: 'The four-step method, plus the things learned badly enough to be worth stating.',
+  },
+  {
+    label: 'builds',
+    href: '/builds/',
+    h1: 'Builds',
+    lede: 'Things I built that still run, with the link you would use to install them. Each one is still mine to maintain.',
+    title: 'Builds — shipped products and their install links',
+    description: 'Products I built and still maintain, with live store and source links.',
+  },
+  {
+    label: 'code',
+    href: '/code/',
+    h1: 'Code',
+    lede: 'Maintenance evidence rather than a badge wall: downloads, stars and the last release date, pulled from the registries when the site is built.',
+    title: 'Code — open source packages and registry figures',
+    description: 'npm packages I maintain, with figures fetched at build time and omitted when a registry is unreachable.',
+  },
+  {
+    label: 'writing',
+    href: '/writing/',
+    h1: 'Writing',
+    lede: 'Notes on agentic engineering, delivery measurement and the parts nobody writes about.',
+    title: 'Writing — Dmitry Amelchenko',
+    description: 'Articles on agentic software engineering, delivery measurement and mobile architecture.',
+  },
+  {
+    label: 'contact',
+    href: '/contact/',
+    h1: 'Contact',
+    lede: '',
+    title: 'Contact — engagement terms and disqualifiers',
+    description: 'How the engagement works, what I will not take on, and how to start a conversation.',
+  },
 ];
 
+/** Tab strip labels and hrefs, derived so the two can never drift apart. */
+export const nav = pages.map(({ label, href }) => ({ label, href }));
+
+/** Footer-only pages: reachable from the footer, never from the tab strip. */
+export const utilityPages = {
+  support: {
+    href: '/support',
+    title: 'Support — Echowaves',
+    description:
+      'Get help with Echowaves open-source packages: expo-cached-image, expo-storage, expo-masonry-layout. Contact, FAQ, and resources.',
+  },
+  privacy: {
+    href: '/privacy',
+    title: 'Privacy Policy — Echowaves',
+    description:
+      'Privacy policy for Echowaves and its open-source projects. Learn how we handle data, cookies, and your privacy rights.',
+  },
+};
+
+/** Shown in the window title bar as a path, so the chrome shows where you are. */
+export const shellPrompt = 'dmitry@echowaves';
 
 export const asOf = '2026-10-17';
 

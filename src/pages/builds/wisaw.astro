@@ -1,8 +1,6 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
-import SiteHeader from '../components/site/SiteHeader.astro';
-import SiteFooter from '../components/site/SiteFooter.astro';
-import { products, wisawStory } from '../data/site.ts';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { products, wisawStory } from '../../data/site.ts';
 
 const wisaw = products.find((product) => product.id === 'wisaw');
 const installLinks = (wisaw?.links ?? []).filter((link) => link.href !== '/wisaw');
@@ -11,13 +9,9 @@ const installLinks = (wisaw?.links ?? []).filter((link) => link.href !== '/wisaw
 <BaseLayout
   title="WiSaw: how a seven-day app was rebuilt four times"
   description="The architecture history of WiSaw — from a seven-day MVP with native clients and a Koa REST API to Expo, GraphQL and serverless infrastructure — including the production-only iOS crash that taught the most, and where coding agents changed the work."
-  canonicalUrl="https://echowaves.com/wisaw"
+  canonicalUrl="https://echowaves.com/builds/wisaw"
 >
-  <a class="skip-link" href="#main">Skip to content</a>
-  <SiteHeader />
-
-  <main id="main">
-    <section class="story">
+  <section class="story">
       <h1>{wisawStory.title}</h1>
       <p class="lede">{wisawStory.lede}</p>
 
@@ -65,13 +59,10 @@ const installLinks = (wisaw?.links ?? []).filter((link) => link.href !== '/wisaw
       }
 
       <p class="back">
-        <a href="/#products">All products</a>
+        <a href="/builds/">All builds</a>
         <a href="/">Home</a>
       </p>
     </section>
-  </main>
-
-  <SiteFooter />
 </BaseLayout>
 
 <style>

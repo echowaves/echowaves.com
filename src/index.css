@@ -1,26 +1,47 @@
 /*
- * Design tokens for the whole site.
+ * Design tokens for the whole site. DESIGN.md is the contract; this file is its
+ * implementation. Green phosphor on near-black, monospace throughout, dark only.
  *
- * Support, Privacy and Blog carry no colour of their own beyond hovers, so they
- * inherit this palette. Keep new tokens additive and few: one background, two
- * text tones, one rule colour, and a signal colour per meaning.
+ * Every text and boundary colour here was measured against --background; where a
+ * canonical palette value failed WCAG, the measurement won. Ratios are re-checkable
+ * with `node scripts/contrast.mjs` -- do not edit a hex without re-measuring it.
+ *
+ *   #8dfa9c 15.71:1  primary text    #3fa852  6.69:1  body copy
+ *   #33d24b 10.09:1  prompt, active  #ff5f57  6.78:1  refusal
+ *   #febc2e 12.01:1  one emphasis    #2b7a3a  3.81:1  borders only, never text
  */
 :root {
-  --bg-primary: #fbfaf7;
-  --bg-secondary: #f3f0e9;
-  --bg-tertiary: #e8e4da;
-  --border-color: #d6d1c5;
-  --text-primary: #191a17;
-  --text-secondary: #5c594f;
-  --accent-blue: #0b4fcc;
-  --accent-green: #12633a;
-  --accent-red: #a3271d;
-  --accent-purple: #5c3d91;
-  --accent-hover: #0a3f9e;
-  --ink-on-accent: #fbfaf7;
-  --font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'SF Mono', 'Consolas', monospace;
-  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  --background: #060606;
+  --panel: #0d0d0d;
+  --panel-raised: #101010;
+  --border: #2b7a3a;
+  --text: #8dfa9c;
+  --text-dim: #3fa852;
+  --decoration-green: #2b7a3a;
+  --accent: #33d24b;
+  --emphasis: #febc2e;
+  --danger: #ff5f57;
+  --ink-on-accent: #04120a;
+
+  --font-mono: 'SF Mono', 'JetBrains Mono', ui-monospace, Menlo, Consolas, monospace;
+
+  --radius-window: 12px;
+  --radius-control: 6px;
+  --reading-column: 74ch;
+
+  /* Legacy aliases: components still read these names. Renaming them is tracked
+     as cleanup rather than done by global find-and-replace. */
+  --bg-primary: var(--background);
+  --bg-secondary: var(--panel);
+  --bg-tertiary: var(--panel-raised);
+  --border-color: var(--border);
+  --text-primary: var(--text);
+  --text-secondary: var(--text-dim);
+  --accent-blue: var(--accent);
+  --accent-green: var(--accent);
+  --accent-red: var(--danger);
+  --accent-purple: var(--emphasis);
+  --accent-hover: var(--text);
 }
 
 * {
@@ -31,61 +52,80 @@
 
 html {
   scroll-behavior: smooth;
+  color-scheme: dark;
+  /* Sticky chrome must not cover what an anchor jump scrolls to. */
+  scroll-padding-block-start: 6rem;
 }
 
 body {
   margin: 0;
-  font-family: var(--font-sans);
+  font-family: var(--font-mono);
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
-  font-size: 17px;
+  background-color: #1c1c1e;
+  color: var(--text-dim);
+  font-size: 15px;
   line-height: 1.65;
+}
+
+/* The one shadow in the system: the window on the desk. Everything inside it is
+   flat and takes depth from tonal steps only -- never blur, glow or gradient. */
+.window {
+  max-width: 1040px;
+  margin: 24px auto;
+  background-color: var(--background);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-window);
+  box-shadow: 0 28px 70px rgb(0 0 0 / 0.6);
+  overflow: clip;
 }
 
 code {
   font-family: var(--font-mono);
 }
 
+/* Underline means link and nothing else. Links are never told apart by colour
+   alone, because green-on-green is not a difference anyone can see. */
 a {
-  color: var(--accent-blue);
-  text-decoration: none;
-  transition: color 0.2s ease;
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
 }
 
 a:hover {
-  color: var(--accent-hover);
+  color: var(--text);
+  text-decoration-thickness: 2px;
 }
 
-/* One readable column: the page is meant to be read, not scanned for cards. */
+/* One readable column: the page is read, not scanned for cards. */
 main > section {
-  max-width: 720px;
+  max-width: var(--reading-column);
   margin: 0 auto;
-  padding: 64px 20px;
+  padding: 46px 20px;
 }
 
-/* Keep a section heading clear of the sticky header when reached by anchor. */
 section[id] {
-  scroll-margin-top: 64px;
+  scroll-margin-top: 96px;
 }
 
 h1,
 h2,
 h3,
 h4 {
+  color: var(--text);
   font-weight: 600;
-  letter-spacing: -0.015em;
+  letter-spacing: -0.01em;
   line-height: 1.25;
 }
 
 :focus-visible {
-  outline: 2px solid var(--accent-blue);
-  outline-offset: 3px;
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 
 ::selection {
-  background-color: var(--bg-tertiary);
+  background-color: var(--accent);
+  color: var(--ink-on-accent);
 }
 
 /* --- accessibility ------------------------------------------------------- */
@@ -95,10 +135,9 @@ h4 {
   left: -9999px;
   top: 0;
   z-index: 10;
-  background-color: var(--accent-blue);
+  background-color: var(--accent);
   color: var(--ink-on-accent);
   padding: 10px 16px;
-  font-family: var(--font-mono);
   font-size: 0.85rem;
 }
 
@@ -108,45 +147,48 @@ h4 {
   color: var(--ink-on-accent);
 }
 
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
 /* --- buttons ------------------------------------------------------------- */
 
 .btn {
   display: inline-block;
-  padding: 12px 28px;
-  background-color: var(--accent-blue);
-  color: var(--ink-on-accent);
-  border: 1px solid var(--accent-blue);
-  font-weight: 600;
+  padding: 9px 16px;
+  background-color: transparent;
+  color: var(--text);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-control);
   font-size: 0.95rem;
   cursor: pointer;
-  transition: all 0.2s ease;
   text-decoration: none;
 }
 
 .btn:hover {
-  background-color: var(--accent-hover);
-  border-color: var(--accent-hover);
-  color: var(--ink-on-accent);
+  background-color: var(--panel-raised);
+  color: var(--text);
 }
 
 .btn-outline {
-  background-color: transparent;
-  color: var(--accent-blue);
-  border: 1px solid var(--border-color);
-}
-
-.btn-outline:hover {
-  background-color: var(--bg-secondary);
-  border-color: var(--accent-blue);
-  color: var(--accent-blue);
+  border-color: var(--border);
+  color: var(--text-dim);
 }
 
 @media (max-width: 768px) {
   main > section {
-    padding: 48px 16px;
+    padding: 32px 16px;
   }
 
-  body {
-    font-size: 16px;
+  .window {
+    margin: 0 auto;
+    border-left: none;
+    border-right: none;
+    border-radius: 0;
   }
 }

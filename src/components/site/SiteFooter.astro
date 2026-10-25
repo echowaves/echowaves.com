@@ -1,5 +1,5 @@
 ---
-import { asOf, identity, nav } from '../../data/site.ts';
+import { asOf, identity } from '../../data/site.ts';
 
 const year = new Date().getFullYear();
 ---
@@ -12,7 +12,6 @@ const year = new Date().getFullYear();
     </p>
 
     <nav class="links" aria-label="Footer">
-      {nav.map((item) => <a href={item.href}>{item.label}</a>)}
       <a href="/impact.json">impact.json</a>
       <a href="/support">Support</a>
       <a href="/privacy">Privacy</a>
