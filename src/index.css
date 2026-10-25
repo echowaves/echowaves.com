@@ -25,23 +25,13 @@
 
   --font-mono: 'SF Mono', 'JetBrains Mono', ui-monospace, Menlo, Consolas, monospace;
 
+  /* The desk the window sits on. Outside the palette: it is not a surface inside
+     the terminal, it is the thing behind it. */
+  --desk: #1c1c1e;
+
   --radius-window: 12px;
   --radius-control: 6px;
   --reading-column: 74ch;
-
-  /* Legacy aliases: components still read these names. Renaming them is tracked
-     as cleanup rather than done by global find-and-replace. */
-  --bg-primary: var(--background);
-  --bg-secondary: var(--panel);
-  --bg-tertiary: var(--panel-raised);
-  --border-color: var(--border);
-  --text-primary: var(--text);
-  --text-secondary: var(--text-dim);
-  --accent-blue: var(--accent);
-  --accent-green: var(--accent);
-  --accent-red: var(--danger);
-  --accent-purple: var(--emphasis);
-  --accent-hover: var(--text);
 }
 
 * {
@@ -61,7 +51,7 @@ body {
   margin: 0;
   font-family: var(--font-mono);
   -webkit-font-smoothing: antialiased;
-  background-color: #1c1c1e;
+  background-color: var(--desk);
   color: var(--text-dim);
   font-size: 15px;
   line-height: 1.65;
@@ -202,6 +192,7 @@ h4 {
 @media (forced-colors: active) {
   :root {
     --background: Canvas;
+    --desk: Canvas;
     --panel: Canvas;
     --panel-raised: Canvas;
     --border: CanvasText;

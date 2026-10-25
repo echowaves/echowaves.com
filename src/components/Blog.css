@@ -1,6 +1,6 @@
 .blog {
-  background-color: var(--bg-primary);
-  border-bottom: 1px solid var(--border-color);
+  background-color: var(--background);
+  border-bottom: 1px solid var(--border);
 }
 
 .blog-intro {
@@ -11,12 +11,12 @@
 
 .blog-intro p {
   font-size: 1.1rem;
-  color: var(--text-secondary);
+  color: var(--text-dim);
   line-height: 1.8;
 }
 
 .blog-intro a {
-  color: var(--accent-blue);
+  color: var(--accent);
   font-weight: 600;
 }
 
@@ -37,13 +37,13 @@
   font-family: var(--font-mono);
   font-size: 2.2rem;
   font-weight: 700;
-  color: var(--accent-blue);
+  color: var(--accent);
   margin-bottom: 4px;
 }
 
 .blog-stat-label {
   font-size: 0.85rem;
-  color: var(--text-secondary);
+  color: var(--text-dim);
   text-transform: uppercase;
   letter-spacing: 1px;
 }
@@ -55,7 +55,7 @@
 .topic-areas h3 {
   text-align: center;
   margin-bottom: 24px;
-  color: var(--text-primary);
+  color: var(--text);
   font-size: 1.5rem;
 }
 
@@ -68,8 +68,8 @@
 }
 
 .topic-card {
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-color);
+  background: var(--panel);
+  border: 1px solid var(--border);
   border-radius: 8px;
   padding: 16px;
   text-align: center;
@@ -81,19 +81,19 @@
 }
 
 .topic-card:hover {
-  border-color: var(--accent-blue);
+  border-color: var(--accent);
 }
 
 .topic-name {
   font-weight: 600;
-  color: var(--text-primary);
+  color: var(--text);
   font-size: 0.85rem;
 }
 
 .featured-title {
   text-align: center;
   margin-bottom: 40px;
-  color: var(--text-primary);
+  color: var(--text);
   font-size: 1.5rem;
 }
 
@@ -105,8 +105,8 @@
 }
 
 .post-card {
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-color);
+  background: var(--panel);
+  border: 1px solid var(--border);
   border-radius: 8px;
   padding: 24px;
   transition: border-color 0.2s ease;
@@ -117,11 +117,11 @@
 }
 
 .post-card:hover {
-  border-color: var(--accent-blue);
+  border-color: var(--accent);
 }
 
 .post-card.pinned {
-  border-color: var(--accent-purple);
+  border-color: var(--emphasis);
   position: relative;
 }
 
@@ -130,8 +130,8 @@
   position: absolute;
   top: -10px;
   right: 16px;
-  background: var(--accent-purple);
-  color: var(--bg-primary);
+  background: var(--emphasis);
+  color: var(--ink-on-accent);
   font-size: 0.7rem;
   font-weight: 700;
   padding: 2px 8px;
@@ -149,25 +149,25 @@
 
 .post-card-header h4 {
   margin: 0;
-  color: var(--text-primary);
+  color: var(--text);
   font-size: 1.1rem;
   line-height: 1.4;
   flex: 1;
 }
 
 .read-time {
-  background-color: var(--bg-tertiary);
+  background-color: var(--panel-raised);
   padding: 3px 8px;
   border-radius: 8px;
   font-size: 0.75rem;
-  color: var(--text-secondary);
+  color: var(--text-dim);
   white-space: nowrap;
   font-weight: 500;
   font-family: var(--font-mono);
 }
 
 .post-card-description {
-  color: var(--text-secondary);
+  color: var(--text-dim);
   line-height: 1.6;
   margin-bottom: 16px;
   flex-grow: 1;
@@ -182,8 +182,10 @@
 }
 
 .post-card-tag {
-  background-color: rgba(88, 166, 255, 0.1);
-  color: var(--accent-blue);
+  /* Was rgba(88,166,255,.1), a blue left over from the pre-terminal theme. Depth in
+     this system comes from tonal steps, so a chip is one step raised. */
+  background-color: var(--panel-raised);
+  color: var(--accent);
   padding: 3px 10px;
   border-radius: 12px;
   font-size: 0.8rem;
@@ -195,17 +197,17 @@
   justify-content: space-between;
   align-items: center;
   padding-top: 12px;
-  border-top: 1px solid var(--border-color);
+  border-top: 1px solid var(--border);
 }
 
 .post-card-date {
-  color: var(--text-secondary);
+  color: var(--text-dim);
   font-size: 0.85rem;
   font-family: var(--font-mono);
 }
 
 .post-card-link {
-  color: var(--accent-blue);
+  color: var(--accent);
   font-weight: 600;
   font-size: 0.9rem;
   transition: transform 0.2s ease;
@@ -230,7 +232,7 @@
   text-align: center;
   padding: 60px;
   font-size: 1.2rem;
-  color: var(--text-secondary);
+  color: var(--text-dim);
 }
 
 .blog-footer {
@@ -239,15 +241,15 @@
 }
 
 .blog-highlight {
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-color);
+  background: var(--panel);
+  border: 1px solid var(--border);
   padding: 48px;
   border-radius: 8px;
   text-align: center;
 }
 
 .blog-highlight h3 {
-  color: var(--text-primary);
+  color: var(--text);
   margin-bottom: 16px;
   font-size: 1.5rem;
 }
@@ -259,7 +261,7 @@
   margin: 24px auto;
   max-width: 700px;
   line-height: 1.6;
-  color: var(--accent-green);
+  color: var(--accent);
 }
 
 .blog-bio {
@@ -267,12 +269,12 @@
   line-height: 1.8;
   max-width: 800px;
   margin: 0 auto;
-  color: var(--text-secondary);
+  color: var(--text-dim);
 }
 
 .blog-bio strong {
   font-weight: 700;
-  color: var(--text-primary);
+  color: var(--text);
 }
 
 @media (max-width: 768px) {

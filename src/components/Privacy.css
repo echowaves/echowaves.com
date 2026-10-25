@@ -1,36 +1,36 @@
 .privacy {
   padding: 80px 20px 60px;
-  background: var(--bg-primary);
+  background: var(--background);
   min-height: 100vh;
 }
 
 .privacy-container {
   max-width: 900px;
   margin: 0 auto;
-  background: var(--bg-secondary);
+  background: var(--panel);
   padding: 60px;
   border-radius: 8px;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--border);
 }
 
 .privacy h1 {
   font-size: 2.5rem;
   margin-bottom: 8px;
-  color: var(--text-primary);
+  color: var(--text);
   text-align: center;
   font-family: var(--font-mono);
 }
 
 .last-updated {
   text-align: center;
-  color: var(--text-secondary);
+  color: var(--text-dim);
   font-style: italic;
   margin-bottom: 40px;
   font-size: 0.9rem;
 }
 
 .privacy-content {
-  color: var(--text-primary);
+  color: var(--text);
   line-height: 1.8;
 }
 
@@ -38,8 +38,8 @@
   font-size: 1.6rem;
   margin-top: 40px;
   margin-bottom: 16px;
-  color: var(--accent-blue);
-  border-bottom: 1px solid var(--border-color);
+  color: var(--accent);
+  border-bottom: 1px solid var(--border);
   padding-bottom: 8px;
 }
 
@@ -51,13 +51,13 @@
   font-size: 1.2rem;
   margin-top: 24px;
   margin-bottom: 12px;
-  color: var(--accent-purple);
+  color: var(--emphasis);
 }
 
 .privacy-content p {
   margin-bottom: 12px;
   font-size: 1rem;
-  color: var(--text-secondary);
+  color: var(--text-dim);
 }
 
 .privacy-content ul {
@@ -68,24 +68,24 @@
 .privacy-content li {
   margin-bottom: 8px;
   font-size: 1rem;
-  color: var(--text-secondary);
+  color: var(--text-dim);
 }
 
 .privacy-content a {
-  color: var(--accent-blue);
+  color: var(--accent);
   font-weight: 600;
 }
 
 .privacy-content a:hover {
-  color: var(--accent-hover);
+  color: var(--text);
 }
 
 .contact-info {
-  background: var(--bg-tertiary);
+  background: var(--panel-raised);
   padding: 20px;
   border-radius: 6px;
   margin-top: 20px;
-  border-left: 3px solid var(--accent-blue);
+  border-left: 3px solid var(--accent);
 }
 
 @media (max-width: 768px) {
