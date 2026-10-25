@@ -1,64 +1,61 @@
 ---
-import { engagement, identity } from '../../data/site.ts';
+import { identity } from '../../data/site.ts';
 ---
 
 <section id="contact">
-  <h2>{engagement.heading}</h2>
+  <h2>Channels</h2>
 
-  <p class="lead">
-    <strong>{engagement.name}.</strong> {engagement.summary}
-  </p>
-
-  <ul class="rules">
-    {engagement.disqualifiers.map((rule) => <li>{rule}</li>)}
-  </ul>
-
-  <p class="cta">
-    <a class="btn" href={engagement.cta.href}>
-      {engagement.cta.label}
-    </a>
-    <a class="alt" href={`mailto:${identity.email}`}>{identity.email}</a>
-  </p>
+  <dl class="channels">
+    <div class="row">
+      <dt>Email</dt>
+      <dd><a href={`mailto:${identity.email}`}>{identity.email}</a></dd>
+    </div>
+    {
+      identity.links.map((link) => (
+        <div class="row">
+          <dt>{link.label}</dt>
+          <dd>
+            <a href={link.href} rel="me noopener">
+              {link.href.replace(/^https?:\/\//, '')}
+            </a>
+          </dd>
+        </div>
+      ))
+    }
+  </dl>
 </section>
 
 <style>
   h2 {
     font-size: 1.5rem;
-    margin-bottom: 12px;
+    margin-bottom: 16px;
   }
 
-  .lead {
-    font-size: 1.125rem;
+  .channels {
+    display: grid;
+    gap: 0;
     max-width: 64ch;
   }
 
-  .rules {
-    list-style: none;
-    margin-top: 24px;
+  .row {
     display: grid;
-    gap: 10px;
-  }
-
-  .rules li {
-    color: var(--text-secondary);
-    max-width: 68ch;
-    padding-left: 20px;
-    position: relative;
-  }
-
-  .rules li::before {
-    content: '×';
-    position: absolute;
-    left: 0;
-    color: var(--accent-red);
-  }
-
-
-  .cta {
-    margin-top: 28px;
-    display: flex;
-    flex-wrap: wrap;
+    grid-template-columns: minmax(96px, 28%) 1fr;
+    gap: 8px 16px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border-color);
     align-items: baseline;
-    gap: 12px 24px;
+  }
+
+  .row:last-child {
+    border-bottom: none;
+  }
+
+  dt {
+    color: var(--text-secondary);
+  }
+
+  dd {
+    margin: 0;
+    overflow-wrap: anywhere;
   }
 </style>

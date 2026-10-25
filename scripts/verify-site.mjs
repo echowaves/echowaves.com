@@ -415,13 +415,20 @@ await check('every built page renders the window chrome exactly once', () => {
   return 'one window, one main, one tab strip per page';
 });
 
-await check('the engagement model states no commercial terms', () => {
-  // Removed deliberately on 2026-10-25: no price line and no availability line. A field
-  // named for money or capacity is a decision to revisit, not an omission to repair —
-  // and an empty one of these is what shipped an empty <p> in the first place.
-  const slots = Object.keys(site.engagement).filter((key) => /price|cost|rate|fee|capacity|availability/i.test(key));
-  assert.deepEqual(slots, [], `commercial-terms fields present on the engagement model: ${slots.join(', ')}`);
-  return 'no pricing or availability slot exists to leave empty';
+await check('the copy model carries no commercial terms', () => {
+  // Removed deliberately on 2026-10-25: the site demonstrates what I can do, so it says
+  // nothing about pricing, capacity, availability, who to contact me about, or who I turn
+  // away. A field named for any of those is a decision to revisit, not an omission to
+  // repair — and an empty one of these is what shipped an empty <p> in the first place.
+  const forbidden = /price|cost|rate|fee|capacity|availability|retainer|invoice|disqualifier/i;
+  const slots = [];
+  for (const [name, value] of Object.entries(site)) {
+    if (value && typeof value === 'object' && !Array.isArray(value)) {
+      slots.push(...Object.keys(value).filter((key) => forbidden.test(key)).map((key) => `${name}.${key}`));
+    }
+  }
+  assert.deepEqual(slots, [], `commercial-terms fields present: ${slots.join(', ')}`);
+  return 'no pricing, capacity or availability slot exists to leave empty';
 });
 
 await check('built pages render no empty text elements', () => {
