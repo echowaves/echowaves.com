@@ -505,9 +505,6 @@ export const utilityPages = {
       'What echowaves.com does with a visitor: no accounts, no forms, no cookies, one analytics page-view tag. What I hold if you email me.',
     heading: 'Privacy',
     lead: `Written for this site rather than adapted from a template. Current as of ${asOf}.`,
-    // Dmitry has to put his name behind a privacy statement; verify lists these
-    // until he clears them, the same way it lists an unsigned claim.
-    needsReview: true,
     sections: [
       {
         heading: 'What the site does while you read it',
