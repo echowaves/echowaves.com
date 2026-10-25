@@ -40,10 +40,11 @@ const BANNED_COPY = [
   { pattern: /\bdossier\b/i, label: 'meta-commentary about this page' },
 ];
 
-const EMOJI = /[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE0F}\u{1F1E6}-\u{1F1FF}]/u;
+// Regional indicators live inside U+1F000–U+1FAFF, so they are not listed twice.
+const EMOJI = /[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}]|\u{FE0F}/u;
 
 const JOB_TITLES =
-  /\b(chief technology officer|chief technical officer|cto|vp of engineering|vice president of engineering|director of engineering|head of engineering|engineering manager|staff engineer|principal engineer|distinguished engineer)\b/i;
+  /\b(?:chief technology officer|chief technical officer|cto|vp of engineering|vice president of engineering|director of engineering|head of engineering|engineering manager|staff engineer|principal engineer|distinguished engineer)\b/i;
 
 const EMPLOYMENT_RANGE = /\b(?:19\d{2}|20\d{2})\s*[–—-]\s*(?:19\d{2}|20\d{2}|present)\b/;
 
