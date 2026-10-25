@@ -354,6 +354,32 @@ await check('every link in the WiSaw story resolves', () => {
   return `${hrefs.length} links across ${paragraphs.length} passages`;
 });
 
+await check('prose agrees with the rebuild list it summarises', () => {
+  // "rebuilt four times" is prose standing in for wisawStory.phases. When a
+  // rebuild is added or dropped the sentence silently becomes false, so the
+  // number written in words has to match the array length.
+  const WORDS = { one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10 };
+  const sources = ['src/data/site.ts', 'src/pages/builds/wisaw.astro'];
+  const spoken = [];
+  for (const rel of sources) {
+    const text = readFileSync(path.join(ROOT, rel), 'utf8');
+    for (const match of text.matchAll(/rebuilt (\w+) times?/gi)) {
+      spoken.push({ rel, word: match[1], value: WORDS[match[1].toLowerCase()] });
+    }
+  }
+  assert.ok(spoken.length > 0, 'expected the WiSaw story to say how many times it was rebuilt');
+  const unparseable = spoken.filter((entry) => entry.value === undefined);
+  assert.deepEqual(unparseable, [], `unrecognised number words: ${unparseable.map((e) => `${e.rel}: "${e.word}"`).join(', ')}`);
+  const expected = site.wisawStory.phases.length;
+  const wrong = spoken.filter((entry) => entry.value !== expected);
+  assert.deepEqual(
+    wrong,
+    [],
+    `the copy says ${wrong.map((e) => `"rebuilt ${e.word} times"`).join(', ')} but wisawStory.phases lists ${expected}`,
+  );
+  return `${spoken.length} mentions agree with ${expected} rebuilds`;
+});
+
 await check('/impact.json matches the content the site renders', () => {
   const payload = site.buildImpactPayload();
   assert.deepEqual(
