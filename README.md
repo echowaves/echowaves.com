@@ -68,6 +68,7 @@ In the project directory, you can run:
 | `npm run verify` | Content verification and edge-case matrix assertions. No dependencies, no test runner. |
 | `npm run check` | `npm run verify` followed by `astro build`. |
 | `npm run preview` | Serve the built site locally. |
+| `npm run og` | Regenerate the social card (`public/og.png`, 1200x630) from the hero copy in `src/data/site.ts`. Needs librsvg; run it after editing the headline or description so a shared link cannot disagree with the page. |
 
 Registry figures are fetched at build time (`src/utils/registry.ts`). Set `ECHOWAVES_OFFLINE=1` to skip the network and build without them.
 
