@@ -1,0 +1,72 @@
+---
+import { asOf, identity } from '../../data/site.ts';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="inner">
+    <p class="statement">
+      Work figures are current as of {asOf}. npm and GitHub counts update when the site is rebuilt. Spotted an error?
+      <a href={`mailto:${identity.email}`}>{identity.email}</a>.
+    </p>
+
+    <nav class="links" aria-label="Footer">
+      <a href="/impact.json">impact.json</a>
+      <a href="/support">Support</a>
+      <a href="/privacy">Privacy</a>
+    </nav>
+
+    <p class="fine">
+      {year} — {identity.name}, {identity.location}.
+    </p>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    border-top: 1px solid var(--border-color);
+    background-color: var(--bg-secondary);
+    margin-top: 40px;
+  }
+
+  .inner {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 48px 20px 64px;
+    display: grid;
+    gap: 28px;
+  }
+
+  .statement {
+    max-width: 68ch;
+    font-size: 0.95rem;
+  }
+
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 22px;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .links a {
+    color: var(--text-secondary);
+  }
+
+  .links a:hover {
+    color: var(--accent-blue);
+  }
+
+  .fine {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    color: var(--text-secondary);
+    border-top: 1px solid var(--border-color);
+    padding-top: 14px;
+  }
+
+</style>

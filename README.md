@@ -1,10 +1,8 @@
-# Echowaves Corporation - Company Showcase
+# echowaves.com
 
-A comprehensive React application showcasing Echowaves Corporation's projects, NPM packages, and company information.
+The personal site of Dmitry Amelchenko: agentic software engineering for engineering organizations — what changed in delivery, measured, and how it was made to stick. Open-source packages are listed as maintained code, not as the main subject.
 
-## About Echowaves
-
-Echowaves Corp. is dedicated to building high-quality, open-source tools and applications for the React Native and Expo ecosystem. With a focus on performance, security, and developer experience, we create solutions that help developers build better mobile applications.
+Built with Astro (static output) plus one React island for the dev.to feed.
 
 ## Featured NPM Packages
 
@@ -44,57 +42,34 @@ Social Group Chat platform built with Ruby on Rails
 
 ## Technologies Used
 
-- React 18
+- Astro 7 (static output) with one React 19 island
 - TypeScript
-- CSS3 with modern features
-- Responsive design
-- Smooth scrolling navigation
+- Plain CSS with design tokens in `src/index.css`
+- Responsive, single-column layout
 
-## Features
+## Content rules and verification
 
-- ✨ Modern, responsive design
-- 📱 Mobile-friendly interface
-- 🎨 Beautiful gradient designs
-- 🔗 Direct links to GitHub and NPM packages
-- 📊 Live statistics and metrics
-- 🚀 Optimized performance
+Two rules hold the site together: every figure names where it came from, and the vocabulary stays concrete (no hype words, no job titles, no employment date ranges — that is Dmitry's rule for this page).
+
+- `src/data/site.ts` holds all copy and figures. Section components in `src/components/site/` render from it and carry no literal claims. Every claim has a non-empty `source`; wording still to be confirmed is flagged `needsReview`.
+- `npm run verify` runs the checks in `scripts/verify-site.mjs`: claim sources, a fixture that must fail without one, registry parsing with a stubbed registry and with `ECHOWAVES_OFFLINE=1`, banned copy plus fixtures proving the ban works, and `/impact.json` parity with the built page. Each check prints `PASS <label>`; any failure exits non-zero, and pending `needsReview` items are listed.
+- `npm run check` runs verification and then the build.
+- `ECHOWAVES_OFFLINE=1 npm run build` succeeds without registry figures: the open source section says so instead of showing numbers.
+- `/impact.json` serves the same content for machine readers, built from the module the page renders.
 
 ## Available Scripts
 
 In the project directory, you can run:
 
-### `npm start`
+| Command | What it does |
+| --- | --- |
+| `npm run dev` | Astro dev server at [http://localhost:4321](http://localhost:4321). |
+| `npm run build` | Static build into `dist/`, including `/impact.json`. Fetches npm and GitHub figures at build time. |
+| `npm run verify` | Content verification and edge-case matrix assertions. No dependencies, no test runner. |
+| `npm run check` | `npm run verify` followed by `astro build`. |
+| `npm run preview` | Serve the built site locally. |
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
-
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+Registry figures are fetched at build time (`src/utils/registry.ts`). Set `ECHOWAVES_OFFLINE=1` to skip the network and build without them.
 
 ## Dynamic Blog Feed
 
@@ -111,11 +86,12 @@ npm run build
 [deployment command removed]
 ```
 
-## Learn More
+## Editing the site
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+Change copy and figures in `src/data/site.ts`, not in the components. Products (with their App Store and Play links) live in the `products` array there; the WiSaw architecture history rendered at `/wisaw` lives in `wisawStory` in the same module, and `src/pages/wisaw.astro` lays it out. Then run `npm run verify` — it rejects the vocabulary this page does not use, refuses a product that claims iOS without a store link, and tells you which claim lost its source. Layout lives in `src/index.css` (tokens, one column) and each section's own spacing in its `<style>` block.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+- [Astro documentation](https://docs.astro.build/)
+- [React documentation](https://react.dev/)
 
 ## Contact
 
@@ -131,4 +107,4 @@ This project is created to showcase Echowaves Corporation's work and contributio
 
 ---
 
-Built with ❤️ using React and TypeScript
+Built with Astro, React and TypeScript.

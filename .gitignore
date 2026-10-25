@@ -12,6 +12,9 @@
 /build
 /dist
 
+# astro generated files
+.astro/
+
 # misc
 .DS_Store
 .env.local
@@ -26,3 +29,6 @@ yarn-error.log*
 
 #Ignore vscode AI rules
 .github/instructions/codacy.instructions.md
+
+# BMad planning artifacts — personal, keep local (client-attributed figures live here)
+_bmad-output/

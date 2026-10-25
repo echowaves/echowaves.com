@@ -1,0 +1,96 @@
+---
+import { products } from '../../data/site.ts';
+---
+
+<section id="products">
+  <h2>Products</h2>
+  <p class="lead">
+    Things I built that still run, with the link you would use to install them. Each one is still mine to maintain.
+  </p>
+
+  <ul class="list">
+    {
+      products.map((product) => (
+        <li>
+          <div class="head">
+            <h3>{product.name}</h3>
+            <span class="kind">{product.kind}</span>
+          </div>
+          <p class="summary">{product.summary}</p>
+          <p class="detail">{product.detail}</p>
+          <p class="links">
+            {product.links.map((link) => (
+              <a
+                href={link.href}
+                rel="noopener noreferrer"
+                target={link.href.startsWith('http') ? '_blank' : undefined}
+              >
+                {link.label}
+              </a>
+            ))}
+          </p>
+        </li>
+      ))
+    }
+  </ul>
+</section>
+
+<style>
+  h2 {
+    font-size: 1.5rem;
+    margin-bottom: 12px;
+  }
+
+  .lead {
+    color: var(--text-secondary);
+    max-width: 64ch;
+  }
+
+  .list {
+    list-style: none;
+  }
+
+  .list > li {
+    padding: 26px 0;
+    border-top: 1px solid var(--border-color);
+  }
+
+  .head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 4px 20px;
+  }
+
+  h3 {
+    font-size: 1.0625rem;
+    font-weight: 600;
+  }
+
+  .kind {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    white-space: nowrap;
+  }
+
+  .summary {
+    margin-top: 8px;
+    max-width: 66ch;
+  }
+
+  .detail {
+    margin-top: 8px;
+    color: var(--text-secondary);
+    max-width: 66ch;
+  }
+
+  .links {
+    margin-top: 12px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 20px;
+    font-size: 0.9375rem;
+  }
+</style>

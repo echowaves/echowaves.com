@@ -1,0 +1,61 @@
+---
+import { identity } from '../../data/site.ts';
+---
+
+<section id="contact">
+  <h2>Channels</h2>
+
+  <dl class="channels">
+    <div class="row">
+      <dt>Email</dt>
+      <dd><a href={`mailto:${identity.email}`}>{identity.email}</a></dd>
+    </div>
+    {
+      identity.links.map((link) => (
+        <div class="row">
+          <dt>{link.label}</dt>
+          <dd>
+            <a href={link.href} rel="me noopener">
+              {link.href.replace(/^https?:\/\//, '')}
+            </a>
+          </dd>
+        </div>
+      ))
+    }
+  </dl>
+</section>
+
+<style>
+  h2 {
+    font-size: 1.5rem;
+    margin-bottom: 16px;
+  }
+
+  .channels {
+    display: grid;
+    gap: 0;
+    max-width: 64ch;
+  }
+
+  .row {
+    display: grid;
+    grid-template-columns: minmax(96px, 28%) 1fr;
+    gap: 8px 16px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border-color);
+    align-items: baseline;
+  }
+
+  .row:last-child {
+    border-bottom: none;
+  }
+
+  dt {
+    color: var(--text-secondary);
+  }
+
+  dd {
+    margin: 0;
+    overflow-wrap: anywhere;
+  }
+</style>
