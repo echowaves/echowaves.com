@@ -1,0 +1,13 @@
+---
+# Codacy analyses this repository's JavaScript with a browser-era ruleset: ES5 syntax,
+# no ES modules, no Node builtins, no non-literal console output. That is the right bar
+# for code that runs in a visitor's browser, and `src/` passes it clean.
+#
+# The two files below never reach a browser. `scripts/verify-site.mjs` is the build-time
+# verifier (a Node CLI: it imports node:fs, uses async/await, and its whole job is
+# printing), and `astro.config.mjs` is an ESM config file Astro loads with import(). Both
+# would have to be rewritten in require() style to satisfy a ruleset that does not apply
+# to them, which would make them worse code to keep honest about the site.
+exclude_paths:
+  - scripts/
+  - astro.config.mjs
