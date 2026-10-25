@@ -32,3 +32,6 @@ yarn-error.log*
 
 # BMad planning artifacts — personal, keep local (client-attributed figures live here)
 _bmad-output/
+
+# bmad: per-run rendered workflow copies, regenerated on demand
+_bmad/render/

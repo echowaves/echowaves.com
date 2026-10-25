@@ -78,12 +78,10 @@ The Technical Blog section on the homepage pulls articles from the [dev.to API](
 - **At build time** (`src/pages/index.astro` + `src/utils/devto.ts`): the latest 7 articles (plus the pinned "classic" post) are fetched and pre-rendered into static HTML for SEO.
 - **On page load** (`src/components/Blog.tsx`): the list silently refreshes against the API, so newly published articles appear without a redeploy. If the API is unreachable, the build-time snapshot stays.
 
-To deploy the site (e.g. after publishing a new article, if you want it in the build-time snapshot):
+After publishing a new article, rebuild to refresh the pre-rendered snapshot:
 
 ```bash
 npm run build
-[deployment command removed]
-[deployment command removed]
 ```
 
 ## Editing the site
