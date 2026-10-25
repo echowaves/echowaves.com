@@ -1,5 +1,4 @@
 import { defineConfig } from 'astro/config';
-import react from '@astrojs/react';
 import sitemap from '@astrojs/sitemap';
 
 export default defineConfig({
@@ -9,5 +8,5 @@ export default defineConfig({
   redirects: {
     '/wisaw': '/builds/wisaw',
   },
-  integrations: [react(), sitemap()],
+  integrations: [sitemap()],
 });

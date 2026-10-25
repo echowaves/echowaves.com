@@ -1,0 +1,108 @@
+---
+import { packages, utilityPages } from '../../data/site.ts';
+
+const support = utilityPages.support;
+
+/** Link text is the address without its scheme, not a second piece of copy. */
+function label(href: string): string {
+  if (href.startsWith('mailto:')) return href.slice('mailto:'.length);
+  return href.replace(/^https:\/\//, '').replace(/\/$/, '');
+}
+---
+
+<section id="support">
+  <h2>{support.heading}</h2>
+  <p class="lead">{support.lead(packages.length)}</p>
+
+  <ul class="channels">
+    {
+      support.channels.map((channel) => (
+        <li>
+          <div class="head">
+            <h3>{channel.name}</h3>
+            <a
+              href={channel.href}
+              rel="noopener noreferrer"
+              target={channel.href.startsWith('mailto:') ? undefined : '_blank'}
+            >
+              {label(channel.href)}
+            </a>
+          </div>
+          <p class="detail">{channel.detail}</p>
+        </li>
+      ))
+    }
+  </ul>
+
+  <h3 class="subhead">Frequently asked</h3>
+  <dl class="faq">
+    {
+      support.faq.map((entry) => (
+        <div>
+          <dt>{entry.question}</dt>
+          <dd>{entry.answer}</dd>
+        </div>
+      ))
+    }
+  </dl>
+</section>
+
+<style>
+  h2 {
+    font-size: var(--text-heading);
+    margin-bottom: var(--space-3);
+  }
+
+  .lead {
+    color: var(--text-dim);
+    max-width: var(--reading-column);
+    margin-bottom: var(--space-5);
+  }
+
+  .channels > li {
+    padding: var(--space-4) 0;
+    border-top: 1px solid var(--border);
+  }
+
+  .head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-4);
+  }
+
+  h3 {
+    font-size: var(--text-lede);
+  }
+
+  .head a {
+    font-size: var(--text-meta);
+    overflow-wrap: anywhere;
+  }
+
+  .detail {
+    margin-top: var(--space-2);
+    max-width: var(--reading-column);
+  }
+
+  .subhead {
+    font-size: var(--text-lede);
+    margin: var(--space-6) 0 var(--space-3);
+  }
+
+  .faq > div {
+    padding: var(--space-4) 0;
+    border-top: 1px solid var(--border);
+  }
+
+  dt {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  dd {
+    margin: var(--space-2) 0 0;
+    max-width: var(--reading-column);
+  }
+</style>
