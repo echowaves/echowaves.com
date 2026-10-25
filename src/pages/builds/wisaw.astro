@@ -7,8 +7,8 @@ const installLinks = (wisaw?.links ?? []).filter((link) => link.href !== '/wisaw
 ---
 
 <BaseLayout
-  title="WiSaw: how a seven-day app was rebuilt four times"
-  description="The architecture history of WiSaw — from a seven-day MVP with native clients and a Koa REST API to Expo, GraphQL and serverless infrastructure — including the production-only iOS crash that taught the most, and where coding agents changed the work."
+  title={wisawStory.title}
+  description={wisawStory.pageDescription}
   canonicalUrl="https://echowaves.com/builds/wisaw"
 >
   <section class="story">
