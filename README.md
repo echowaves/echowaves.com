@@ -69,6 +69,7 @@ In the project directory, you can run:
 | `npm run check` | `npm run verify` followed by `astro build`. |
 | `npm run preview` | Serve the built site locally. |
 | `npm run og` | Regenerate the social card (`public/og.png`, 1200x630) from the hero copy in `src/data/site.ts`. Needs librsvg; run it after editing the headline or description so a shared link cannot disagree with the page. |
+| `npm run icons` | Regenerate every icon (favicon set, `apple-touch-icon.png`, `icon-192/512.png`, `favicon.ico`, `manifest.json`) and the tab-bar `public/logo.png` from `scripts/echowaves-logo.jpeg`, cutting its white background away. Needs ImageMagick; run it after replacing that file. |
 
 Registry figures are fetched at build time (`src/utils/registry.ts`). Set `ECHOWAVES_OFFLINE=1` to skip the network and build without them.
 

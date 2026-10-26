@@ -63,12 +63,17 @@ const ogAlt = `${hero.name}${hero.synopsis} \u2014 ${hero.headline}`;
     <meta name="twitter:image" content={ogImage} />
     <meta name="twitter:image:alt" content={ogAlt} />
 
-    <!-- Favicon and icons -->
-    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <!--
+      Icons, every one of them cut from scripts/echowaves-logo.jpeg by `npm run icons`:
+      transparent artwork on purpose, so the mark sits on a light tab strip and a dark one
+      alike. What sat here before was Create React App's atom logo at six sizes and a
+      manifest that still called this site "Create React App Sample".
+    -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/manifest.json" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.webp" />
-    <link rel="icon" type="image/webp" href="/favicon-32x32.webp" sizes="32x32" />
-    <link rel="icon" type="image/webp" href="/favicon-16x16.webp" sizes="16x16" />
 
     <!-- JSON-LD Organization (every page) -->
     <script type="application/ld+json" set:html={JSON.stringify({
@@ -76,7 +81,7 @@ const ogAlt = `${hero.name}${hero.synopsis} \u2014 ${hero.headline}`;
       "@type": "Organization",
       "name": "Echowaves",
       "url": "https://echowaves.com",
-      "logo": "https://echowaves.com/android-chrome-512x512.png",
+      "logo": "https://echowaves.com/icon-512.png",
       "sameAs": [
         "https://github.com/echowaves",
         "https://www.linkedin.com/in/dmitryame",

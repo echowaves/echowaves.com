@@ -576,6 +576,61 @@ await check('every page advertises the social card that exists', () => {
   return `${width}x${height} card, one tag and a described alt per page`;
 });
 
+await check('every icon belongs to this site', () => {
+  // Create React App shipped its atom logo at every size and a manifest that still named
+  // the site "Create React App Sample"; six of those files were linked or installed long
+  // after React itself left. `npm run icons` regenerates the set from scripts/icon.svg,
+  // so this checks the wiring: each icon a page links exists, each declared size is the
+  // size it was rasterised at, and no scaffold asset rode into dist/.
+  const problems = [];
+
+  const manifestFile = path.join(ROOT, 'public', 'manifest.json');
+  if (!existsSync(manifestFile)) skip('public/manifest.json is missing — run `npm run icons`');
+  const manifest = JSON.parse(readFileSync(manifestFile, 'utf8'));
+
+  for (const field of ['name', 'short_name']) {
+    if (/react|sample/i.test(String(manifest[field] ?? ''))) {
+      problems.push(`manifest.json ${field} still names a scaffold: ${manifest[field]}`);
+    }
+  }
+  if (!Array.isArray(manifest.icons) || manifest.icons.length === 0) {
+    problems.push('manifest.json declares no icons');
+  }
+
+  const declared = new Set();
+  for (const icon of manifest.icons ?? []) {
+    const file = path.join(ROOT, 'public', icon.src.replace(/^\//, ''));
+    declared.add(icon.src);
+    if (!existsSync(file)) {
+      problems.push(`manifest.json points at ${icon.src}, which is not in public/`);
+      continue;
+    }
+    const { width, height } = pngSize(file);
+    if (`${width}x${height}` !== icon.sizes) {
+      problems.push(`${icon.src} is ${width}x${height}, manifest declares ${icon.sizes}`);
+    }
+  }
+
+  for (const page of builtPages()) {
+    const where = path.relative(ROOT, page);
+    const html = readFileSync(page, 'utf8');
+    for (const match of html.matchAll(/<link rel="[^"]*icon[^"]*"[^>]*href="([^"]*)"/g)) {
+      const href = match[1];
+      if (!existsSync(path.join(ROOT, 'dist', href.replace(/^\//, '')))) {
+        problems.push(`${where}: links ${href}, which is not in dist/`);
+      }
+    }
+  }
+
+  const scaffold = walk(path.join(ROOT, 'dist'), ['.png', '.ico', '.svg', '.webp']).filter(
+    (file) => /logo\d|android-chrome|safari-pinned-tab|\.webp$/i.test(path.basename(file))
+  );
+  for (const file of scaffold) problems.push(`${path.relative(ROOT, file)} is a scaffold asset`);
+
+  assert.deepEqual(problems, [], `\n     ${problems.join('\n     ')}`);
+  return `${manifest.icons.length} manifest icons, every linked icon present`;
+});
+
 await check('no page ships first-party JavaScript', () => {
   // The site's contract: everything is generated at build time and runs on the reader's
   // side only as HTML and CSS. React used to ride along here as a 191KB bundle that no
