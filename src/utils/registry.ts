@@ -109,21 +109,25 @@ function toDate(value: unknown): string | null {
 async function collectOne(pkg: Package, fetchImpl: FetchLike): Promise<PackageStats> {
   const stats = emptyStats(pkg);
 
-  const downloads = await getJson(
-    fetchImpl,
-    `${NPM_DOWNLOADS_ENDPOINT}/${pkg.npmPackage}`,
-    `npm downloads for ${pkg.npmPackage}`
-  );
-  stats.weeklyDownloads = toCount(downloads?.downloads);
+  // Three providers that do not depend on each other, so they are asked at once.
+  // Awaiting them in series turned every render of /code into a queue of round trips.
+  const [downloads, repo, release] = await Promise.all([
+    getJson(
+      fetchImpl,
+      `${NPM_DOWNLOADS_ENDPOINT}/${pkg.npmPackage}`,
+      `npm downloads for ${pkg.npmPackage}`
+    ),
+    getJson(fetchImpl, `${GITHUB_REPO_ENDPOINT}/${pkg.repo}`, `GitHub repo ${pkg.repo}`),
+    getJson(
+      fetchImpl,
+      `${GITHUB_REPO_ENDPOINT}/${pkg.repo}/releases/latest`,
+      `GitHub latest release for ${pkg.repo}`
+    ),
+  ]);
 
-  const repo = await getJson(fetchImpl, `${GITHUB_REPO_ENDPOINT}/${pkg.repo}`, `GitHub repo ${pkg.repo}`);
+  stats.weeklyDownloads = toCount(downloads?.downloads);
   stats.stars = toCount(repo?.stargazers_count);
 
-  const release = await getJson(
-    fetchImpl,
-    `${GITHUB_REPO_ENDPOINT}/${pkg.repo}/releases/latest`,
-    `GitHub latest release for ${pkg.repo}`
-  );
   // Only a real date is kept: a tag name would read as "last release v3.2.1".
   stats.lastRelease = toDate(release?.published_at) ?? toDate(release?.created_at);
 
@@ -153,12 +157,32 @@ function hasFigure(stats: PackageStats): boolean {
   return stats.weeklyDownloads !== null || stats.stars !== null || stats.lastRelease !== null;
 }
 
+/**
+ * How long a live snapshot stays good for. A production build collects once and never
+ * reads this again; it exists for `astro dev`, where every request to /code would
+ * otherwise re-run the whole collection — against an unauthenticated GitHub API that
+ * allows sixty calls an hour, which a few browser refreshes would spend.
+ */
+export const SNAPSHOT_TTL_MS = 5 * 60 * 1000;
+
+let liveSnapshot: { snapshot: RegistrySnapshot; takenAt: number } | null = null;
+
+/** Dev renders reuse the last live snapshot; an injected fetch is always honoured. */
+export function resetRegistryCache(): void {
+  liveSnapshot = null;
+}
+
 export async function collectRegistryStats(
   packages: Package[],
   options: CollectOptions = {}
 ): Promise<RegistrySnapshot> {
   const env = resolveEnv(options.env);
   const now = options.now ?? (() => new Date());
+  const cached = options.fetchImpl === undefined;
+
+  if (cached && liveSnapshot && now().getTime() - liveSnapshot.takenAt < SNAPSHOT_TTL_MS) {
+    return liveSnapshot.snapshot;
+  }
 
   if (isOffline(env)) {
     return {
@@ -170,17 +194,24 @@ export async function collectRegistryStats(
   }
 
   const fetchImpl: FetchLike = options.fetchImpl ?? (fetch as unknown as FetchLike);
-  const collected: PackageStats[] = [];
-  for (const pkg of packages) {
-    collected.push(await collectOne(pkg, fetchImpl));
-  }
+  // Promise.all keeps the packages in the order they were passed, which is the order
+  // the page renders them.
+  const collected: PackageStats[] = await Promise.all(
+    packages.map((pkg) => collectOne(pkg, fetchImpl))
+  );
 
-  return {
+  const snapshot: RegistrySnapshot = {
     offline: false,
     collectedAt: now().toISOString(),
     packages: collected,
     hasFigures: collected.some(hasFigure),
   };
+
+  if (cached) {
+    liveSnapshot = { snapshot, takenAt: now().getTime() };
+  }
+
+  return snapshot;
 }
 
 export function statsFor(snapshot: RegistrySnapshot | null, name: string): PackageStats | undefined {
