@@ -33,6 +33,11 @@
   --radius-control: 6px;
   --reading-column: 74ch;
 
+  /* How far down an anchor jump must land to clear the sticky chrome: title bar plus
+     one tab row on the wide window, two rows once the tab strip wraps. Static because
+     no script ships to measure it; a little generous on purpose. */
+  --chrome-offset: 6rem;
+
   /* Type. Six sizes doing the work of eighteen, chosen from the values already in
      use rather than a ratio imposed on them; every substitution moved at most 2px.
      --text-figure shares a size with --text-heading because DESIGN.md treats them as
@@ -70,7 +75,7 @@ html {
   scroll-behavior: smooth;
   color-scheme: dark;
   /* Sticky chrome must not cover what an anchor jump scrolls to. */
-  scroll-padding-block-start: 6rem;
+  scroll-padding-block-start: var(--chrome-offset);
 }
 
 body {
@@ -113,15 +118,24 @@ a:hover {
   text-decoration-thickness: 2px;
 }
 
-/* One readable column: the page is read, not scanned for cards. */
-main > section {
+/* One readable column: the page is read, not scanned for cards. The heading block a
+   page opens with belongs to that column rather than sitting in a banner above it --
+   PageHead renders straight into <main>, so without this its title and lede start at
+   the window edge while the body below stays centered. */
+main > section,
+main > .page-head {
   max-width: var(--reading-column);
   margin: 0 auto;
   padding: var(--space-8) var(--space-5);
 }
 
+/* The gap under a heading block comes from the next block's own top padding. */
+main > .page-head {
+  padding-block-end: 0;
+}
+
 section[id] {
-  scroll-margin-top: 96px;
+  scroll-margin-top: var(--chrome-offset);
 }
 
 h1,
@@ -197,8 +211,20 @@ h4 {
 }
 
 @media (max-width: 768px) {
+  /* The tab strip wraps to a second row at phone widths, so the chrome is taller
+     exactly where anchors are most likely to be used. */
+  :root {
+    --chrome-offset: 9rem;
+  }
+
+  main > section,
+  main > .page-head {
+    padding-block-start: var(--space-7);
+    padding-inline: var(--space-4);
+  }
+
   main > section {
-    padding: var(--space-7) var(--space-4);
+    padding-block-end: var(--space-7);
   }
 
   .window {

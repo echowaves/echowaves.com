@@ -13,13 +13,10 @@ interface Props {
 const { route } = Astro.props;
 ---
 
-{
-  route.h1 ? <h1 class="page-title">{route.h1}</h1> : null
-}
-
-{
-  route.lede ? <p class="lede">{route.lede}</p> : null
-}
+<header class="page-head">
+  {route.h1 ? <h1 class="page-title">{route.h1}</h1> : null}
+  {route.lede ? <p class="lede">{route.lede}</p> : null}
+</header>
 
 <style>
   .page-title {
