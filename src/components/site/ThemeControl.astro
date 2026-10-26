@@ -1,0 +1,89 @@
+---
+import { MODES, MODE_LABELS, themesInGroup } from '../../data/themes.ts';
+
+/*
+ * The reader's palette preference: one native select with the four modes GitHub uses — light,
+ * dark, system, custom — and, in custom mode, one more per group to pin which palette each
+ * scheme resolves to. Native widgets are chosen deliberately: they are keyboard-operable,
+ * announced correctly and themed by the operating system without any of it being re-implemented.
+ *
+ * This component owns no state and ships no script of its own. The runtime in BaseLayout reads
+ * the same ids back, persists the choice to localStorage and repaints; with scripts disabled the
+ * selects simply do nothing and the media-query defaults in src/index.css stand.
+ */
+const lightThemes = themesInGroup('light');
+const darkThemes = themesInGroup('dark');
+---
+
+<div class="theme" role="group" aria-labelledby="theme-mode-label">
+  <label class="sr-only" id="theme-mode-label" for="theme-mode">Theme</label>
+  <select class="control" id="theme-mode" name="theme-mode">
+    <!--
+      `system` is marked selected in the markup, not only set by the runtime: with scripts off no
+      script ever runs, and a select whose first option read "Light" would be claiming a palette
+      the page is not painting — the media query decides that, per OS. The runtime overwrites the
+      value with whatever it resolves, so this is the honest placeholder rather than a default.
+    -->
+    {MODES.map((mode) => <option value={mode} selected={mode === 'system'}>{MODE_LABELS[mode]}</option>)}
+  </select>
+
+  <div class="pins" id="theme-pair" hidden>
+    <label class="sr-only" for="theme-light">Light theme</label>
+    <select class="control" id="theme-light" name="theme-light">
+      {lightThemes.map((theme) => <option value={theme.id}>{theme.label}</option>)}
+    </select>
+    <label class="sr-only" for="theme-dark">Dark theme</label>
+    <select class="control" id="theme-dark" name="theme-dark">
+      {darkThemes.map((theme) => <option value={theme.id}>{theme.label}</option>)}
+    </select>
+  </div>
+</div>
+
+<style>
+  .theme {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    /* The path line gives up its width first; the control keeps its own. */
+    margin-inline-start: auto;
+    flex: none;
+  }
+
+  .pins {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+  }
+
+  /* `display` here would otherwise beat the UA rule for [hidden]. */
+  .pins[hidden] {
+    display: none;
+  }
+
+  /*
+   * Painted from tokens like everything else, and deliberately compact: the title bar is a row
+   * of chrome, and a taller control would push the sticky offset past what `--chrome-offset`
+   * reserves. The native arrow comes from the widget, so nothing here pretends to be one.
+   */
+  .control {
+    font-family: inherit;
+    font-size: var(--text-meta);
+    color: var(--text-dim);
+    background-color: transparent;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-control);
+    padding: var(--space-1) var(--space-2);
+  }
+
+  .control:hover {
+    color: var(--text);
+    border-color: var(--accent);
+  }
+
+  @media (max-width: 768px) {
+    .control {
+      font-size: var(--text-fine);
+      padding: var(--space-1);
+    }
+  }
+</style>

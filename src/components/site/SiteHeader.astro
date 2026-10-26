@@ -1,4 +1,5 @@
 ---
+import ThemeControl from './ThemeControl.astro';
 import { nav, shellPrompt } from '../../data/site.ts';
 
 /*
@@ -19,11 +20,12 @@ const shellPath = path === '/' ? '~/echowaves' : `~/echowaves${path}`;
   <div class="titlebar">
     <span class="lights" aria-hidden="true"><i></i><i></i><i></i></span>
     <a class="mark" href="/" aria-label="Echowaves home">
-      <img src="/logo.png" width="57" height="64" alt="" />
+      <span class="mark-glyph" aria-hidden="true"></span>
     </a>
     <p class="path">
       <span class="host">{shellPrompt}</span><span class="sep"> &mdash; </span>{shellPath}
     </p>
+    <ThemeControl />
   </div>
 
   <nav class="tabs" aria-label="Primary">
@@ -85,11 +87,16 @@ const shellPath = path === '/' ? '~/echowaves' : `~/echowaves${path}`;
   }
 
   /*
-   * The mark, cut out of scripts/echowaves-logo.jpeg by `npm run icons`. It links to the
-   * route the first tab already points at, so the anchor carries the name and the image
-   * keeps an empty alt — one label, not two. Underline is off because an underline across
-   * a logo reads as a rendering accident, and this link is identified by its position and
-   * its accessible name rather than by paint.
+   * The mark, cut out of scripts/echowaves-logo.jpeg by `npm run icons`. It links to the route
+   * the first tab already points at, so the anchor carries the name and the artwork is hidden
+   * from assistive tech — one label, not two. Underline is off because an underline across a logo
+   * reads as a rendering accident, and this link is identified by its position and its accessible
+   * name rather than by paint.
+   *
+   * The artwork is used as a mask rather than as an image, which is what lets the mark follow the
+   * active palette: `--accent` paints it, so no per-theme logo raster is needed and a theme swap
+   * repaints it in the same frame as everything else. The source keeps its own alpha, so the
+   * strokes stay anti-aliased.
    */
   .mark {
     display: inline-flex;
@@ -97,10 +104,20 @@ const shellPath = path === '/' ? '~/echowaves' : `~/echowaves${path}`;
     text-decoration: none;
   }
 
-  .mark img {
+  .mark-glyph {
     display: block;
-    width: auto;
+    /* /logo.png is 57×64 trimmed; `contain` keeps that ratio inside the box. */
+    width: var(--space-6);
     height: var(--space-5);
+    background-color: var(--accent);
+    -webkit-mask-image: url('/logo.png');
+    mask-image: url('/logo.png');
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+    -webkit-mask-size: contain;
+    mask-size: contain;
   }
 
   .path {

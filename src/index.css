@@ -1,10 +1,16 @@
 /*
  * Design tokens for the whole site. DESIGN.md is the contract; this file is its
- * implementation. Green phosphor on near-black, monospace throughout, dark only.
+ * implementation. Monospace throughout; colour comes from a palette.
  *
- * Every text and boundary colour here was measured against --background; where a
- * canonical palette value failed WCAG, the measurement won. Ratios are re-checkable
- * with `node scripts/contrast.mjs` -- do not edit a hex without re-measuring it.
+ * `:root` below carries Phosphor — green phosphor on near-black, the site's own palette and the
+ * dark default. Every other palette is generated further down between the `themes:begin` /
+ * `themes:end` sentinels from src/data/themes.ts (`node scripts/make-themes.mjs`), keyed on
+ * `html[data-theme="<id>"]`, and each declares this same set of colour tokens. Nothing outside
+ * this file names a colour: `npm run verify` fails if it does.
+ *
+ * Every Phosphor text and boundary colour was measured against --background; where a canonical
+ * palette value failed WCAG, the measurement won. Ratios for every palette are re-checkable with
+ * `node scripts/contrast.mjs` -- do not edit a hex without re-measuring it.
  *
  *   #8dfa9c 15.71:1  primary text    #3fa852  6.69:1  body copy
  *   #33d24b 10.09:1  prompt, active  #ff5f57  6.78:1  refusal
@@ -73,6 +79,12 @@
 
 html {
   scroll-behavior: smooth;
+  /*
+   * Phosphor is the palette this stylesheet declares with no script and nothing stored, so the
+   * form controls and scrollbars get the dark scheme to match. A theme block sets its own
+   * `color-scheme`, and the generated no-script fallback switches to light when the OS asks for
+   * light; both outrank this line.
+   */
   color-scheme: dark;
   /* Sticky chrome must not cover what an anchor jump scrolls to. */
   scroll-padding-block-start: var(--chrome-offset);
@@ -235,14 +247,174 @@ h4 {
   }
 }
 
+/* themes:begin — generated from src/data/themes.ts by `node scripts/make-themes.mjs`.
+   Do not hand-edit a palette: the registry is the source of truth, and `npm run verify`
+   fails when this region, src/data/themes.ts and the built head disagree. */
+
+html[data-theme="phosphor"] {
+  color-scheme: dark;
+  --background: #060606;
+  --panel: #0d0d0d;
+  --panel-raised: #101010;
+  --desk: #1c1c1e;
+  --border: #2b7a3a;
+  --decoration-green: #2b7a3a;
+  --text: #8dfa9c;
+  --text-dim: #3fa852;
+  --accent: #33d24b;
+  --emphasis: #febc2e;
+  --danger: #ff5f57;
+  --ink-on-accent: #04120a;
+}
+
+html[data-theme="github-light"] {
+  color-scheme: light;
+  --background: #ffffff;
+  --panel: #f6f8fa;
+  --panel-raised: #eaeef2;
+  --desk: #eff2f5;
+  --border: #d0d7de;
+  --decoration-green: #d0d7de;
+  --text: #1f2328;
+  --text-dim: #656d76;
+  --accent: #0969da;
+  --emphasis: #9a6700;
+  --danger: #cf222e;
+  --ink-on-accent: #ffffff;
+}
+
+html[data-theme="solarized-light"] {
+  color-scheme: light;
+  --background: #fdf6e3;
+  --panel: #eee8d5;
+  --panel-raised: #e2dfce;
+  --desk: #93a1a1;
+  --border: #839496;
+  --decoration-green: #93a1a1;
+  --text: #073642;
+  --text-dim: #586e75;
+  --accent: #268bd2;
+  --emphasis: #cb4b16;
+  --danger: #dc322f;
+  --ink-on-accent: #fdf6e3;
+}
+
+html[data-theme="one-light"] {
+  color-scheme: light;
+  --background: #fafafa;
+  --panel: #f2f2f2;
+  --panel-raised: #eaeaeb;
+  --desk: #696c77;
+  --border: #a0a1a7;
+  --decoration-green: #a0a1a7;
+  --text: #383a42;
+  --text-dim: #696c77;
+  --accent: #4078f2;
+  --emphasis: #986801;
+  --danger: #e45649;
+  --ink-on-accent: #ffffff;
+}
+
+html[data-theme="gruvbox-light"] {
+  color-scheme: light;
+  --background: #fbf1c7;
+  --panel: #f2e5bc;
+  --panel-raised: #ebdbb2;
+  --desk: #7c6f64;
+  --border: #d5c4a1;
+  --decoration-green: #bdae93;
+  --text: #282828;
+  --text-dim: #504945;
+  --accent: #076678;
+  --emphasis: #b57600;
+  --danger: #9d0006;
+  --ink-on-accent: #fbf1c7;
+}
+
+html[data-theme="dracula"] {
+  color-scheme: dark;
+  --background: #282a36;
+  --panel: #44475a;
+  --panel-raised: #6272a4;
+  --desk: #21222c;
+  --border: #6272a4;
+  --decoration-green: #6272a4;
+  --text: #f8f8f2;
+  --text-dim: #6272a4;
+  --accent: #8be9fd;
+  --emphasis: #ffb86c;
+  --danger: #ff5555;
+  --ink-on-accent: #282a36;
+}
+
+html[data-theme="nord"] {
+  color-scheme: dark;
+  --background: #2e3440;
+  --panel: #434c5e;
+  --panel-raised: #4c566a;
+  --desk: #3b4252;
+  --border: #4c566a;
+  --decoration-green: #4c566a;
+  --text: #eceff4;
+  --text-dim: #d8dee9;
+  --accent: #88c0d0;
+  --emphasis: #ebcb8b;
+  --danger: #bf616a;
+  --ink-on-accent: #2e3440;
+}
+
+html[data-theme="solarized-dark"] {
+  color-scheme: dark;
+  --background: #002b36;
+  --panel: #073642;
+  --panel-raised: #1b454f;
+  --desk: #073642;
+  --border: #586e75;
+  --decoration-green: #586e75;
+  --text: #fdf6e3;
+  --text-dim: #93a1a1;
+  --accent: #2aa198;
+  --emphasis: #b58900;
+  --danger: #dc322f;
+  --ink-on-accent: #002b36;
+}
+
+/* Every palette above is attribute-keyed on <html>, which outranks the plain `:root` the
+   print and forced-colours blocks used to carry. Those two therefore match `:root:root`:
+   same declarations, same behaviour, specificity that still wins over a theme. */
+
+@media (prefers-color-scheme: light) {
+  html:not([data-theme]) {
+    color-scheme: light;
+    --background: #ffffff;
+    --panel: #f6f8fa;
+    --panel-raised: #eaeef2;
+    --desk: #eff2f5;
+    --border: #d0d7de;
+    --decoration-green: #d0d7de;
+    --text: #1f2328;
+    --text-dim: #656d76;
+    --accent: #0969da;
+    --emphasis: #9a6700;
+    --danger: #cf222e;
+    --ink-on-accent: #ffffff;
+  }
+}
+
+/* themes:end */
+
 /*
  * Forced-colors mode (Windows High Contrast, forced dark in browsers) replaces the
  * background we author while leaving our green text in place: #8dfa9c on a system
  * white canvas measures 1.29:1, which is unreadable rather than merely unpretty.
  * Hand colouring back to the system and keep only structure.
+ *
+ * `:root:root`, not `:root`: a palette block is keyed on `html[data-theme="…"]` and would
+ * outrank a single `:root`. Doubling the pseudo-class restores the override without changing a
+ * declaration — same behaviour as before themes existed, for every theme.
  */
 @media (forced-colors: active) {
-  :root {
+  :root:root {
     --background: Canvas;
     --desk: Canvas;
     --panel: Canvas;
@@ -272,7 +444,10 @@ h4 {
  * window chrome goes, the palette collapses to black on white, and the
  * type scale is restated in points because a pixel means nothing to a
  * printer. Tokens are redefined here rather than overridden per rule,
- * so this stays the only place where print values live.
+ * so this stays the only place where print values live — and every colour token is spelled out,
+ * because a palette block keyed on `html[data-theme="…"]` would otherwise still be supplying
+ * --text and friends to paper. `:root:root` outranks it exactly as `:root` outranked the single
+ * theme this file used to have.
  * ------------------------------------------------------------------ */
 
 @page {
@@ -280,11 +455,22 @@ h4 {
 }
 
 @media print {
-  :root {
+  :root:root {
     --background: #ffffff;
     --desk: #ffffff;
     --panel: #ffffff;
     --panel-raised: #ffffff;
+    /*
+     * These five used to arrive from `:root` by inheritance. With a palette keyed on `<html>`
+     * they would arrive from whichever theme is active instead, so paper spells them out and
+     * keeps printing what it printed before. Fixing the greens into black-on-white is a separate
+     * decision about DESIGN.md's print ruling, not part of theming.
+     */
+    --text: #8dfa9c;
+    --text-dim: #3fa852;
+    --decoration-green: #2b7a3a;
+    --emphasis: #febc2e;
+    --danger: #ff5f57;
     --foreground: #000000;
     --muted: #444444;
     --faint: #666666;

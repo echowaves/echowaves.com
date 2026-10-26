@@ -179,6 +179,234 @@ function findCopyViolations(strings) {
 // site imports rather than a copy of their contents.
 const site = await import(pathToFileURL(path.join(SRC, 'data', 'site.ts')).href);
 const registry = await import(pathToFileURL(path.join(SRC, 'utils', 'registry.ts')).href);
+const themeRegistry = await import(pathToFileURL(path.join(SRC, 'data', 'themes.ts')).href);
+const contrast = await import(pathToFileURL(path.join(ROOT, 'scripts', 'lib', 'contrast.mjs')).href);
+
+const {
+  CONTRAST_ROLES,
+  FAVICON_SIZES,
+  LEGIBILITY_FLOOR,
+  MODES,
+  STORAGE_KEY,
+  TOKEN_NAMES,
+  defaultTheme,
+  faviconHref,
+  isHex,
+  themeById,
+  themes,
+  themesInGroup,
+  themesRegionCss,
+} = themeRegistry;
+const { ratio } = contrast;
+
+/** Sentinels of the generated palette region in src/index.css. */
+const THEMES_BEGIN = '/* themes:begin';
+const THEMES_END = '/* themes:end */';
+
+/** The runtime BaseLayout writes into every page, found by the storage key it carries. */
+function themeScriptSource(html) {
+  for (const match of html.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/g)) {
+    if (match[1].includes('storageKey')) return match[1];
+  }
+  throw new Error('no theme runtime in the built markup');
+}
+
+/** The palette table the shipped runtime carries: ids, groups and tab colours. */
+function themePayload(markup) {
+  const script = themeScriptSource(markup);
+  const payload = /var P = (\{.*\});/.exec(script);
+  if (!payload) throw new Error('the theme runtime carries no palette payload');
+  return payload[1];
+}
+
+/**
+ * The stub DOM both theme harnesses run the shipped runtime against. Deliberately not a browser:
+ * resolution is arithmetic over localStorage and matchMedia, and running the code that actually
+ * ships — rather than a copy of its logic — is what makes the result worth anything. What it does
+ * model are the three things `apply()` writes: `data-theme`, the two theme-color tags, and the
+ * favicon links — including the two it must leave alone, because a template that rewrote
+ * `/favicon.ico` or the apple-touch tile would be just as broken as one that missed them.
+ *
+ * Options: `store` (what localStorage returns), `scheme`, `elements` (the control's selects),
+ * `noMatchMedia` (a browser without it), `legacyListener` (matchMedia with only addListener) and
+ * `storageThrows` (private mode refusing a write). Those three are the runtime's guarded error
+ * paths, none of which may take the page down.
+ */
+function themeDom(script, options = {}) {
+  const { store = null, scheme = 'light', elements = null } = options;
+  const painted = [];
+  const stored = {
+    value: store === null ? null : typeof store === 'string' ? store : JSON.stringify(store),
+  };
+  const media = { matches: scheme === 'light', change: [] };
+
+  // A node that records the attributes the runtime sets and answers getAttribute the way the DOM
+  // does: an attribute that is not there reads as null, not undefined.
+  const node = (fields) => ({
+    ...fields,
+    setAttribute(name, value) {
+      this[name] = value;
+    },
+    getAttribute(name) {
+      return this[name] === undefined ? null : String(this[name]);
+    },
+  });
+
+  const metas = [node({ media: null }), node({ media: '(prefers-color-scheme: light)' })];
+  const links = [
+    node({ rel: 'icon', sizes: '32x32', href: '/favicon-32x32.png' }),
+    node({ rel: 'icon', sizes: '16x16', href: '/favicon-16x16.png' }),
+    // `[rel~="icon"]` matches this one, so only its missing `sizes` keeps the .ico container alone.
+    node({ rel: 'shortcut icon', href: '/favicon.ico' }),
+    // One word, so `[rel~="icon"]` does not match it and its 180px tile survives untouched.
+    node({ rel: 'apple-touch-icon', sizes: '180x180', href: '/apple-touch-icon.png' }),
+  ];
+
+  const document = {
+    readyState: 'complete',
+    getElementById: (id) => elements?.[id] ?? null,
+    addEventListener: () => {},
+    querySelectorAll: (selector) => {
+      if (selector === 'meta[name="theme-color"]') return metas;
+      // `~=` is a word match against the space-separated list, not a substring match.
+      if (selector === 'link[rel~="icon"]') {
+        return links.filter((link) => link.rel.split(/\s+/).includes('icon'));
+      }
+      return [];
+    },
+    documentElement: {
+      setAttribute: (name, value) => {
+        if (name === 'data-theme') painted.push(value);
+      },
+    },
+  };
+
+  const windowHandlers = {};
+  const window = {
+    addEventListener: (type, handler) => {
+      (windowHandlers[type] ??= []).push(handler);
+    },
+  };
+  if (!options.noMatchMedia) {
+    window.matchMedia = () => {
+      const query = {
+        // A getter, so setScheme below reaches the object the runtime is already holding.
+        get matches() {
+          return media.matches;
+        },
+        addListener: (handler) => media.change.push(handler),
+      };
+      // Legacy mode withholds the modern API altogether: that is what an old Safari hands out, and
+      // the runtime has to fall back rather than silently stop following the OS.
+      if (!options.legacyListener) {
+        query.addEventListener = (type, handler) => {
+          if (type === 'change') media.change.push(handler);
+        };
+      }
+      return query;
+    };
+  }
+
+  const localStorage = {
+    getItem: () => stored.value,
+    setItem: (key, value) => {
+      if (options.storageThrows) throw new Error('QuotaExceededError: storage is blocked');
+      if (key === STORAGE_KEY) stored.value = value;
+    },
+  };
+
+  new Function('document', 'window', 'localStorage', script)(document, window, localStorage);
+
+  return {
+    painted,
+    media,
+    stored,
+    windowHandlers,
+    // The hrefs the runtime owns, keyed by the size attribute it read them from.
+    favicons: () =>
+      Object.fromEntries(
+        links
+          .filter((link) => /^[0-9]+x[0-9]+$/.test(String(link.sizes)) && link.rel.split(/\s+/).includes('icon'))
+          .map((link) => [link.sizes, link.href])
+      ),
+    // Everything outside the per-theme pair, still pointing where the head put it.
+    untouched: () =>
+      Object.fromEntries(
+        links.filter((link) => !/^icon$/.test(link.rel)).map((link) => [link.rel, link.href])
+      ),
+    tabColours: () => metas.map((meta) => meta.content),
+  };
+}
+
+/**
+ * Runs the shipped runtime against a stub DOM for each stored state and reports what it paints:
+ * the palette, both tab colours and every favicon href it wrote.
+ */
+function resolveThemes(script, states) {
+  return states.map((state) => {
+    const dom = themeDom(script, state);
+    return {
+      ...state,
+      theme: dom.painted[dom.painted.length - 1],
+      tabColours: dom.tabColours(),
+      favicons: dom.favicons(),
+      untouched: dom.untouched(),
+    };
+  });
+}
+
+/**
+ * The same runtime, wired: the stub hands it four elements and a matchMedia it can talk to, so a
+ * change event can be fired, an OS flip simulated and another tab's write delivered — no browser.
+ * Everything the control promises — repaint, reveal the custom pair, persist, follow the scheme
+ * live, notice a sibling tab — is exercised here against the code that ships.
+ */
+function operateControl(script, choice, options = {}) {
+  const element = (extra = {}) => ({
+    value: '',
+    hidden: false,
+    handlers: {},
+    addEventListener(type, handler) {
+      this.handlers[type] = (this.handlers[type] ?? []).concat(handler);
+    },
+    fire(type) {
+      (this.handlers[type] ?? []).forEach((handler) => handler());
+    },
+    ...extra,
+  });
+  const elements = {
+    'theme-mode': element(),
+    'theme-pair': element({ hidden: true }),
+    'theme-light': element(),
+    'theme-dark': element(),
+  };
+  const dom = themeDom(script, { store: choice ?? null, scheme: 'light', elements, ...options });
+
+  return {
+    painted: dom.painted,
+    elements,
+    choice: () => JSON.parse(dom.stored.value ?? '{}'),
+    favicons: dom.favicons,
+    untouched: dom.untouched,
+    tabColours: dom.tabColours,
+    select: (id, value) => {
+      elements[id].value = value;
+      elements[id].fire('change');
+    },
+    // What the OS flipping from light to dark does to a page that is already open.
+    setScheme: (scheme) => {
+      dom.media.matches = scheme === 'light';
+      dom.media.change.forEach((handler) => handler());
+    },
+    // What another tab saving the preference does to this one: the shared store already holds the
+    // new value by the time the event arrives, which is the whole point. Another key must be
+    // ignored, and ignoring it means not repainting either.
+    otherTabWrites: (value, key = STORAGE_KEY) => {
+      if (key === STORAGE_KEY) dom.stored.value = value;
+      (dom.windowHandlers.storage ?? []).forEach((handler) => handler({ key, newValue: value }));
+    },
+  };
+}
 
 await check('every claim carries a source', () => {
   const missing = site.claims.filter((claim) => !claim.source || claim.source.trim().length === 0);
@@ -498,18 +726,397 @@ await check('styles speak only in tokens', () => {
   assert.deepEqual(undeclared, [], `used but never defined in src/index.css:\n     ${undeclared.join('\n     ')}`);
   assert.deepEqual(literals, [], `colour written outside the token block:\n     ${literals.join('\n     ')}`);
 
-  // The theme-color meta tag is the one literal that has to stay a literal, so at
-  // least make sure it still paints the same colour as the window.
-  const layout = readFileSync(path.join(SRC, 'layouts', 'BaseLayout.astro'), 'utf8');
-  const themeColor = /name="theme-color" content="(#[0-9a-fA-F]{3,8})"/.exec(layout)?.[1];
-  const background = /--background:\s*(#[0-9a-fA-F]{3,8})/.exec(tokens)?.[1];
-  assert.equal(
-    themeColor?.toLowerCase(),
-    background?.toLowerCase(),
-    'the theme-color meta tag disagrees with --background',
-  );
+  // The palette blocks live in this same file and declare no new names, so the set above is
+  // still the whole vocabulary. Their contents are the next check's business.
+  //
+  // The values beside those names are this check's business, though: `:root` is hand-written, and
+  // it is what a reader with no script and a dark scheme gets. Editing a hex in the registry and
+  // forgetting this block would leave the no-script palette quietly disagreeing with every palette
+  // block generated beside it, so compare them token by token instead of trusting the comment.
+  const noScript = defaultTheme('dark');
+  for (const token of TOKEN_NAMES) {
+    assert.ok(defined.has(`--${token}`), `--${token} is in the registry but not in :root`);
+    const declared = new RegExp(`--${token}:\\s*(#[0-9a-f]{6})\\s*;`).exec(rootBlock);
+    assert.ok(declared, `:root does not declare --${token} as a #rrggbb value`);
+    assert.equal(
+      declared[1],
+      noScript.tokens[token],
+      `:root --${token} is ${declared[1]}, but the no-script palette (${noScript.id}) says ${noScript.tokens[token]} — update src/index.css from src/data/themes.ts`
+    );
+  }
 
   return `${defined.size} tokens declared; ${styleSources.length} style sources read only tokens`;
+});
+
+// ---------------------------------------------------------------------------
+// Themes. src/data/themes.ts is the source of truth; these four checks are what stops the
+// stylesheet, the head, the control and the icon set from drifting away from it.
+
+await check('every palette in the registry ships its CSS block', () => {
+  const css = readFileSync(path.join(SRC, 'index.css'), 'utf8');
+  const start = css.indexOf(THEMES_BEGIN);
+  const finish = css.indexOf(THEMES_END);
+  assert.ok(start !== -1 && finish > start, 'index.css is missing the generated themes region');
+  const region = css.slice(start, finish + THEMES_END.length);
+  assert.equal(
+    region,
+    themesRegionCss(),
+    'the themes region in src/index.css is stale — run `node scripts/make-themes.mjs`'
+  );
+
+  const problems = [];
+  for (const theme of themes) {
+    const block = new RegExp(`html\\[data-theme="${theme.id}"\\] \\{([\\s\\S]*?)\\n\\}`).exec(css);
+    if (!block) {
+      problems.push(`${theme.id}: no html[data-theme="${theme.id}"] block`);
+      continue;
+    }
+    if (!block[1].includes(`color-scheme: ${theme.group};`)) {
+      problems.push(`${theme.id}: color-scheme is not ${theme.group}`);
+    }
+    for (const token of TOKEN_NAMES) {
+      const declared = new RegExp(`--${token}: (#[0-9a-f]{6});`).exec(block[1]);
+      if (!declared) problems.push(`${theme.id}: --${token} missing`);
+      else if (declared[1] !== theme.tokens[token]) {
+        problems.push(`${theme.id}: --${token} is ${declared[1]}, registry says ${theme.tokens[token]}`);
+      }
+    }
+  }
+
+  // With no script there is no data-theme, so the light default has to arrive from the media
+  // query; the dark default is what :root already declares.
+  const light = defaultTheme('light');
+  const fallback = new RegExp(
+    `@media \\(prefers-color-scheme: light\\) \\{\\s*html:not\\(\\[data-theme\\]\\) \\{([\\s\\S]*?)\\n  \\}`
+  ).exec(css);
+  assert.ok(fallback, 'index.css has no prefers-color-scheme fallback for readers without scripts');
+  for (const token of TOKEN_NAMES) {
+    const declared = new RegExp(`--${token}: (#[0-9a-f]{6});`).exec(fallback[1]);
+    if (!declared || declared[1] !== light.tokens[token]) {
+      problems.push(`no-script fallback: --${token} is not ${light.id}'s value`);
+    }
+  }
+
+  assert.deepEqual(problems, [], `\n     ${problems.join('\n     ')}`);
+  return `${themes.length} palettes generated from src/data/themes.ts, plus the no-script default`;
+});
+
+await check('every palette declares the full token set and stays legible', () => {
+  const ids = themes.map((theme) => theme.id);
+  assert.equal(new Set(ids).size, ids.length, `duplicate theme ids: ${ids.join(', ')}`);
+  for (const group of ['light', 'dark']) {
+    const defaults = themesInGroup(group).filter((theme) => theme.isDefault);
+    assert.equal(defaults.length, 1, `the ${group} group needs exactly one default, found ${defaults.length}`);
+  }
+
+  const problems = [];
+  const subAA = [];
+  for (const theme of themes) {
+    for (const token of TOKEN_NAMES) {
+      const value = theme.tokens[token];
+      if (!isHex(value)) problems.push(`${theme.id}: --${token} is "${value}", not #rrggbb`);
+    }
+    for (const role of CONTRAST_ROLES) {
+      const measured = ratio(theme.tokens[role.token], theme.tokens[role.against]);
+      // A palette this site tuned is held to WCAG AA on every role. One it inherited ships its
+      // published hexes, so only the legibility floor applies — except its rules, which light
+      // palettes publish pale on purpose and which carry no text.
+      const required = theme.measured ? role.aa : role.token === 'border' ? 0 : LEGIBILITY_FLOOR;
+      if (measured < required) {
+        problems.push(
+          `${theme.id}: --${role.token} on --${role.against} is ${measured}:1, needs ${required}:1`
+        );
+      } else if (measured < role.aa && role.token !== 'border') {
+        // Canonical hexes as-is is a recorded decision, not an oversight: name it, do not hide it.
+        subAA.push(`${theme.id} --${role.token} ${measured}:1`);
+      }
+    }
+  }
+  assert.deepEqual(problems, [], `\n     ${problems.join('\n     ')}`);
+  const note = subAA.length
+    ? `Phosphor holds AA everywhere; canonical palettes ship published hexes below it on ${subAA.length} roles (${subAA.slice(0, 3).join(', ')}…), every one recorded in DESIGN.md`
+    : 'every palette clears AA on every text role';
+  return `${note}; pale rules are a light palette being itself, not a failure`;
+});
+
+await check('print and forced colours still outrank every palette', () => {
+  const css = readFileSync(path.join(SRC, 'index.css'), 'utf8');
+  const problems = [];
+  for (const media of ['@media print', '@media (forced-colors: active)']) {
+    const start = css.indexOf(media);
+    assert.ok(start !== -1, `index.css has no ${media} block`);
+    let depth = 0;
+    let end = start;
+    for (let i = css.indexOf('{', start); i < css.length; i += 1) {
+      if (css[i] === '{') depth += 1;
+      if (css[i] === '}') depth -= 1;
+      if (depth === 0) {
+        end = i;
+        break;
+      }
+    }
+    const block = css.slice(start, end);
+    // A palette is html[data-theme="…"]: specificity (0,1,1). `:root` would lose to it, and the
+    // media blocks must win whatever the reader picked.
+    if (!block.includes(':root:root')) problems.push(`${media} no longer overrides a data-theme block`);
+    if (/[^:]:(?!root)[a-z-]+ \{/.test(block)) problems.push(`${media} lost its :root override`);
+    // Paper and forced-colours cannot inherit from a screen palette: every colour token has to
+    // be redeclared or the theme bleeds through.
+    for (const token of TOKEN_NAMES) {
+      if (!block.includes(`--${token}:`)) problems.push(`${media} leaves --${token} to the active palette`);
+    }
+  }
+  assert.deepEqual(problems, [], `\n     ${problems.join('\n     ')}`);
+  return 'both media blocks out-rank a palette and redeclare all twelve colour tokens';
+});
+
+await check('the head paints the active palette', () => {
+  // theme-color is the one place a colour has to stay a literal, so make sure it still matches
+  // the ground of the palette a browser with scripts disabled gets — the dark default — and that
+  // the runtime in the head knows every palette, including its tab colour.
+  const payload = JSON.parse(themePayload(builtMarkup()));
+  assert.deepEqual(
+    payload.themes.map((theme) => theme.id).sort(),
+    themes.map((theme) => theme.id).sort(),
+    'the theme runtime does not know every palette in the registry'
+  );
+  for (const theme of themes) {
+    const shipped = payload.themes.find((entry) => entry.id === theme.id);
+    assert.equal(shipped.bg, theme.tokens.background, `${theme.id}: tab colour disagrees with --background`);
+  }
+  assert.equal(payload.defaults.dark, defaultTheme('dark').id, 'wrong dark default');
+  assert.equal(payload.defaults.light, defaultTheme('light').id, 'wrong light default');
+  // The hrefs the runtime writes come from these templates, so they have to be the writer's own.
+  for (const px of FAVICON_SIZES) {
+    assert.equal(
+      payload.faviconTemplates[String(px)],
+      faviconHref('{id}', px),
+      `the runtime's ${px}px favicon template is not the one npm run icons writes`
+    );
+  }
+
+  const problems = [];
+  for (const page of builtPages()) {
+    const html = readFileSync(page, 'utf8');
+    // Exactly the pair BaseLayout ships: an unqualified tag carrying the dark default's ground and
+    // a `(prefers-color-scheme: light)` one carrying the light default's. That is what makes the
+    // tab colour right for a reader with scripts off, where the media query picks the palette; the
+    // runtime then overwrites both, so a third tag could only ever be stale.
+    const meta = [...html.matchAll(/<meta name="theme-color"((?:[^>"]|"[^"]*")*)>/g)];
+    if (meta.length !== 2) {
+      problems.push(`${path.relative(ROOT, page)}: ${meta.length} theme-color tags, expected the scheme pair`);
+    } else {
+      const wanted = {
+        '': defaultTheme('dark').tokens.background,
+        '(prefers-color-scheme: light)': defaultTheme('light').tokens.background,
+      };
+      const seen = [];
+      for (const [, attributes] of meta) {
+        const media = /media="([^"]*)"/.exec(attributes)?.[1] ?? '';
+        const content = /content="([^"]*)"/.exec(attributes)?.[1] ?? '';
+        seen.push(media || '(none)');
+        if (!(media in wanted)) problems.push(`${path.relative(ROOT, page)}: theme-color media="${media}" is not the pair`);
+        else if (content !== wanted[media]) {
+          problems.push(
+            `${path.relative(ROOT, page)}: theme-color for ${media || 'no media'} is ${content}, not ${wanted[media]}`
+          );
+        }
+      }
+      if (new Set(seen).size !== seen.length) {
+        problems.push(`${path.relative(ROOT, page)}: two theme-color tags share a media query (${seen.join(', ')})`);
+      }
+    }
+    const scripts = html.match(/data-theme/g) ?? [];
+    if (scripts.length === 0) problems.push(`${path.relative(ROOT, page)}: no theme runtime in the head`);
+  }
+  assert.deepEqual(problems, [], `\n     ${problems.join('\n     ')}`);
+  return `${payload.themes.length} palettes wired into every page; tab colour starts at the two scheme grounds`;
+});
+
+await check('the theme control offers every palette and stays operable without CSS', () => {
+  const problems = [];
+  for (const page of builtPages()) {
+    const html = readFileSync(page, 'utf8');
+    for (const id of ['theme-mode', 'theme-light', 'theme-dark']) {
+      if (!html.includes(`id="${id}"`)) problems.push(`${path.relative(ROOT, page)}: no #${id} select`);
+      if (!new RegExp(`<label[^>]*for="${id}"`).test(html)) {
+        problems.push(`${path.relative(ROOT, page)}: #${id} has no label of its own`);
+      }
+    }
+    const modes = [...html.matchAll(/<select[^>]*id="theme-mode"[^>]*>([\s\S]*?)<\/select>/g)];
+    if (modes.length !== 1) problems.push(`${path.relative(ROOT, page)}: ${modes.length} mode selects`);
+    else {
+      for (const mode of MODES) {
+        if (!modes[0][1].includes(`value="${mode}"`)) problems.push(`${path.relative(ROOT, page)}: no ${mode} option`);
+      }
+      // Without scripts nothing overwrites the select, so the markup has to claim `system` — the
+      // one choice that is true whatever the OS says. A default of "Light" would be a lie about a
+      // palette the media query may not be painting at all.
+      if (!/<option value="system"[^>]*selected/.test(modes[0][1])) {
+        problems.push(`${path.relative(ROOT, page)}: the mode select does not offer system as its fallback`);
+      }
+    }
+    for (const theme of themes) {
+      if (!html.includes(`value="${theme.id}"`)) problems.push(`${path.relative(ROOT, page)}: ${theme.id} cannot be chosen`);
+    }
+    // The pinning selects are hidden until custom mode asks for them; hidden is what keeps them
+    // out of the tab order when the mode does not use them.
+    if (!/id="theme-pair"[^>]*hidden/.test(html) && !/hidden[^>]*id="theme-pair"/.test(html)) {
+      problems.push(`${path.relative(ROOT, page)}: the custom pair is visible before custom mode`);
+    }
+  }
+  assert.deepEqual(problems, [], `\n     ${problems.join('\n     ')}`);
+  return `${MODES.length} modes and ${themes.length} palettes selectable on every page`;
+});
+
+await check('the theme script resolves every stored preference', () => {
+  // The runtime is the only script the site writes itself, so its decisions are worth exercising:
+  // first visit, both schemes, a corrupt store, an unknown id and a custom pair. Run against
+  // stubs rather than a browser — this is resolution logic, not layout.
+  const html = readFileSync(builtPages()[0], 'utf8');
+  const script = themeScriptSource(html);
+  const outcomes = resolveThemes(script, [
+    { label: 'first visit, OS light', store: null, scheme: 'light' },
+    { label: 'first visit, OS dark', store: null, scheme: 'dark' },
+    { label: 'mode light', store: { mode: 'light' }, scheme: 'dark' },
+    { label: 'mode dark', store: { mode: 'dark' }, scheme: 'light' },
+    { label: 'custom pair, OS light', store: { mode: 'custom', light: 'solarized-light', dark: 'dracula' }, scheme: 'light' },
+    { label: 'custom pair, OS dark', store: { mode: 'custom', light: 'solarized-light', dark: 'dracula' }, scheme: 'dark' },
+    { label: 'unknown id is ignored', store: { mode: 'custom', light: 'not-a-theme', dark: 'nord' }, scheme: 'light' },
+    { label: 'corrupt json falls back to system', store: '{{{', scheme: 'dark' },
+    { label: 'garbage mode is ignored', store: { mode: 'hot-pink' }, scheme: 'light' },
+    // One pair of palettes, shared by every mode: a stored light pin is what `system` paints when
+    // the OS is in light scheme, exactly as it is what `light` and `custom` paint.
+    { label: 'a stored pin survives a bad mode', store: { mode: 'hot-pink', light: 'one-light' }, scheme: 'light' },
+    // The guarded error paths. A browser with no matchMedia cannot follow the OS, so it settles on
+    // the dark default; an old one whose query object only answers to addListener still resolves.
+    { label: 'no matchMedia at all', store: null, scheme: 'light', noMatchMedia: true },
+    { label: 'legacy matchMedia', store: { mode: 'system' }, scheme: 'dark', legacyListener: true },
+  ]);
+  const expected = {
+    'first visit, OS light': defaultTheme('light').id,
+    'first visit, OS dark': defaultTheme('dark').id,
+    'mode light': defaultTheme('light').id,
+    'mode dark': defaultTheme('dark').id,
+    'custom pair, OS light': 'solarized-light',
+    'custom pair, OS dark': 'dracula',
+    'unknown id is ignored': defaultTheme('light').id,
+    'corrupt json falls back to system': defaultTheme('dark').id,
+    'garbage mode is ignored': defaultTheme('light').id,
+    'a stored pin survives a bad mode': 'one-light',
+    'no matchMedia at all': defaultTheme('dark').id,
+    'legacy matchMedia': defaultTheme('dark').id,
+  };
+  const problems = [];
+  for (const outcome of outcomes) {
+    const wanted = expected[outcome.label];
+    const ground = themeById(wanted).tokens.background;
+    if (outcome.theme !== wanted) {
+      problems.push(`${outcome.label}: got ${outcome.theme}, expected ${wanted}`);
+      continue;
+    }
+    // Both theme-color tags are repainted: the browser picks one by scheme, and after a deliberate
+    // choice that choice outranks the scheme, so a stale second tag would paint the wrong tab.
+    const stale = outcome.tabColours.filter((content) => content !== ground);
+    if (stale.length > 0) {
+      problems.push(`${outcome.label}: theme-color tags ${outcome.tabColours.join(', ')}, not ${ground} twice`);
+    }
+    // The favicon names are the ones `npm run icons` wrote, from the registry's own template. A
+    // runtime that builds a prettier string than the writer does is a 404 nobody sees.
+    for (const [sizes, href] of Object.entries(outcome.favicons)) {
+      const wantedHref = faviconHref(wanted, Number(sizes.split('x')[0]));
+      if (href !== wantedHref) problems.push(`${outcome.label}: the ${sizes} icon is ${href}, not ${wantedHref}`);
+    }
+    for (const [rel, href] of Object.entries(outcome.untouched)) {
+      const keep = rel === 'shortcut icon' ? '/favicon.ico' : '/apple-touch-icon.png';
+      if (href !== keep) problems.push(`${outcome.label}: ${rel} was rewritten to ${href}`);
+    }
+  }
+  assert.deepEqual(problems, [], `\n     ${problems.join('\n     ')}`);
+  return `${outcomes.length} stored states resolve to the right palette, tab colour and favicon pair`;
+});
+
+await check('the control repaints, persists and follows the OS live', () => {
+  const script = themeScriptSource(readFileSync(builtPages()[0], 'utf8'));
+  const light = defaultTheme('light').id;
+  const dark = defaultTheme('dark').id;
+  const page = operateControl(script); // starts in the light scheme with nothing stored
+
+  const problems = [];
+  const expect = (label, ok) => {
+    if (!ok) problems.push(label);
+  };
+  const last = (target = page) => target.painted[target.painted.length - 1];
+
+  expect(`first paint is ${last()}, not the light default in the light scheme`, last() === light);
+  expect('the mode select did not read system', page.elements['theme-mode'].value === 'system');
+  expect('the custom pair was visible before custom mode', page.elements['theme-pair'].hidden === true);
+
+  page.select('theme-mode', 'custom');
+  expect('custom mode did not reveal the pair', page.elements['theme-pair'].hidden === false);
+  expect(`custom mode painted ${last()}`, last() === light);
+
+  page.select('theme-dark', 'dracula');
+  expect('the pin was not persisted', page.choice().dark === 'dracula');
+  expect(`the light scheme stopped honouring the light default (${last()})`, last() === light);
+
+  // The acceptance criterion, end to end: flip the OS while the page is open.
+  page.setScheme('dark');
+  expect(`the dark scheme did not pick up the pinned Dracula (${last()})`, last() === 'dracula');
+  page.setScheme('light');
+  expect(`the light scheme did not come back (${last()})`, last() === light);
+
+  page.select('theme-mode', 'dark');
+  expect(`dark mode ignored the pin (${last()})`, last() === 'dracula');
+  expect('the pair stayed open outside custom mode', page.elements['theme-pair'].hidden === true);
+  expect('the mode was not persisted', page.choice().mode === 'dark');
+
+  // Every repaint above wrote the head, so this is where the runtime's own output is worth reading:
+  // two tab colours carrying Dracula, and the two favicon links pointing at the files
+  // `npm run icons` actually generated. A template that builds a tidier name than the writer does
+  // asks the browser for a file nobody made, which no other check would notice.
+  const ground = themeById('dracula').tokens.background;
+  expect(`the tab colour pair reads ${page.tabColours().join(', ')}`, page.tabColours().every((c) => c === ground));
+  const icons = page.favicons();
+  for (const px of [16, 32]) {
+    const sizes = `${px}x${px}`;
+    const wanted = faviconHref('dracula', px);
+    expect(`the ${sizes} link reads ${icons[sizes]}, not the ${wanted} npm run icons writes`, icons[sizes] === wanted);
+  }
+  for (const [rel, href] of Object.entries(page.untouched())) {
+    const keep = rel === 'shortcut icon' ? '/favicon.ico' : '/apple-touch-icon.png';
+    expect(`${rel} was rewritten to ${href}`, href === keep);
+  }
+
+  // Another tab saves a preference: this page re-reads the store and repaints, control included.
+  page.otherTabWrites(JSON.stringify({ mode: 'light' }));
+  expect(`another tab's choice did not repaint this page (${last()})`, last() === light);
+  expect('the mode select did not follow the other tab', page.elements['theme-mode'].value === 'light');
+
+  // A write to somebody else's key is not our business, and must not repaint anything.
+  const paints = page.painted.length;
+  page.otherTabWrites('{}', 'some-other-key');
+  expect('an unrelated storage event repainted the page', page.painted.length === paints);
+
+  // Reload honours what was just written: same script, storage as the first page left it.
+  const reopened = operateControl(script, page.choice());
+  expect(`a stored light mode painted ${last(reopened)} in the light scheme`, last(reopened) === light);
+
+  // Old Safari hands out a matchMedia with only addListener. Following the OS is then the whole
+  // difference between a page that tracks the scheme and one that stopped caring.
+  const legacy = operateControl(script, { mode: 'system' }, { legacyListener: true });
+  expect(`legacy matchMedia painted ${last(legacy)}`, last(legacy) === light);
+  legacy.setScheme('dark');
+  expect('legacy matchMedia did not follow the OS', last(legacy) === dark);
+
+  // Private mode refuses the write. The choice still applies to this page; only its memory fails.
+  const blocked = operateControl(script, undefined, { storageThrows: true });
+  blocked.select('theme-mode', 'dark');
+  expect(`a store that throws stopped the repaint (${last(blocked)})`, last(blocked) === dark);
+  expect('a blocked store was somehow written', Object.keys(blocked.choice()).length === 0);
+
+  assert.deepEqual(problems, [], `\n     ${problems.join('\n     ')}`);
+  return `${page.painted.length} repaints, one OS flip, another tab's write and two broken browsers, all from the shipped runtime`;
 });
 
 await check('type and rhythm come from the scale', () => {
@@ -622,6 +1229,26 @@ await check('every icon belongs to this site', () => {
     }
   }
 
+  // The theme runtime rewrites the favicon hrefs to one pair per palette and the title bar masks
+  // /logo.png; nothing links either, so nothing else would notice they were never generated. These
+  // names come from `faviconHref`, the same template the writer and the runtime read — if any of
+  // the three drifts, either this check fails or the swap resolves to a file that is not there.
+  const swapped = ['/logo.png'].concat(
+    themes.flatMap((theme) => FAVICON_SIZES.map((px) => faviconHref(theme.id, px)))
+  );
+  for (const href of swapped) {
+    if (!existsSync(path.join(ROOT, 'dist', href.replace(/^\//, '')))) {
+      problems.push(`${href} is not in dist/ — run \`npm run icons\``);
+    }
+  }
+
+  // A launcher installs one icon, so the manifest carries the default dark palette's ground.
+  if (manifest.theme_color !== defaultTheme('dark').tokens.background) {
+    problems.push(
+      `manifest.json theme_color is ${manifest.theme_color}, not ${defaultTheme('dark').tokens.background}`
+    );
+  }
+
   const scaffold = walk(path.join(ROOT, 'dist'), ['.png', '.ico', '.svg', '.webp']).filter(
     (file) => /logo\d|android-chrome|safari-pinned-tab|\.webp$/i.test(path.basename(file))
   );
@@ -645,19 +1272,25 @@ await check('no page ships first-party JavaScript', () => {
   const offenders = [];
   for (const page of builtPages()) {
     const html = readFileSync(page, 'utf8');
+    let runtimes = 0;
     for (const match of html.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/g)) {
       const [, body] = match;
+      // Astro strips attributes from an `is:inline` block, so the two scripts the site owns are
+      // identified by what they do: the gtag bootstrap pushes to dataLayer, the theme runtime
+      // carries the palette payload under a storage key. Neither is a bundle.
       const ok =
         match[0].includes('application/ld+json') ||
         match[0].includes('googletagmanager.com/gtag/js') ||
-        // Astro strips attributes from an `is:inline` block, so the gtag bootstrap is
-        // identified by what it does rather than by anything written on its tag.
-        /window\.dataLayer|function gtag\(\)/.test(body);
+        /window\.dataLayer|function gtag\(\)/.test(body) ||
+        body.includes('storageKey');
+      if (body.includes('storageKey')) runtimes += 1;
       if (!ok) offenders.push(`${path.relative(ROOT, page)}: ${match[0].slice(0, 80)}`);
     }
+    // One inline runtime per page: a second copy would resolve the preference twice.
+    if (runtimes !== 1) offenders.push(`${path.relative(ROOT, page)}: ${runtimes} theme runtimes`);
   }
   assert.deepEqual(offenders, [], `unexpected scripts:\n     ${offenders.join('\n     ')}`);
-  return 'no bundles in dist; only JSON-LD and the analytics tag';
+  return 'no bundles in dist; JSON-LD, the analytics tag and one inline theme runtime per page';
 });
 
 await check('the copy model carries no commercial terms', () => {
