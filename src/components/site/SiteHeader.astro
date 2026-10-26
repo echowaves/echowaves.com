@@ -18,6 +18,9 @@ const shellPath = path === '/' ? '~/echowaves' : `~/echowaves${path}`;
 <header class="chrome">
   <div class="titlebar">
     <span class="lights" aria-hidden="true"><i></i><i></i><i></i></span>
+    <a class="mark" href="/" aria-label="Echowaves home">
+      <img src="/logo.png" width="57" height="64" alt="" />
+    </a>
     <p class="path">
       <span class="host">{shellPrompt}</span><span class="sep"> &mdash; </span>{shellPath}
     </p>
@@ -81,6 +84,25 @@ const shellPath = path === '/' ? '~/echowaves' : `~/echowaves${path}`;
     background-color: var(--accent);
   }
 
+  /*
+   * The mark, cut out of scripts/echowaves-logo.jpeg by `npm run icons`. It links to the
+   * route the first tab already points at, so the anchor carries the name and the image
+   * keeps an empty alt — one label, not two. Underline is off because an underline across
+   * a logo reads as a rendering accident, and this link is identified by its position and
+   * its accessible name rather than by paint.
+   */
+  .mark {
+    display: inline-flex;
+    flex: none;
+    text-decoration: none;
+  }
+
+  .mark img {
+    display: block;
+    width: auto;
+    height: var(--space-5);
+  }
+
   .path {
     font-size: var(--text-fine);
     color: var(--text-dim);
@@ -98,15 +120,16 @@ const shellPath = path === '/' ? '~/echowaves' : `~/echowaves${path}`;
   }
 
   /*
-   * Seven tabs never fit 375px. The strip scrolls horizontally instead of hiding
-   * navigation behind a disclosure, which keeps every route one tab away and needs
-   * no script. The active tab is scrolled into view by the browser on focus.
+   * Seven tabs never fit 375px, so the strip wraps onto more rows instead of
+   * scrolling out of sight or hiding routes behind a disclosure. A scroll container
+   * gave no affordance that it scrolled: the last tab looked like no tab existed.
+   * Wrapping keeps every route visible at once and still needs no script; the chrome
+   * grows taller on narrow screens, which is what `--chrome-offset` accounts for.
    */
   .tabs {
     display: flex;
-    gap: var(--space-1);
-    overflow-x: auto;
-    scrollbar-width: thin;
+    flex-wrap: wrap;
+    gap: 0 var(--space-1);
     background-color: var(--panel);
     padding: 0 var(--space-1);
   }

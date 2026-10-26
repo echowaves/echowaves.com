@@ -31,6 +31,7 @@
     "preview": "astro preview",
     "verify": "node scripts/verify-site.mjs",
     "check": "astro build && npm run verify",
-    "og": "node scripts/make-og.mjs"
+    "og": "node scripts/make-og.mjs",
+    "icons": "node scripts/make-icons.mjs"
   }
 }
