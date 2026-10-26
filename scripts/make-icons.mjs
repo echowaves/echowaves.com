@@ -1,8 +1,14 @@
 /*
  * Regenerates every icon and the nav logo from one drawing: scripts/echowaves-logo.jpeg.
  *
- *   npm run icons        # writes public/logo.png, public/favicon.*, public/apple-touch-icon.png,
- *                        # public/icon-*.png and public/manifest.json
+ *   npm run icons        # writes public/logo.png, public/favicon.* including one favicon pair
+ *                        # per theme, public/apple-touch-icon.png, public/icon-*.png and
+ *                        # public/manifest.json
+ *
+ * Favicons come in one pair per palette in src/data/themes.ts — the mark in that theme's accent
+ * on that theme's ground — because a tab icon is the first thing the active theme paints and the
+ * head swaps `href` to match. The nav logo needs no variants: SiteHeader uses it as a CSS mask
+ * and paints it with `--accent`, so it follows the theme without shipping eight copies.
  *
  * The artwork is a JPEG on white, so most of this script is turning that into clean
  * transparency: colour-key the white (which also clears the gaps between the arcs, not just
@@ -22,13 +28,19 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { identity, pages } from '../src/data/site.ts';
+import { defaultTheme, FAVICON_SIZES, faviconHref, themes } from '../src/data/themes.ts';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const SOURCE = path.join(ROOT, 'scripts', 'echowaves-logo.jpeg');
 const PUBLIC = path.join(ROOT, 'public');
 
-/** The near-black of the window: the plate under any icon a launcher may tint or mask. */
-const BACKGROUND = '#060606';
+/**
+ * Phosphor's near-black: the plate under the icons a launcher or iOS paints, and the manifest's
+ * colour. A launcher installs one icon, so it carries the default dark palette rather than a
+ * choice the browser has not made yet; the per-theme favicons are what follow a theme.
+ */
+const DARK_DEFAULT = defaultTheme('dark');
+const BACKGROUND = DARK_DEFAULT.tokens.background;
 
 /**
  * White becomes transparency — including the gaps between the arcs, not just the outer
@@ -75,10 +87,13 @@ function magick(args) {
   }
 }
 
-function raster(px, file, { plate = true, opaque = false } = {}) {
+function raster(px, file, { plate = true, opaque = false, tint = null, background = BACKGROUND } = {}) {
   const geometry = plate ? String(px) : `x${px}`;
   magick([SOURCE, ...(plate ? PLATE : MARK), '-resize', geometry,
-    ...(opaque ? ['-background', BACKGROUND, '-flatten'] : []),
+    // `-colorize 100` replaces the artwork's own colour with a palette accent and leaves the alpha
+    // it was cut with untouched — a flat sprite in the theme's accent, not a recoloured JPEG.
+    ...(tint ? ['-fill', tint, '-colorize', '100'] : []),
+    ...(opaque ? ['-background', background, '-flatten'] : []),
     '-define', 'png:compression-level=9', file]);
 }
 
@@ -86,6 +101,22 @@ const scratch = mkdtempSync(path.join(tmpdir(), 'echowaves-icons-'));
 try {
   for (const { px, file, plate, opaque } of RASTERS) {
     raster(px, path.join(PUBLIC, file), { plate, opaque });
+  }
+
+  /*
+   * One tab icon per palette: the mark in that theme's accent, sitting on that theme's ground.
+   * The theme script rewrites `link[rel~=icon] href` to these names — from the same `faviconHref`
+   * template, which is why neither side can move without the other noticing; with scripts disabled
+   * the transparent pair above stays, because it reads on a light tab strip and a dark one alike.
+   */
+  for (const theme of themes) {
+    for (const px of FAVICON_SIZES) {
+      raster(px, path.join(PUBLIC, faviconHref(theme.id, px)), {
+        opaque: true,
+        tint: theme.tokens.accent,
+        background: theme.tokens.background,
+      });
+    }
   }
 
   magick([SOURCE, ...MARK, '-resize', `x${LOGO_HEIGHT}`, '-define', 'png:compression-level=9',
@@ -122,7 +153,11 @@ const manifest = {
 
 writeFileSync(path.join(PUBLIC, 'manifest.json'), `${JSON.stringify(manifest, null, 2)}\n`);
 
+const themedFavicons = themes.length * FAVICON_SIZES.length;
+
 console.log(
   `wrote logo.png (h=${LOGO_HEIGHT}), ${RASTERS.map((r) => r.file).join(', ')}, ` +
-    `favicon.ico (${ICO_SIZES.join('/')}px) and manifest.json from scripts/echowaves-logo.jpeg`
+    `favicon.ico (${ICO_SIZES.join('/')}px), ${themedFavicons} per-theme favicons ` +
+    `(${themes.map((theme) => theme.id).join(', ')}) and manifest.json (theme_color ${BACKGROUND}) ` +
+    'from scripts/echowaves-logo.jpeg'
 );

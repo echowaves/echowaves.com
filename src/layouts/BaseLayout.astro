@@ -3,6 +3,7 @@ import '../index.css';
 import SiteHeader from '../components/site/SiteHeader.astro';
 import SiteFooter from '../components/site/SiteFooter.astro';
 import { hero } from '../data/site.ts';
+import { defaultTheme, themeScriptPayload } from '../data/themes.ts';
 
 interface Props {
   title: string;
@@ -22,11 +23,194 @@ const {
 // LinkedIn reserve the large image without cropping, and its alt text is the same sentence
 // the page itself opens with.
 const ogAlt = `${hero.name}${hero.synopsis} \u2014 ${hero.headline}`;
+
+/*
+ * With no script there is one palette per scheme (the media-query fallback in src/index.css).
+ * With a script there are eight, and the reader chooses. The runtime below is inline because it
+ * has to run before the first paint — a stylesheet or a deferred script would show the wrong
+ * palette for a frame — and because the site ships no JS bundle. It reads the stored preference,
+ * paints `<html data-theme>`, repaints the tab colour and the favicons from the same palette,
+ * follows the OS while the mode is `system` or `custom`, re-reads the store when another tab
+ * writes it, and wires the titlebar control. A
+ * corrupt or unknown stored value resolves to `system`; nothing here throws.
+ */
+const themeDefaultDark = defaultTheme('dark');
+const themeDefaultLight = defaultTheme('light');
+const themeScript = `(${function () {
+  var P = __PAYLOAD__;
+  var byId = {};
+  for (var i = 0; i < P.themes.length; i++) byId[P.themes[i].id] = P.themes[i];
+
+  function stored() {
+    try {
+      var value = JSON.parse(localStorage.getItem(P.storageKey) || '{}');
+      return value && typeof value === 'object' ? value : {};
+    } catch (error) {
+      return {};
+    }
+  }
+
+  // Tampered or half-written data is ignored rather than trusted: an unknown id or mode falls
+  // back to the group default and to `system`, and the next deliberate change overwrites it.
+  function pinned(id, group) {
+    return byId[id] && byId[id].group === group ? id : P.defaults[group];
+  }
+
+  // One read of the store, shared by first paint and by a `storage` event from another tab: the
+  // second one is the same resolution, not a special case. `sync` belongs to the control further
+  // down, which does not exist yet while this runs.
+  var mode = 'system';
+  var light = P.defaults.light;
+  var dark = P.defaults.dark;
+  var sync = null;
+
+  function read() {
+    var preference = stored();
+    mode = P.modes.indexOf(preference.mode) > -1 ? preference.mode : 'system';
+    light = pinned(preference.light, 'light');
+    dark = pinned(preference.dark, 'dark');
+  }
+
+  var query = window.matchMedia ? window.matchMedia('(prefers-color-scheme: light)') : null;
+
+  function resolvedId() {
+    if (mode === 'light') return light;
+    if (mode === 'dark') return dark;
+    // `system` and `custom` both follow the OS; custom only swaps which palettes are in play.
+    return query && query.matches ? light : dark;
+  }
+
+  function apply() {
+    var theme = byId[resolvedId()] || byId[P.defaults.dark];
+    document.documentElement.setAttribute('data-theme', theme.id);
+    // Two theme-color tags ship: an unqualified one and a `(prefers-color-scheme: light)` one, so
+    // the tab colour matches the page with scripts off. Once a palette is chosen it outranks the
+    // OS scheme, so both are given the chosen ground and the browser cannot pick the stale one.
+    var metas = document.querySelectorAll('meta[name="theme-color"]');
+    for (var m = 0; m < metas.length; m++) metas[m].setAttribute('content', theme.bg);
+    // Only the PNG favicons, which exist per theme. The .ico container, the apple-touch tile and
+    // the manifest icons stay as `npm run icons` cut them: transparent artwork on any tab strip.
+    // The payload carries one href template per size, rendered by the registry's own `faviconHref`,
+    // so the script cannot invent a filename the writer never made — a swap to a path nobody
+    // generated is a default globe in the tab, which is nothing for anyone to notice.
+    var links = document.querySelectorAll('link[rel~="icon"]');
+    for (var j = 0; j < links.length; j++) {
+      var size = (links[j].getAttribute('sizes') || '').split('x')[0];
+      var template = /^[0-9]+$/.test(size) ? P.faviconTemplates[size] : null;
+      if (template) links[j].setAttribute('href', template.split('{id}').join(theme.id));
+    }
+  }
+
+  read();
+  apply();
+
+  if (window.addEventListener) {
+    window.addEventListener('storage', function (event) {
+      // Only other documents fire this, so it cannot loop against our own save().
+      if (event && event.key && event.key !== P.storageKey) return;
+      read();
+      apply();
+      if (sync) sync();
+    });
+  }
+
+  if (query) {
+    var follow = function () {
+      if (mode === 'system' || mode === 'custom') apply();
+    };
+    if (query.addEventListener) query.addEventListener('change', follow);
+    else if (query.addListener) query.addListener(follow);
+  }
+
+  // The control lives in the title bar, which does not exist yet while this runs.
+  function whenReady(handler) {
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', handler);
+    else handler();
+  }
+
+  whenReady(function () {
+    var modeSelect = document.getElementById('theme-mode');
+    if (!modeSelect) return;
+    var pair = document.getElementById('theme-pair');
+    var lightSelect = document.getElementById('theme-light');
+    var darkSelect = document.getElementById('theme-dark');
+
+    sync = function () {
+      modeSelect.value = mode;
+      if (lightSelect) lightSelect.value = light;
+      if (darkSelect) darkSelect.value = dark;
+      // The pair is the custom pinning surface; hidden means out of the tab order and the
+      // accessibility tree, which is what a mode that does not use them wants.
+      if (pair) pair.hidden = mode !== 'custom';
+    };
+
+    function save() {
+      try {
+        localStorage.setItem(P.storageKey, JSON.stringify({ mode: mode, light: light, dark: dark }));
+      } catch (error) {
+        /* Private mode or a full quota: the choice still applies to this page. */
+      }
+    }
+
+    modeSelect.addEventListener('change', function () {
+      mode = P.modes.indexOf(modeSelect.value) > -1 ? modeSelect.value : 'system';
+      save();
+      apply();
+      sync();
+    });
+
+    var pins = [
+      [lightSelect, 'light'],
+      [darkSelect, 'dark'],
+    ];
+    for (var k = 0; k < pins.length; k++) {
+      (function (select, group) {
+        if (!select) return;
+        select.addEventListener('change', function () {
+          if (group === 'light') light = pinned(select.value, 'light');
+          else dark = pinned(select.value, 'dark');
+          save();
+          apply();
+          sync();
+        });
+      })(pins[k][0], pins[k][1]);
+    }
+
+    sync();
+  });
+}})()`.replace('__PAYLOAD__', () => JSON.stringify(themeScriptPayload()));
 ---
 
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!--
+      The tab colour and the icons come before the theme runtime, in this order, because the
+      runtime paints them. Two theme-color tags: `media` picks one per OS scheme, which is what a
+      reader with scripts off gets (the media-query palette in src/index.css has the same two
+      grounds), and the runtime overwrites both with whatever palette it actually resolved. Each
+      palette has its own favicon; the transparent pair here reads on a light tab strip and a dark
+      one alike. Every icon here was cut from scripts/echowaves-logo.jpeg by `npm run icons`; what
+      sat here before was Create React App's atom logo at six sizes and a manifest that still called
+      this site "Create React App Sample".
+    -->
+    <meta name="theme-color" content={themeDefaultDark.tokens.background} />
+    <meta
+      name="theme-color"
+      media="(prefers-color-scheme: light)"
+      content={themeDefaultLight.tokens.background}
+    />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.json" />
+
+    <script is:inline set:html={themeScript} />
+
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-22JW6D5KRZ"></script>
     <script is:inline>
@@ -36,9 +220,6 @@ const ogAlt = `${hero.name}${hero.synopsis} \u2014 ${hero.headline}`;
       gtag('config', 'G-22JW6D5KRZ');
     </script>
 
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#060606" />
     <title>{title}</title>
     <meta name="description" content={description} />
 
@@ -62,18 +243,6 @@ const ogAlt = `${hero.name}${hero.synopsis} \u2014 ${hero.headline}`;
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImage} />
     <meta name="twitter:image:alt" content={ogAlt} />
-
-    <!--
-      Icons, every one of them cut from scripts/echowaves-logo.jpeg by `npm run icons`:
-      transparent artwork on purpose, so the mark sits on a light tab strip and a dark one
-      alike. What sat here before was Create React App's atom logo at six sizes and a
-      manifest that still called this site "Create React App Sample".
-    -->
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
-    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-    <link rel="manifest" href="/manifest.json" />
 
     <!-- JSON-LD Organization (every page) -->
     <script type="application/ld+json" set:html={JSON.stringify({
