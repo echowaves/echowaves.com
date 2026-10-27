@@ -10,9 +10,12 @@
  * `npm run verify` fails if the stylesheet region and this registry disagree, so a palette
  * added here cannot half-ship.
  *
- * Values are each palette's published hexes (see `source` on every theme). DESIGN.md records
- * the measured contrast table; the human ruling for this feature is that canonical hexes ship
- * as published, and only Phosphor — the site's own palette — is held to measured AA.
+ * Values start as each palette's published hexes (see `source` on every theme), and DESIGN.md
+ * records the measured contrast table. Guest palettes keep published hexes except where a text
+ * role falls below AA on a surface it renders on: then the hue is kept and only the lightness
+ * moves the minimum to clear 4.5:1, and the move is recorded in `source` beside it (ruling of
+ * 2026-10-26, superseding the first theming release's "published hexes as-is", which shipped
+ * invisible Dracula body copy).
  */
 
 export type ThemeGroup = 'light' | 'dark';
@@ -37,9 +40,11 @@ export type TokenName = (typeof TOKEN_NAMES)[number];
 
 /**
  * The tokens a reader has to be able to see, what each is measured against, and the WCAG target.
- * `npm run verify` holds a `measured` palette to these numbers; a palette shipping canonical
- * hexes is held to a legibility floor instead, because bending someone else's published palette to
- * 4.5:1 would stop it being that palette (the decision is recorded in this feature's spec).
+ * A role is listed once per surface its text actually renders on — body copy on `background`,
+ * tab labels and footer meta on `panel` (the chrome paints panel), hero chips on `panel-raised`.
+ * `npm run verify` holds every palette — this site's own or a guest's — to these numbers on text
+ * roles. A guest hex below 4.5 nudges in lightness, never hue, until it clears; the only
+ * exemption left is the rule token, where pale published borders are the palette being itself.
  */
 export const CONTRAST_ROLES: { token: TokenName; against: TokenName; label: string; aa: number }[] = [
   { token: 'text', against: 'background', label: 'headlines', aa: 4.5 },
@@ -48,17 +53,16 @@ export const CONTRAST_ROLES: { token: TokenName; against: TokenName; label: stri
   { token: 'emphasis', against: 'background', label: 'one emphasis', aa: 4.5 },
   { token: 'danger', against: 'background', label: 'refusal red', aa: 4.5 },
   { token: 'ink-on-accent', against: 'accent', label: 'ink on accent', aa: 4.5 },
+  // The same roles again on the surfaces the chrome paints: `.tab`, `.path` and footer meta are
+  // text-dim on panel, `.host` and footer links are accent on panel, hero chips are body copy on
+  // panel-raised. Measuring only against background is how Dracula's tab labels stayed at 2.97:1.
+  { token: 'text-dim', against: 'panel', label: 'tabs & meta on panel', aa: 4.5 },
+  { token: 'accent', against: 'panel', label: 'links on panel', aa: 4.5 },
+  { token: 'text', against: 'panel-raised', label: 'copy on raised', aa: 4.5 },
   // A rule is a boundary, not text: 3:1. Light palettes publish pale rules on purpose, so this
   // one is only enforced where the palette was tuned for it.
   { token: 'border', against: 'background', label: 'rules, frame', aa: 3 },
 ];
-
-/**
- * Below this a colour is not a style choice any more. Scoped to the text roles in
- * `CONTRAST_ROLES` — every palette clears it on all six, while rules deliberately sit below it:
- * a light palette publishes pale borders (1.45:1 to 1.69:1) and that is the palette, not a defect.
- */
-export const LEGIBILITY_FLOOR = 2.5;
 
 export interface Theme {
   /** URL-safe id; becomes `html[data-theme="<id>"]` and the favicon file suffix. */
@@ -71,11 +75,13 @@ export interface Theme {
   /** Where the hexes come from, so a reader can check them and DESIGN.md can cite them. */
   source: string;
   /**
-   * True for a palette this site tuned itself, false for one it inherited. A measured palette is
-   * held to WCAG AA on every role in `CONTRAST_ROLES`; an inherited one ships its published hexes
-   * and is held to the legibility floor, with anything below AA named in DESIGN.md's table.
+   * True for a palette this site tuned itself, false for one it inherited. Every palette is held
+   * to WCAG AA on the text roles in `CONTRAST_ROLES`; `measured` additionally binds its rule token
+   * to 3:1, because an inherited palette's pale published rules are part of that palette.
    */
   measured?: boolean;
+  /** True when a published hex moved to clear AA; each move is narrated in `source`. */
+  nudged?: boolean;
   tokens: Record<TokenName, string>;
 }
 
@@ -126,10 +132,11 @@ export const themes: Theme[] = [
   },
   {
     id: 'solarized-light',
+    nudged: true,
     label: 'Solarized Light',
     group: 'light',
     source:
-      'Solarized (Ethan Schoonover) light scheme — grounds base3 (#fdf6e3) and base2 (#eee8d5), text base02/base01, rules base0/base1, plus the orange/blue/red accents. The yellow (#b58900) is the palette’s own emphasis hue but measures 2.98:1 on the light ground base3 (#fdf6e3), so the orange takes the role here; panel-raised is a 5% tint of base2 toward base02, because Solarized publishes two grounds per scheme',
+      'Solarized (Ethan Schoonover) light scheme — grounds base3 (#fdf6e3) and base2 (#eee8d5), text base02/base01, rules base0/base1, plus the orange/blue/red accents. The yellow (#b58900) is the palette’s own emphasis hue but measures 2.98:1 on the light ground base3 (#fdf6e3), so the orange takes the role here; panel-raised is a 5% tint of base2 toward base02, because Solarized publishes two grounds per scheme. Blue, orange and red are darkened in lightness only (from #268bd2, #cb4b16, #dc322f) so prompt, emphasis and refusal clear text AA on both grounds, and base01 body copy likewise (from #586e75), which fell below AA on the panel ground',
     tokens: {
       background: '#fdf6e3',
       panel: '#eee8d5',
@@ -138,19 +145,20 @@ export const themes: Theme[] = [
       border: '#839496',
       'decoration-green': '#93a1a1',
       text: '#073642',
-      'text-dim': '#586e75',
-      accent: '#268bd2',
-      emphasis: '#cb4b16',
-      danger: '#dc322f',
+      'text-dim': '#566b72',
+      accent: '#1e6ca3',
+      emphasis: '#c24815',
+      danger: '#d72724',
       'ink-on-accent': '#fdf6e3',
     },
   },
   {
     id: 'one-light',
+    nudged: true,
     label: 'One Light',
     group: 'light',
     source:
-      'Atom One Light (`@mono-*`, `@hue-*`, `@syntax-bg` from one-light-syntax); panel and panel-raised darken the published ground by 3% and 6% lightness, the same LESS operation the palette file uses for its gutter grey',
+      'Atom One Light (`@mono-*`, `@hue-*`, `@syntax-bg` from one-light-syntax); panel and panel-raised darken the published ground by 3% and 6% lightness, the same LESS operation the palette file uses for its gutter grey; blue and red are darkened in lightness only (from #4078f2, #e45649) to clear text AA on the ground and on the panel chrome',
     tokens: {
       background: '#fafafa',
       panel: '#f2f2f2',
@@ -160,17 +168,18 @@ export const themes: Theme[] = [
       'decoration-green': '#a0a1a7',
       text: '#383a42',
       'text-dim': '#696c77',
-      accent: '#4078f2',
+      accent: '#2363f0',
       emphasis: '#986801',
-      danger: '#e45649',
+      danger: '#d72f20',
       'ink-on-accent': '#ffffff',
     },
   },
   {
     id: 'gruvbox-light',
+    nudged: true,
     label: 'Gruvbox Light',
     group: 'light',
-    source: 'Gruvbox (Moria de Bar) light background ramp bg0…bg4, fg greys and the bright accents',
+    source: 'Gruvbox (Moria de Bar) light background ramp bg0…bg4, fg greys and the bright accents; the orange is darkened in lightness only (from #b57600) to clear text AA on the cream ground',
     tokens: {
       background: '#fbf1c7',
       panel: '#f2e5bc',
@@ -181,25 +190,26 @@ export const themes: Theme[] = [
       text: '#282828',
       'text-dim': '#504945',
       accent: '#076678',
-      emphasis: '#b57600',
+      emphasis: '#966200',
       danger: '#9d0006',
       'ink-on-accent': '#fbf1c7',
     },
   },
   {
     id: 'dracula',
+    nudged: true,
     label: 'Dracula',
     group: 'dark',
-    source: 'Dracula spec palette (background, current line, comment, cyan, orange, red)',
+    source: 'Dracula spec palette (background, current line, comment, cyan, orange, red); body copy is Comment lightened in lightness only (from #6272a4, which measured 3.03:1 on Background — the invisible-text complaint of 2026-10-26) until it clears AA on Background and on the panel chrome alike; panel-raised is the same Comment darkened to hold Foreground at AA in hero chips, while rules and decoration keep the published Comment',
     tokens: {
       background: '#282a36',
       panel: '#44475a',
-      'panel-raised': '#6272a4',
+      'panel-raised': '#5f70a3',
       desk: '#21222c',
       border: '#6272a4',
       'decoration-green': '#6272a4',
       text: '#f8f8f2',
-      'text-dim': '#6272a4',
+      'text-dim': '#afb7d1',
       accent: '#8be9fd',
       emphasis: '#ffb86c',
       danger: '#ff5555',
@@ -208,9 +218,10 @@ export const themes: Theme[] = [
   },
   {
     id: 'nord',
+    nudged: true,
     label: 'Nord',
     group: 'dark',
-    source: 'Nord polar north nord0…nord6, nord8, nord11 and nord13',
+    source: 'Nord polar north nord0…nord6, nord8, nord11 and nord13; the red is nord11 (#bf616a) and the frost blue nord8 (#88c0d0) each moved in lightness only to clear text AA on nord0 and on the panel chrome',
     tokens: {
       background: '#2e3440',
       panel: '#434c5e',
@@ -220,18 +231,19 @@ export const themes: Theme[] = [
       'decoration-green': '#4c566a',
       text: '#eceff4',
       'text-dim': '#d8dee9',
-      accent: '#88c0d0',
+      accent: '#91c5d3',
       emphasis: '#ebcb8b',
-      danger: '#bf616a',
+      danger: '#d08b91',
       'ink-on-accent': '#2e3440',
     },
   },
   {
     id: 'solarized-dark',
+    nudged: true,
     label: 'Solarized Dark',
     group: 'dark',
     source:
-      'Solarized dark scheme — ground base03 (#002b36), panel base02, rules base01/base1, text base3/base1, plus the accents; panel-raised is an 8% tint of base02 toward base3, because Solarized publishes two grounds per scheme',
+      'Solarized dark scheme — ground base03 (#002b36), panel base02, rules base01/base1, text base3/base1, plus the accents; panel-raised is an 8% tint of base02 toward base3, because Solarized publishes two grounds per scheme. Red and cyan are lightened in lightness only (from #dc322f, #2aa198) to clear text AA on base03 and on the panel chrome',
     tokens: {
       background: '#002b36',
       panel: '#073642',
@@ -241,9 +253,9 @@ export const themes: Theme[] = [
       'decoration-green': '#586e75',
       text: '#fdf6e3',
       'text-dim': '#93a1a1',
-      accent: '#2aa198',
+      accent: '#2caaa0',
       emphasis: '#b58900',
-      danger: '#dc322f',
+      danger: '#e56663',
       'ink-on-accent': '#002b36',
     },
   },
