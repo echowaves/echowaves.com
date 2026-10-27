@@ -185,7 +185,6 @@ const contrast = await import(pathToFileURL(path.join(ROOT, 'scripts', 'lib', 'c
 const {
   CONTRAST_ROLES,
   FAVICON_SIZES,
-  LEGIBILITY_FLOOR,
   MODES,
   STORAGE_KEY,
   TOKEN_NAMES,
@@ -810,7 +809,6 @@ await check('every palette declares the full token set and stays legible', () =>
   }
 
   const problems = [];
-  const subAA = [];
   for (const theme of themes) {
     for (const token of TOKEN_NAMES) {
       const value = theme.tokens[token];
@@ -818,25 +816,20 @@ await check('every palette declares the full token set and stays legible', () =>
     }
     for (const role of CONTRAST_ROLES) {
       const measured = ratio(theme.tokens[role.token], theme.tokens[role.against]);
-      // A palette this site tuned is held to WCAG AA on every role. One it inherited ships its
-      // published hexes, so only the legibility floor applies — except its rules, which light
-      // palettes publish pale on purpose and which carry no text.
-      const required = theme.measured ? role.aa : role.token === 'border' ? 0 : LEGIBILITY_FLOOR;
+      // Every palette — this site's or a guest's — carries AA on the text roles: sub-AA text is
+      // how Dracula shipped invisible body copy. A guest hex below 4.5 nudges in lightness, never
+      // hue, and records the move in `source`. Rules are exempt unless the palette was tuned here,
+      // because a light palette publishes pale rules on purpose and they carry no text.
+      const required = role.token === 'border' && !theme.measured ? 0 : role.aa;
       if (measured < required) {
         problems.push(
           `${theme.id}: --${role.token} on --${role.against} is ${measured}:1, needs ${required}:1`
         );
-      } else if (measured < role.aa && role.token !== 'border') {
-        // Canonical hexes as-is is a recorded decision, not an oversight: name it, do not hide it.
-        subAA.push(`${theme.id} --${role.token} ${measured}:1`);
       }
     }
   }
   assert.deepEqual(problems, [], `\n     ${problems.join('\n     ')}`);
-  const note = subAA.length
-    ? `Phosphor holds AA everywhere; canonical palettes ship published hexes below it on ${subAA.length} roles (${subAA.slice(0, 3).join(', ')}…), every one recorded in DESIGN.md`
-    : 'every palette clears AA on every text role';
-  return `${note}; pale rules are a light palette being itself, not a failure`;
+  return 'every palette clears AA on every text role; pale guest rules are a palette being itself, not a failure';
 });
 
 await check('print and forced colours still outrank every palette', () => {

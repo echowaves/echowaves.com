@@ -6,8 +6,8 @@
  *
  * Ratios are WCAG 2.1 relative luminance from scripts/lib/contrast.mjs — the same maths
  * `npm run verify` enforces, so a number quoted in the contract is the number that fails a build.
- * A palette this site tuned (Phosphor) must clear AA on every role; a palette it inherited ships
- * its published hexes, and the row says so rather than hiding it.
+ * Every palette must clear AA on the text roles; Phosphor — the one this site tuned — clears 3:1
+ * on rules too, while guest palettes publish their own rule colours and are exempt there.
  */
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -27,11 +27,12 @@ const against = (theme, role) => theme.tokens[role.against];
 const rows = (list) => {
   const lines = [];
   for (const theme of list) {
-    lines.push(
-      `| \`${theme.id}\` | ${theme.tokens.background} | ${
-        theme.measured ? 'measured, AA required' : 'canonical hexes'
-      } | ${TOKEN_NAMES.length} |`
-    );
+    const hexes = theme.measured
+      ? 'measured here, AA incl. rules'
+      : theme.nudged
+        ? 'published, text roles nudged to AA'
+        : 'canonical';
+    lines.push(`| \`${theme.id}\` | ${theme.tokens.background} | ${hexes} | ${TOKEN_NAMES.length} |`);
   }
   return lines;
 };
@@ -41,9 +42,10 @@ if (flat) {
     console.log(`\n${theme.id} — ${theme.label} (${theme.group})${theme.measured ? ', measured' : ''}`);
     for (const role of CONTRAST_ROLES) {
       const value = ratio(theme.tokens[role.token], against(theme, role));
-      const verdict = value >= role.aa ? 'AA' : value >= 3 ? 'AA large/UI' : 'below AA';
+      const exempt = role.token === 'border' && !theme.measured;
+      const verdict = exempt ? 'published rule colour (exempt)' : value >= role.aa ? 'AA' : value >= 3 ? 'AA large/UI' : 'below AA';
       console.log(
-        `  --${role.token.padEnd(15)} ${theme.tokens[role.token]} on ${against(theme, role)}  ${String(value).padStart(6)}:1  ${verdict}`
+        `  --${role.token.padEnd(15)} on ${String(against(theme, role)).padEnd(13)} ${theme.tokens[role.token]}  ${value.toFixed(2).padStart(6)}:1  ${verdict}`
       );
     }
     console.log(`  source: ${theme.source}`);
@@ -61,12 +63,12 @@ if (flat) {
     for (const theme of list) {
       const cells = CONTRAST_ROLES.map((role) => {
         const value = ratio(theme.tokens[role.token], against(theme, role));
-        return `\`${theme.tokens[role.token]}\` ${value}:1`;
+        return `\`${theme.tokens[role.token]}\` ${value.toFixed(2)}:1`;
       });
       console.log(`| ${theme.label} | ${cells.join(' | ')} |`);
     }
   }
   console.log(
-    '\nRatios are against `--background`, except ink-on-accent, which sits on `--accent`. AA is 4.5:1 for text and 3:1 for a rule.'
+    '\nEach role is measured on the surface its text renders on (`--background`, `--panel` or `--panel-raised`; ink-on-accent sits on `--accent`). AA is 4.5:1 for every text role in every palette; the 3:1 rule floor is enforced on palettes this site tuned — guest rules ship published and pale.'
   );
 }

@@ -23,5 +23,6 @@ export const contrastRatio = (a, b) => {
   return (high + 0.05) / (low + 0.05);
 };
 
-/** A ratio rounded the way DESIGN.md writes it: two decimals, one decimal implied zero kept. */
+/** A ratio rounded to two decimals — the guard's threshold. Writers of fixed tables format
+ * further with `toFixed(2)` so an implied trailing zero survives on the page. */
 export const ratio = (a, b) => Math.round(contrastRatio(a, b) * 100) / 100;
