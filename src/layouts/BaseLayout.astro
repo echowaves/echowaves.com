@@ -30,9 +30,10 @@ const ogAlt = `${hero.name}${hero.synopsis} \u2014 ${hero.headline}`;
  * has to run before the first paint — a stylesheet or a deferred script would show the wrong
  * palette for a frame — and because the site ships no JS bundle. It reads the stored preference,
  * paints `<html data-theme>`, repaints the tab colour and the favicons from the same palette,
- * follows the OS while the mode is `system` or `custom`, re-reads the store when another tab
- * writes it, and wires the titlebar control. A
- * corrupt or unknown stored value resolves to `system`; nothing here throws.
+ * follows the OS while the mode is `system`, re-reads the store when another tab writes it, and
+ * wires the titlebar control. A corrupt or unknown stored value — including a stored `custom`
+ * mode from before 2026-10-27, which resolves as `system` with its pins — resolves to something
+ * honest; nothing here throws.
  */
 const themeDefaultDark = defaultTheme('dark');
 const themeDefaultLight = defaultTheme('light');
@@ -66,6 +67,9 @@ const themeScript = `(${function () {
 
   function read() {
     var preference = stored();
+    // A retired mode is an unknown mode: `custom` left the registry on 2026-10-27, so a stored
+    // custom pair lands on `system` here — which is exactly what custom did, follow the OS with
+    // these pins. The next deliberate save rewrites the mode as light, dark or system.
     mode = P.modes.indexOf(preference.mode) > -1 ? preference.mode : 'system';
     light = pinned(preference.light, 'light');
     dark = pinned(preference.dark, 'dark');
@@ -76,7 +80,7 @@ const themeScript = `(${function () {
   function resolvedId() {
     if (mode === 'light') return light;
     if (mode === 'dark') return dark;
-    // `system` and `custom` both follow the OS; custom only swaps which palettes are in play.
+    // `system` follows the OS between the stored pair — the pins are what "custom" used to be.
     return query && query.matches ? light : dark;
   }
 
@@ -116,7 +120,7 @@ const themeScript = `(${function () {
 
   if (query) {
     var follow = function () {
-      if (mode === 'system' || mode === 'custom') apply();
+      if (mode === 'system') apply();
     };
     if (query.addEventListener) query.addEventListener('change', follow);
     else if (query.addListener) query.addListener(follow);
@@ -129,19 +133,27 @@ const themeScript = `(${function () {
   }
 
   whenReady(function () {
-    var modeSelect = document.getElementById('theme-mode');
-    if (!modeSelect) return;
-    var pair = document.getElementById('theme-pair');
-    var lightSelect = document.getElementById('theme-light');
-    var darkSelect = document.getElementById('theme-dark');
+    var select = document.getElementById('theme-mode');
+    if (!select) return;
+    // The set-default groups arrive disabled in the markup — without a script they would be dead
+    // options — and this is the moment a script exists: wiring up is what earns them a click.
+    var groups = [document.getElementById('theme-set-light'), document.getElementById('theme-set-dark')];
+    for (var g = 0; g < groups.length; g++) {
+      if (groups[g]) groups[g].disabled = false;
+    }
+    var modeOptions = {
+      light: document.getElementById('theme-mode-light'),
+      dark: document.getElementById('theme-mode-dark'),
+    };
 
     sync = function () {
-      modeSelect.value = mode;
-      if (lightSelect) lightSelect.value = light;
-      if (darkSelect) darkSelect.value = dark;
-      // The pair is the custom pinning surface; hidden means out of the tab order and the
-      // accessibility tree, which is what a mode that does not use them wants.
-      if (pair) pair.hidden = mode !== 'custom';
+      // The displayed value always states what the page is painting: one of the three modes,
+      // never a palette id left over from a set-default pick.
+      select.value = mode;
+      // And the two dynamic labels name the palettes that means, from the same registry the
+      // markup rendered — after a pin or another tab's write, "Light — Solarized Light" follows.
+      if (modeOptions.light) modeOptions.light.textContent = P.modeLabels.light + ' — ' + byId[light].label;
+      if (modeOptions.dark) modeOptions.dark.textContent = P.modeLabels.dark + ' — ' + byId[dark].label;
     };
 
     function save() {
@@ -152,29 +164,32 @@ const themeScript = `(${function () {
       }
     }
 
-    modeSelect.addEventListener('change', function () {
-      mode = P.modes.indexOf(modeSelect.value) > -1 ? modeSelect.value : 'system';
+    // One handler for one control. Order of resolution is load-bearing: a value that names a
+    // mode is a mode first — a palette id colliding with a mode name must not shadow it — and a
+    // palette lookup answers only for its own keys, so inherited Object.prototype entries
+    // ('constructor' and friends) cannot masquerade as a theme. Unknown values (nobody typed
+    // them into a native select, but nothing about the DOM is trustworthy) settle on `system`.
+    select.addEventListener('change', function () {
+      var value = select.value;
+      if (P.modes.indexOf(value) > -1) {
+        mode = value;
+      } else if (
+        Object.prototype.hasOwnProperty.call(byId, value) &&
+        P.modes.indexOf(byId[value].group) > -1
+      ) {
+        // A set-default pick applies immediately: the palette is pinned to its group and the
+        // mode flips to that group, so the choice visibly works rather than waiting for an OS.
+        var theme = byId[value];
+        if (theme.group === 'light') light = theme.id;
+        else dark = theme.id;
+        mode = theme.group;
+      } else {
+        mode = 'system';
+      }
       save();
       apply();
       sync();
     });
-
-    var pins = [
-      [lightSelect, 'light'],
-      [darkSelect, 'dark'],
-    ];
-    for (var k = 0; k < pins.length; k++) {
-      (function (select, group) {
-        if (!select) return;
-        select.addEventListener('change', function () {
-          if (group === 'light') light = pinned(select.value, 'light');
-          else dark = pinned(select.value, 'dark');
-          save();
-          apply();
-          sync();
-        });
-      })(pins[k][0], pins[k][1]);
-    }
 
     sync();
   });

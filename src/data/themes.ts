@@ -261,15 +261,30 @@ export const themes: Theme[] = [
   },
 ];
 
-/** The four-way preference, GitHub's model. */
-export const MODES = ['light', 'dark', 'system', 'custom'] as const;
+/**
+ * The three-way preference. `system` follows the OS between the stored pair, so a fourth "custom"
+ * mode would only re-name System with non-default pins — dropped 2026-10-27; a stored `custom`
+ * resolves as `system` (the runtime's mode list no longer contains it).
+ */
+export const MODES = ['light', 'dark', 'system'] as const;
 export type ThemeMode = (typeof MODES)[number];
 
 export const MODE_LABELS: Record<ThemeMode, string> = {
   light: 'Light',
   dark: 'Dark',
   system: 'System',
-  custom: 'Custom',
+};
+
+/** The label of a mode option: the mode plus the palette it paints ("Light — Solarized Light"). */
+export const paintedModeLabel = (
+  mode: Extract<ThemeMode, 'light' | 'dark'>,
+  theme: { label: string }
+): string => `${MODE_LABELS[mode]} — ${theme.label}`;
+
+/** The two set-default section labels of the control, keyed by group. */
+export const SET_DEFAULT_LABELS: Record<ThemeGroup, string> = {
+  light: 'Set light default',
+  dark: 'Set dark default',
 };
 
 /** Where the preference lives. Corrupt or unreadable data is ignored, never fatal. */
@@ -350,11 +365,19 @@ export const themesRegionCss = (): string => {
   ].join('\n');
 };
 
-/** Payload for the pre-paint script: enough to resolve and paint, nothing more. */
+/** Payload for the pre-paint script: enough to resolve, paint and label, nothing more. */
 export const themeScriptPayload = () => ({
-  themes: themes.map((theme) => ({ id: theme.id, group: theme.group, bg: theme.tokens.background })),
+  // `label` travels so the control's dynamic option labels ("Light — Solarized Light") can be
+  // re-written by the runtime from the same registry the markup renders, not a second copy.
+  themes: themes.map((theme) => ({
+    id: theme.id,
+    group: theme.group,
+    label: theme.label,
+    bg: theme.tokens.background,
+  })),
   defaults: { light: defaultTheme('light').id, dark: defaultTheme('dark').id },
   modes: MODES as unknown as string[],
+  modeLabels: MODE_LABELS as unknown as Record<string, string>,
   storageKey: STORAGE_KEY,
   // Per size, the href with its id left blank — rendered by `faviconHref`, so the script paints
   // the writer's filenames and cannot invent a tidier one of its own.

@@ -1,22 +1,38 @@
 ---
-import { MODES, MODE_LABELS, themesInGroup } from '../../data/themes.ts';
+import {
+  MODE_LABELS,
+  SET_DEFAULT_LABELS,
+  defaultTheme,
+  paintedModeLabel,
+  themesInGroup,
+} from '../../data/themes.ts';
 
 /*
- * The reader's palette preference: one native select with the four modes GitHub uses — light,
- * dark, system, custom — and, in custom mode, one more per group to pin which palette each
- * scheme resolves to. Native widgets are chosen deliberately: they are keyboard-operable,
- * announced correctly and themed by the operating system without any of it being re-implemented.
+ * The reader's palette preference: one native select whose selectable states are Light, Dark and
+ * System — each naming what it paints ("Light — Solarized Light") — plus two groups that set the
+ * light and dark defaults. Picking a palette from a group applies immediately (the runtime pins
+ * it and switches to that group), so "my light theme" is one choice, not a mode to discover.
+ * System then means "switch between my chosen pair as the OS scheme changes"; what used to be
+ * "Custom" is just System with non-default pins, so the mode is gone.
  *
- * This component owns no state and ships no script of its own. The runtime in BaseLayout reads
- * the same ids back, persists the choice to localStorage and repaints; with scripts disabled the
- * selects simply do nothing and the media-query defaults in src/index.css stand.
+ * Native widgets are chosen deliberately: they are keyboard-operable, announced correctly and
+ * themed by the operating system without any of it being re-implemented. This component owns no
+ * state and ships no script of its own. The runtime in BaseLayout reads these ids back, enables
+ * the two groups (dead options are never left clickable), persists choices to localStorage and
+ * repaints; with scripts disabled the select simply does nothing and the media-query defaults in
+ * src/index.css stand.
  */
 const lightThemes = themesInGroup('light');
 const darkThemes = themesInGroup('dark');
+
+// The dynamic labels state what each mode paints before anything is stored: its group default.
+// The runtime rewrites them from the stored pins, so the value on display always says what the
+// page is painting. Both formats come from the registry — one source for every label the control
+// shows and the guards assert.
 ---
 
-<div class="theme" role="group" aria-labelledby="theme-mode-label">
-  <label class="sr-only" id="theme-mode-label" for="theme-mode">Theme</label>
+<div class="theme">
+  <label class="sr-only" for="theme-mode">Theme</label>
   <select class="control" id="theme-mode" name="theme-mode">
     <!--
       `system` is marked selected in the markup, not only set by the runtime: with scripts off no
@@ -24,19 +40,21 @@ const darkThemes = themesInGroup('dark');
       the page is not painting — the media query decides that, per OS. The runtime overwrites the
       value with whatever it resolves, so this is the honest placeholder rather than a default.
     -->
-    {MODES.map((mode) => <option value={mode} selected={mode === 'system'}>{MODE_LABELS[mode]}</option>)}
-  </select>
-
-  <div class="pins" id="theme-pair" hidden>
-    <label class="sr-only" for="theme-light">Light theme</label>
-    <select class="control" id="theme-light" name="theme-light">
+    <option value="system" selected>{MODE_LABELS.system}</option>
+    <option id="theme-mode-light" value="light">{paintedModeLabel('light', defaultTheme('light'))}</option>
+    <option id="theme-mode-dark" value="dark">{paintedModeLabel('dark', defaultTheme('dark'))}</option>
+    <!--
+      Disabled in the markup and enabled by the runtime when it wires up: without a script these
+      options cannot act, and offering them would be a dead option — a claim with no behaviour.
+      With scripts on they are the whole point of the control.
+    -->
+    <optgroup id="theme-set-light" label={SET_DEFAULT_LABELS.light} disabled>
       {lightThemes.map((theme) => <option value={theme.id}>{theme.label}</option>)}
-    </select>
-    <label class="sr-only" for="theme-dark">Dark theme</label>
-    <select class="control" id="theme-dark" name="theme-dark">
+    </optgroup>
+    <optgroup id="theme-set-dark" label={SET_DEFAULT_LABELS.dark} disabled>
       {darkThemes.map((theme) => <option value={theme.id}>{theme.label}</option>)}
-    </select>
-  </div>
+    </optgroup>
+  </select>
 </div>
 
 <style>
@@ -47,17 +65,6 @@ const darkThemes = themesInGroup('dark');
     /* The path line gives up its width first; the control keeps its own. */
     margin-inline-start: auto;
     flex: none;
-  }
-
-  .pins {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--space-1);
-  }
-
-  /* `display` here would otherwise beat the UA rule for [hidden]. */
-  .pins[hidden] {
-    display: none;
   }
 
   /*
