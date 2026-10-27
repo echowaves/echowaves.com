@@ -186,11 +186,14 @@ const {
   CONTRAST_ROLES,
   FAVICON_SIZES,
   MODES,
+  MODE_LABELS,
+  SET_DEFAULT_LABELS,
   STORAGE_KEY,
   TOKEN_NAMES,
   defaultTheme,
   faviconHref,
   isHex,
+  paintedModeLabel,
   themeById,
   themes,
   themesInGroup,
@@ -210,7 +213,7 @@ function themeScriptSource(html) {
   throw new Error('no theme runtime in the built markup');
 }
 
-/** The palette table the shipped runtime carries: ids, groups and tab colours. */
+/** The palette table the shipped runtime carries: ids, groups, labels and tab colours. */
 function themePayload(markup) {
   const script = themeScriptSource(markup);
   const payload = /var P = (\{.*\});/.exec(script);
@@ -226,7 +229,7 @@ function themePayload(markup) {
  * favicon links — including the two it must leave alone, because a template that rewrote
  * `/favicon.ico` or the apple-touch tile would be just as broken as one that missed them.
  *
- * Options: `store` (what localStorage returns), `scheme`, `elements` (the control's selects),
+ * Options: `store` (what localStorage returns), `scheme`, `elements` (the control's elements),
  * `noMatchMedia` (a browser without it), `legacyListener` (matchMedia with only addListener) and
  * `storageThrows` (private mode refusing a write). Those three are the runtime's guarded error
  * paths, none of which may take the page down.
@@ -355,10 +358,11 @@ function resolveThemes(script, states) {
 }
 
 /**
- * The same runtime, wired: the stub hands it four elements and a matchMedia it can talk to, so a
- * change event can be fired, an OS flip simulated and another tab's write delivered — no browser.
- * Everything the control promises — repaint, reveal the custom pair, persist, follow the scheme
- * live, notice a sibling tab — is exercised here against the code that ships.
+ * The same runtime, wired: the stub hands it the control's five elements and a matchMedia it can
+ * talk to, so a change event can be fired, an OS flip simulated and another tab's write delivered
+ * — no browser. Everything the control promises — repaint, apply a set-default pick, persist,
+ * re-sync its dynamic labels, follow the scheme live, notice a sibling tab — is exercised here
+ * against the code that ships.
  */
 function operateControl(script, choice, options = {}) {
   const element = (extra = {}) => ({
@@ -375,9 +379,13 @@ function operateControl(script, choice, options = {}) {
   });
   const elements = {
     'theme-mode': element(),
-    'theme-pair': element({ hidden: true }),
-    'theme-light': element(),
-    'theme-dark': element(),
+    // The set-default groups arrive disabled — the markup's honest no-script state — and the
+    // runtime's wiring is what enables them.
+    'theme-set-light': element({ disabled: true }),
+    'theme-set-dark': element({ disabled: true }),
+    // The two options whose labels sync() rewrites to name the palettes their modes paint.
+    'theme-mode-light': element(),
+    'theme-mode-dark': element(),
   };
   const dom = themeDom(script, { store: choice ?? null, scheme: 'light', elements, ...options });
 
@@ -876,7 +884,14 @@ await check('the head paints the active palette', () => {
   for (const theme of themes) {
     const shipped = payload.themes.find((entry) => entry.id === theme.id);
     assert.equal(shipped.bg, theme.tokens.background, `${theme.id}: tab colour disagrees with --background`);
+    // The dynamic option labels ("Light — Solarized Light") are rewritten from these labels, so
+    // the runtime has to carry the registry's own words for each palette, not a second copy.
+    assert.equal(shipped.label, theme.label, `${theme.id}: label disagrees with the registry`);
   }
+  assert.deepEqual(payload.modeLabels, MODE_LABELS, 'the runtime carries mode labels the registry does not');
+  // The runtime resolves any mode missing from this list to `system` — that is how a stored
+  // `custom` migrates — so the payload's list has to be exactly the registry's.
+  assert.deepEqual(payload.modes, MODES, 'the runtime resolves a different set of modes than the registry defines');
   assert.equal(payload.defaults.dark, defaultTheme('dark').id, 'wrong dark default');
   assert.equal(payload.defaults.light, defaultTheme('light').id, 'wrong light default');
   // The hrefs the runtime writes come from these templates, so they have to be the writer's own.
@@ -926,46 +941,91 @@ await check('the head paints the active palette', () => {
   return `${payload.themes.length} palettes wired into every page; tab colour starts at the two scheme grounds`;
 });
 
-await check('the theme control offers every palette and stays operable without CSS', () => {
+await check('the theme control offers every palette and makes no claim without scripts', () => {
   const problems = [];
   for (const page of builtPages()) {
     const html = readFileSync(page, 'utf8');
-    for (const id of ['theme-mode', 'theme-light', 'theme-dark']) {
-      if (!html.includes(`id="${id}"`)) problems.push(`${path.relative(ROOT, page)}: no #${id} select`);
-      if (!new RegExp(`<label[^>]*for="${id}"`).test(html)) {
-        problems.push(`${path.relative(ROOT, page)}: #${id} has no label of its own`);
-      }
+    const where = path.relative(ROOT, page);
+    // One dynamic select replaced the mode select and the two custom pins: one control, one
+    // keyboard stop, and nothing left of the retired trio.
+    const selects = [...html.matchAll(/<select\b/g)];
+    if (selects.length !== 1) {
+      problems.push(`${where}: ${selects.length} selects, expected the one theme control`);
     }
-    const modes = [...html.matchAll(/<select[^>]*id="theme-mode"[^>]*>([\s\S]*?)<\/select>/g)];
-    if (modes.length !== 1) problems.push(`${path.relative(ROOT, page)}: ${modes.length} mode selects`);
-    else {
-      for (const mode of MODES) {
-        if (!modes[0][1].includes(`value="${mode}"`)) problems.push(`${path.relative(ROOT, page)}: no ${mode} option`);
-      }
-      // Without scripts nothing overwrites the select, so the markup has to claim `system` — the
-      // one choice that is true whatever the OS says. A default of "Light" would be a lie about a
-      // palette the media query may not be painting at all.
-      if (!/<option value="system"[^>]*selected/.test(modes[0][1])) {
-        problems.push(`${path.relative(ROOT, page)}: the mode select does not offer system as its fallback`);
-      }
+    for (const gone of ['theme-pair', 'theme-light', 'theme-dark']) {
+      if (html.includes(`id="${gone}"`)) problems.push(`${where}: #${gone} survived the unified dropdown`);
     }
+    // The four ids beyond the select itself that the runtime resolves by getElementById. Delete
+    // one and no other check would notice: the groups stay dead, or the dynamic labels stop
+    // following the pins — silent behaviour loss behind green markup.
+    for (const id of ['theme-set-light', 'theme-set-dark', 'theme-mode-light', 'theme-mode-dark']) {
+      if (!html.includes(`id="${id}"`)) problems.push(`${where}: no #${id} for the runtime to wire`);
+    }
+    if (!/<label[^>]*for="theme-mode"/.test(html)) problems.push(`${where}: #theme-mode has no label of its own`);
+    const controls = [...html.matchAll(/<select[^>]*id="theme-mode"[^>]*>([\s\S]*?)<\/select>/g)];
+    if (controls.length !== 1) {
+      problems.push(`${where}: ${controls.length} theme controls`);
+      continue;
+    }
+    const body = controls[0][1];
+    for (const mode of MODES) {
+      if (!body.includes(`value="${mode}"`)) problems.push(`${where}: no ${mode} option`);
+    }
+    // The handler resolves a value as a mode before it resolves one as a palette. That order is
+    // only meaningful while the registry keeps them disjoint: a palette named `light` would make
+    // its own id unreachable as a pick, and `system` unpinnable.
     for (const theme of themes) {
-      if (!html.includes(`value="${theme.id}"`)) problems.push(`${path.relative(ROOT, page)}: ${theme.id} cannot be chosen`);
+      if (MODES.includes(theme.id)) problems.push(`${where}: palette ${theme.id} collides with a mode value`);
     }
-    // The pinning selects are hidden until custom mode asks for them; hidden is what keeps them
-    // out of the tab order when the mode does not use them.
-    if (!/id="theme-pair"[^>]*hidden/.test(html) && !/hidden[^>]*id="theme-pair"/.test(html)) {
-      problems.push(`${path.relative(ROOT, page)}: the custom pair is visible before custom mode`);
+    // A retired value never comes back: `custom` left the model on 2026-10-27, and an option
+    // carrying it would be resolved as garbage by today's runtime.
+    if (/<option[^>]*value="custom"/.test(body)) problems.push(`${where}: a custom option survived the unified dropdown`);
+    // Without scripts nothing overwrites the select, so the markup has to claim `system` — the
+    // one choice that is true whatever the OS says. A default of "Light" would be a lie about a
+    // palette the media query may not be painting at all.
+    if (!/<option value="system"[^>]*selected/.test(body)) {
+      problems.push(`${where}: the theme select does not offer system as its fallback`);
+    }
+    // The two dynamic labels state what their modes paint, and before anything is stored that
+    // is each group's default — rendered through the registry's own helper, so markup, runtime
+    // and this guard share one format.
+    const text = body.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ');
+    for (const group of ['light', 'dark']) {
+      const painted = paintedModeLabel(group, defaultTheme(group));
+      if (!text.includes(painted)) problems.push(`${where}: the ${group} mode option does not read "${painted}"`);
+    }
+    // Both set-default sections are disabled in the markup: without a runtime those options are
+    // dead, and a native select offering dead options is a trap. The runtime enables them when it
+    // wires up, which is the only moment their claim becomes true.
+    const groups = [...body.matchAll(/<optgroup\b([^>]*)>([\s\S]*?)<\/optgroup>/g)];
+    if (groups.length !== 2) problems.push(`${where}: ${groups.length} set-default groups, expected two`);
+    for (const [, attrs] of groups) {
+      if (!/\bdisabled\b/.test(attrs)) problems.push(`${where}: a set-default group is enabled in the markup: <optgroup${attrs}>`);
+    }
+    // Each group holds exactly its own palettes, in registry order — a dark palette listed under
+    // "Set light default" would offer a pick the runtime's pinned() has to refuse.
+    for (const group of ['light', 'dark']) {
+      const label = SET_DEFAULT_LABELS[group];
+      const match = groups.find(([, attrs]) => attrs.includes(`label="${label}"`));
+      if (!match) {
+        problems.push(`${where}: no "${label}" group`);
+        continue;
+      }
+      const listed = [...match[2].matchAll(/<option[^>]*value="([^"]+)"/g)].map((m) => m[1]);
+      const wanted = themesInGroup(group).map((theme) => theme.id);
+      if (listed.join(',') !== wanted.join(',')) {
+        problems.push(`${where}: "${label}" lists ${listed.join(', ') || '(nobody)'}, expected ${wanted.join(', ')}`);
+      }
     }
   }
   assert.deepEqual(problems, [], `\n     ${problems.join('\n     ')}`);
-  return `${MODES.length} modes and ${themes.length} palettes selectable on every page`;
+  return `one select, ${MODES.length} modes and ${themes.length} palettes in two disabled set-default groups on every page`;
 });
 
 await check('the theme script resolves every stored preference', () => {
   // The runtime is the only script the site writes itself, so its decisions are worth exercising:
-  // first visit, both schemes, a corrupt store, an unknown id and a custom pair. Run against
-  // stubs rather than a browser — this is resolution logic, not layout.
+  // first visit, both schemes, a corrupt store, an unknown id and a legacy custom pair. Run
+  // against stubs rather than a browser — this is resolution logic, not layout.
   const html = readFileSync(builtPages()[0], 'utf8');
   const script = themeScriptSource(html);
   const outcomes = resolveThemes(script, [
@@ -973,13 +1033,19 @@ await check('the theme script resolves every stored preference', () => {
     { label: 'first visit, OS dark', store: null, scheme: 'dark' },
     { label: 'mode light', store: { mode: 'light' }, scheme: 'dark' },
     { label: 'mode dark', store: { mode: 'dark' }, scheme: 'light' },
-    { label: 'custom pair, OS light', store: { mode: 'custom', light: 'solarized-light', dark: 'dracula' }, scheme: 'light' },
-    { label: 'custom pair, OS dark', store: { mode: 'custom', light: 'solarized-light', dark: 'dracula' }, scheme: 'dark' },
-    { label: 'unknown id is ignored', store: { mode: 'custom', light: 'not-a-theme', dark: 'nord' }, scheme: 'light' },
+    // The migration state: `custom` was retired on 2026-10-27, and a reader who left it stored
+    // must see exactly what custom painted — the OS followed between those two pins.
+    { label: 'legacy custom pair, OS light', store: { mode: 'custom', light: 'solarized-light', dark: 'dracula' }, scheme: 'light' },
+    { label: 'legacy custom pair, OS dark', store: { mode: 'custom', light: 'solarized-light', dark: 'dracula' }, scheme: 'dark' },
+    // Half a legacy store is still just an ordinary system state: missing pins default, and a
+    // pin from the wrong group is refused exactly like an unknown id would be.
+    { label: 'legacy custom without pins', store: { mode: 'custom' }, scheme: 'dark' },
+    { label: 'legacy custom cross-group pin', store: { mode: 'custom', light: 'dracula' }, scheme: 'light' },
+    { label: 'unknown id is ignored', store: { mode: 'system', light: 'not-a-theme', dark: 'nord' }, scheme: 'light' },
     { label: 'corrupt json falls back to system', store: '{{{', scheme: 'dark' },
     { label: 'garbage mode is ignored', store: { mode: 'hot-pink' }, scheme: 'light' },
     // One pair of palettes, shared by every mode: a stored light pin is what `system` paints when
-    // the OS is in light scheme, exactly as it is what `light` and `custom` paint.
+    // the OS is in light scheme, exactly as it is what `light` paints whatever the OS says.
     { label: 'a stored pin survives a bad mode', store: { mode: 'hot-pink', light: 'one-light' }, scheme: 'light' },
     // The guarded error paths. A browser with no matchMedia cannot follow the OS, so it settles on
     // the dark default; an old one whose query object only answers to addListener still resolves.
@@ -991,8 +1057,10 @@ await check('the theme script resolves every stored preference', () => {
     'first visit, OS dark': defaultTheme('dark').id,
     'mode light': defaultTheme('light').id,
     'mode dark': defaultTheme('dark').id,
-    'custom pair, OS light': 'solarized-light',
-    'custom pair, OS dark': 'dracula',
+    'legacy custom pair, OS light': 'solarized-light',
+    'legacy custom pair, OS dark': 'dracula',
+    'legacy custom without pins': defaultTheme('dark').id,
+    'legacy custom cross-group pin': defaultTheme('light').id,
     'unknown id is ignored': defaultTheme('light').id,
     'corrupt json falls back to system': defaultTheme('dark').id,
     'garbage mode is ignored': defaultTheme('light').id,
@@ -1040,29 +1108,41 @@ await check('the control repaints, persists and follows the OS live', () => {
     if (!ok) problems.push(label);
   };
   const last = (target = page) => target.painted[target.painted.length - 1];
+  const labelOf = (group, target = page) => target.elements[`theme-mode-${group}`].textContent;
 
   expect(`first paint is ${last()}, not the light default in the light scheme`, last() === light);
-  expect('the mode select did not read system', page.elements['theme-mode'].value === 'system');
-  expect('the custom pair was visible before custom mode', page.elements['theme-pair'].hidden === true);
+  expect('the select did not read system', page.elements['theme-mode'].value === 'system');
+  // The groups ship disabled — the markup's honest no-script state — and wiring up is what earns
+  // them a click. The dynamic labels start by naming each group's default palette.
+  expect('the set-light group was not enabled by wiring', page.elements['theme-set-light'].disabled === false);
+  expect('the set-dark group was not enabled by wiring', page.elements['theme-set-dark'].disabled === false);
+  expect(`the light option reads "${labelOf('light')}"`, labelOf('light') === paintedModeLabel('light', defaultTheme('light')));
 
-  page.select('theme-mode', 'custom');
-  expect('custom mode did not reveal the pair', page.elements['theme-pair'].hidden === false);
-  expect(`custom mode painted ${last()}`, last() === light);
+  // A pick from "set light default" applies immediately: the palette is pinned and stored, the
+  // mode flips to its group so the choice visibly works, and the select re-displays the result.
+  page.select('theme-mode', 'solarized-light');
+  expect('the pick was not pinned as the light default', page.choice().light === 'solarized-light');
+  expect(`the pick did not paint its palette (${last()})`, last() === 'solarized-light');
+  expect(`the select still reads ${page.elements['theme-mode'].value}`, page.elements['theme-mode'].value === 'light');
+  expect(`the light label reads "${labelOf('light')}"`, labelOf('light') === paintedModeLabel('light', themeById('solarized-light')));
 
-  page.select('theme-dark', 'dracula');
-  expect('the pin was not persisted', page.choice().dark === 'dracula');
-  expect(`the light scheme stopped honouring the light default (${last()})`, last() === light);
+  // Same from the dark group — and an explicit Dark paints its pin even while the OS says light.
+  page.select('theme-mode', 'dracula');
+  expect('the pick was not pinned as the dark default', page.choice().dark === 'dracula');
+  expect(`the pick did not paint its palette (${last()})`, last() === 'dracula');
+  expect(`the dark label reads "${labelOf('dark')}"`, labelOf('dark') === paintedModeLabel('dark', themeById('dracula')));
+  expect('the mode was not persisted', page.choice().mode === 'dark');
 
-  // The acceptance criterion, end to end: flip the OS while the page is open.
+  // System switches between the pinned pair — never the group defaults — as the OS flips. The
+  // acceptance criterion, end to end, on an open page.
+  page.select('theme-mode', 'system');
+  expect(`system did not honour the light pin (${last()})`, last() === 'solarized-light');
   page.setScheme('dark');
   expect(`the dark scheme did not pick up the pinned Dracula (${last()})`, last() === 'dracula');
   page.setScheme('light');
-  expect(`the light scheme did not come back (${last()})`, last() === light);
-
-  page.select('theme-mode', 'dark');
-  expect(`dark mode ignored the pin (${last()})`, last() === 'dracula');
-  expect('the pair stayed open outside custom mode', page.elements['theme-pair'].hidden === true);
-  expect('the mode was not persisted', page.choice().mode === 'dark');
+  expect(`the light scheme did not come back to the pinned Solarized Light (${last()})`, last() === 'solarized-light');
+  // End on dark so the head assertions below read Dracula's tab colour and favicons.
+  page.setScheme('dark');
 
   // Every repaint above wrote the head, so this is where the runtime's own output is worth reading:
   // two tab colours carrying Dracula, and the two favicon links pointing at the files
@@ -1081,10 +1161,13 @@ await check('the control repaints, persists and follows the OS live', () => {
     expect(`${rel} was rewritten to ${href}`, href === keep);
   }
 
-  // Another tab saves a preference: this page re-reads the store and repaints, control included.
+  // Another tab saves a preference: this page re-reads the store and repaints, control included
+  // — value and both dynamic labels, since the new store carries no pins and defaults them.
   page.otherTabWrites(JSON.stringify({ mode: 'light' }));
   expect(`another tab's choice did not repaint this page (${last()})`, last() === light);
   expect('the mode select did not follow the other tab', page.elements['theme-mode'].value === 'light');
+  expect(`the light label did not re-sync ("${labelOf('light')}")`, labelOf('light') === paintedModeLabel('light', defaultTheme('light')));
+  expect(`the dark label did not re-sync ("${labelOf('dark')}")`, labelOf('dark') === paintedModeLabel('dark', defaultTheme('dark')));
 
   // A write to somebody else's key is not our business, and must not repaint anything.
   const paints = page.painted.length;
@@ -1094,6 +1177,37 @@ await check('the control repaints, persists and follows the OS live', () => {
   // Reload honours what was just written: same script, storage as the first page left it.
   const reopened = operateControl(script, page.choice());
   expect(`a stored light mode painted ${last(reopened)} in the light scheme`, last(reopened) === light);
+
+  // A reader who left "custom" stored (retired 2026-10-27) sees exactly what custom painted —
+  // the OS followed between those pins — and the first deliberate change rewrites the store with
+  // a mode that still exists, pins kept.
+  const migrated = operateControl(script, { mode: 'custom', light: 'solarized-light', dark: 'dracula' });
+  expect(`legacy custom did not follow the light scheme to its pin (${last(migrated)})`, last(migrated) === 'solarized-light');
+  // The dynamic labels name what System paints here: the stored pair, not the group defaults.
+  expect(`the migrated light label reads "${labelOf('light', migrated)}"`,
+    labelOf('light', migrated) === paintedModeLabel('light', themeById('solarized-light')));
+  expect(`the migrated dark label reads "${labelOf('dark', migrated)}"`,
+    labelOf('dark', migrated) === paintedModeLabel('dark', themeById('dracula')));
+  migrated.setScheme('dark');
+  expect(`legacy custom did not follow the OS to its dark pin (${last(migrated)})`, last(migrated) === 'dracula');
+  migrated.setScheme('light');
+  expect(`legacy custom did not follow the OS back to its light pin (${last(migrated)})`, last(migrated) === 'solarized-light');
+  migrated.setScheme('dark');
+  migrated.select('theme-mode', 'dark');
+  const rewritten = migrated.choice();
+  expect(`the store still says ${JSON.stringify(rewritten)}`, rewritten.mode === 'dark' && rewritten.light === 'solarized-light' && rewritten.dark === 'dracula');
+
+  // Half a legacy store behaves like the whole thing: a missing pin falls back to its group's
+  // default, and a pin stored under the wrong group is refused rather than painted cross-wise.
+  const partial = operateControl(script, { mode: 'custom' });
+  expect(`legacy custom with no pins did not paint the light default (${last(partial)})`, last(partial) === light);
+  partial.setScheme('dark');
+  expect(`legacy custom with no pins did not follow the OS to the dark default (${last(partial)})`, last(partial) === dark);
+
+  const crossGroup = operateControl(script, { mode: 'custom', light: 'dracula' });
+  expect(`a cross-group light pin was painted (${last(crossGroup)})`, last(crossGroup) === light);
+  crossGroup.setScheme('dark');
+  expect(`a cross-group pin leaked into the dark scheme (${last(crossGroup)})`, last(crossGroup) === dark);
 
   // Old Safari hands out a matchMedia with only addListener. Following the OS is then the whole
   // difference between a page that tracks the scheme and one that stopped caring.
@@ -1109,7 +1223,7 @@ await check('the control repaints, persists and follows the OS live', () => {
   expect('a blocked store was somehow written', Object.keys(blocked.choice()).length === 0);
 
   assert.deepEqual(problems, [], `\n     ${problems.join('\n     ')}`);
-  return `${page.painted.length} repaints, one OS flip, another tab's write and two broken browsers, all from the shipped runtime`;
+  return `${page.painted.length} repaints, apply-on-pick, label re-sync, a legacy custom migration, OS flips, another tab's write and two broken browsers, all from the shipped runtime`;
 });
 
 await check('type and rhythm come from the scale', () => {
