@@ -591,6 +591,43 @@ await check('no client-attributed employer detail in tracked files', () => {
   return `${tracked.length} tracked files scanned against ${rules.length} rules`;
 });
 
+// Commit messages carry the same risk as blobs, and they are easier to write carelessly:
+// a message describing a scrub can name what it scrubbed. Every local head is scanned,
+// because any of them could be the one that gets pushed. A branch that fails this is
+// reworded or deleted, not exempted.
+await check('no client-attributed employer detail in commit messages', () => {
+  let rules;
+  try {
+    rules = loadRules();
+  } catch (error) {
+    skip(error.message.split('\n')[0]);
+  }
+
+  const heads = spawnSync('git', ['for-each-ref', '--format=%(refname)', 'refs/heads'], {
+    cwd: ROOT,
+    encoding: 'utf8',
+  });
+  if (heads.status !== 0) skip(`git for-each-ref exited ${heads.status}`);
+  const branches = heads.stdout.split('\n').filter(Boolean);
+  if (branches.length === 0) skip('no local branches to read');
+
+  const log = spawnSync('git', ['log', '--format=%H %s%n%b%x00', ...branches], {
+    cwd: ROOT,
+    encoding: 'utf8',
+  });
+  if (log.status !== 0) skip(`git log exited ${log.status}`);
+
+  const violations = [];
+  for (const entry of log.stdout.split('\0').filter((e) => e.trim())) {
+    const sha = entry.trim().split(/\s+/)[0].slice(0, 7);
+    for (const { re } of rules) {
+      if (entry.match(re)) violations.push(`${sha}: /${re.source}/`);
+    }
+  }
+  assert.equal(violations.length, 0, `\n     ${violations.join('\n     ')}`);
+  return `${branches.length} local branches, all commit messages scanned`;
+});
+
 /** A product naming a store must link to that store; guessing one is worse than none. */
 function platformLinksToConfirm(list) {
   const stores = [
