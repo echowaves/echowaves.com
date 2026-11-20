@@ -30,7 +30,7 @@ A mandate to meet, with an opportunity attached. Google's Lighthouse added agent
   - **success:** A check resolves every URL and identifier in both discovery artifacts against the built output and the site's data modules, and fails on any entry whose target is absent or mistyped.
 - **CAP-4**
   - **intent:** Readers get WCAG AA contrast for every text role on every surface in all eight palettes, including the hero panel the audit flagged.
-  - **success:** The contrast gate reports ≥ 4.5:1 for each text role on its own rendering surface in all eight palettes, with the hero's copy-on-raised role measured explicitly rather than inferred from body copy.
+  - **success:** The contrast gate reports ≥ 4.5:1 for each text role on its own rendering surface in all eight palettes, with the hero's copy-on-raised role measured explicitly rather than inferred from body copy. The gate measures and refuses regressions; it never authorises changing a palette hex to reach the number — a failure is reported, not fixed by editing the palette.
 - **CAP-5**
   - **intent:** The site's own verification gate refuses to pass a build whose discovery artifacts are missing, malformed, or stale, so CAP-1..CAP-3 stay true without manual diligence.
   - **success:** A green `npm run verify` includes checks that fail when a discovery artifact is deleted, made invalid JSON, left pointing at a removed page, or built from data newer than the artifact.
@@ -47,11 +47,11 @@ A mandate to meet, with an opportunity attached. Google's Lighthouse added agent
 ## Non-goals
 
 - Deploying the site in any form — the user deploys by hand, always — and therefore making the PageSpeed score change. HEAD-only work cannot move a score measured on an older deployment.
-- Changing palette colors, adding palettes, or pursuing AAA. AA on text roles is the floor and it is already met at HEAD.
-- Fixing contrast in the deployed CSS by any route other than shipping HEAD.
+- Changing palette colors or adding palettes, and therefore fixing the deployed contrast failure by any route other than shipping HEAD. AA on text roles is the floor and it is already met at HEAD; AAA is not pursued.
 - Adding JavaScript, interactive widgets, or client-side rendering for agent convenience.
 - Rewriting thin page copy (e.g. `/contact` at 96 visible words) as content work.
 - Registering with an external ARD registry or serving signed trust manifests and attestations.
+- Tuning any palette's hexes to satisfy a contrast audit or an external score. The eight palettes are frozen as shipped: guest palettes are other people's published colour systems, and canonical fidelity outranks Google's checks by owner decision (2026-11-20).
 
 ## Success signal
 

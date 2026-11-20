@@ -2,7 +2,9 @@
 title: 'Sprint change proposal — guest palette fidelity over audit contrast'
 type: 'change-proposal'
 created: '2026-11-20'
-status: 'proposed'
+status: 'approved'   # Dmitry approved 2026-11-20; P1/P2/P5 applied to the discovery spec, P4 scoped below, P3 routed to its owner
+applied: ['P1', 'P2', 'P4', 'P5']
+routed: ['P3 → bmad-ux owner (EXPERIENCE.md is adopted by the spec, not owned by it)']
 trigger: 'Owner directive during PageSpeed agentic-browsing work'
 affects:
   - _bmad-output/specs/spec-agent-discovery-and-contrast/SPEC.md

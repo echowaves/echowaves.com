@@ -19,8 +19,9 @@
   evidence: Plausible per spec (forced-colors forces background-color), but unverifiable in this sandbox — no browser. One check in Windows High Contrast (or Safari forced-colors emulation) settles whether a `forced-colors: active` rule for `.mark-glyph` is needed.
 
 - source_spec: `_bmad-output/implementation-artifacts/spec-aa-text-contrast.md`
+  status: required-by-freeze (2026-11-20) — no longer optional; it is the only machine enforcement of "do not modify the existing themes"
   summary: Nothing enforces the guest-fidelity half of the contrast policy — that a nudged hex kept its hue/saturation and moved the minimum distance; verify only checks the ratio came out ≥4.5.
-  evidence: A future edit could repaint a guest palette wholesale in the name of AA and every check would pass. Proving it needs published-hex baselines stored per token (a `published` field) plus an HSL-delta guard in verify-site.mjs; DESIGN.md states the rule, the registry narrates each move — only the machine-check is missing.
+  evidence: A future edit could repaint a guest palette wholesale in the name of AA and every check would pass. Proving it needs published-hex baselines stored per token (a `published` field) plus an HSL-delta guard in verify-site.mjs; DESIGN.md states the rule, the registry narrates each move — only the machine-check is missing. Scope: verify fails when a text-role hex differs from its `published` value by more than the nudge recorded in `source`, so palette tuning for an external contrast score cannot pass silently.
 - source_spec: `_bmad-output/implementation-artifacts/spec-aa-text-contrast.md`
   summary: Per-theme favicons are declared registry-derived ("accent on ground") but verify only checks their hrefs exist; editing an accent without rerunning `npm run icons` ships stale tabs silently.
   evidence: This very change had to hand-regenerate the four nudged palettes' PNGs; a pixel-sample check (decode each favicon, compare corner/centre colours against tokens.background/tokens.accent) would have caught any forgotten run. Needs a dependency-free PNG decode in verify-site.mjs.
