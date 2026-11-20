@@ -30,8 +30,9 @@ yarn-error.log*
 #Ignore vscode AI rules
 .github/instructions/codacy.instructions.md
 
-# BMad planning artifacts — personal, keep local (client-attributed figures live here)
-_bmad-output/
+# BMad planning artifacts are versioned. Keep them free of client-attributed
+# employment detail and non-public employer names; binaries carrying such
+# material stay outside the repository (~/.echowaves-local-imports).
 
 # bmad: per-run rendered workflow copies, regenerated on demand
 _bmad/render/

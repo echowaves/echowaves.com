@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Averages are unverifiable — echowaves.com repositioning dossier</title>
+<meta name="description" content="Complete record of an autonomous brainstorming session: 106 ideas across 9 lenses and 14 insights, each traceable to its memlog line.">
+<style>
+:root{--paper:#efece4;--paper2:#e7e3d9;--ink:#15171b;--soft:#52565f;--rule:rgba(21,23,27,.20);--hair:rgba(21,23,27,.12);--mark:#9a2a10;
+--mono:ui-monospace,"SFMono-Regular",Menlo,Consolas,"Liberation Mono",monospace;
+--sans:"Helvetica Neue",Helvetica,Arial,system-ui,sans-serif;
+--serif:"Iowan Old Style","Hoefler Text","Palatino Linotype",Palatino,Georgia,serif}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.55}
+body::before{content:"";position:absolute;top:0;left:0;right:0;height:6px;background:var(--ink)}
+.wrap{max-width:1180px;margin:0 auto;padding:0 28px 90px}
+a{color:inherit;text-decoration:none;border-bottom:1px solid var(--rule)}
+a:hover{color:var(--mark);border-bottom-color:var(--mark)}
+.kicker{font-family:var(--mono);font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--soft)}
+.sheet{border-bottom:1px solid var(--ink);padding-top:36px}
+.toprow{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;font-family:var(--mono);font-size:10.5px;
+letter-spacing:.18em;text-transform:uppercase;color:var(--soft);padding-bottom:14px;border-bottom:1px solid var(--rule)}
+.claim{font-family:var(--serif);font-weight:400;font-size:clamp(33px,6vw,73px);line-height:.98;letter-spacing:-.018em;margin:36px 0 0;max-width:21ch}
+.claim em{font-style:normal;color:var(--mark)}
+.claim .sub{display:block;font-family:var(--mono);font-size:12.5px;letter-spacing:.02em;line-height:1.55;color:var(--soft);max-width:64ch;margin-top:28px}
+.prov{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);border-top:1px solid var(--ink);margin:44px 0 0}
+.prov div{padding:16px 0}
+.prov div+div{border-left:1px solid var(--rule);padding-left:24px}
+.prov dt{font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--mark);margin-bottom:7px}
+.prov dd{margin:0;font-family:var(--mono);font-size:13.5px;line-height:1.55}
+nav.index{position:sticky;top:0;z-index:9;background:var(--paper);border-bottom:1px solid var(--ink)}
+nav.index ol{list-style:none;display:flex;flex-wrap:wrap;margin:0;padding:0}
+nav.index a{display:block;padding:11px 12px;font-family:var(--mono);font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;border-bottom:2px solid transparent;color:var(--soft)}
+nav.index a span{color:var(--mark)}
+nav.index a:hover{color:var(--ink);border-bottom-color:var(--ink)}
+nav.index a.on{color:var(--ink);border-bottom-color:var(--mark)}
+.tally{display:grid;grid-template-columns:minmax(0,330px) minmax(0,1fr);gap:46px;padding:44px 0 6px;align-items:start}
+.bigcount b{display:block;font-family:var(--mono);font-size:78px;line-height:.9;font-weight:500;letter-spacing:-.03em;border-top:2px solid var(--ink);padding-top:12px}
+.bigcount i{font-style:normal;display:block;font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--soft);margin-top:12px;line-height:1.7}
+.bars .row{display:grid;grid-template-columns:26px minmax(0,1fr) 190px 34px;gap:12px;align-items:center;font-family:var(--mono);font-size:11px;padding:5px 0;border-bottom:1px dotted var(--hair)}
+.bars .nm{color:var(--soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bars .track{position:relative;height:9px;border-left:1px solid var(--ink)}
+.bars .fill{position:absolute;top:0;bottom:0;left:0;background:var(--ink)}
+.bars .ct{text-align:right;font-variant-numeric:tabular-nums}
+section.lens{padding:62px 0 8px;border-top:1px solid var(--ink);margin-top:30px}
+.sechead{display:grid;grid-template-columns:104px minmax(0,1fr);align-items:start;margin-bottom:30px}
+.sechead .num{font-family:var(--mono);font-size:11px;letter-spacing:.16em;color:var(--mark);padding-top:9px}
+.sechead h2{font-family:var(--serif);font-weight:400;font-size:clamp(25px,3.4vw,41px);line-height:1.02;letter-spacing:-.015em;margin:0}
+.sechead .paren{font-family:var(--mono);font-size:12px;color:var(--ink);margin-top:9px}
+.sechead .idiom{margin:11px 0 0;max-width:74ch;font-size:14px;color:var(--soft)}
+.sechead .count{font-family:var(--mono);font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--mark);margin-top:13px}
+.premise{display:grid;grid-template-columns:104px minmax(0,1fr);border-bottom:1px solid var(--hair)}
+.premise .m{font-family:var(--mono);font-size:10.5px;color:var(--soft);padding-top:16px}
+.premise p{margin:0;padding:13px 0 17px;font-family:var(--serif);font-size:19px;line-height:1.42}
+.shadow .doc{border-left:5px solid var(--ink);background:var(--paper2);margin:0 0 14px}
+.shadow .hd{display:flex;gap:16px;align-items:center;font-family:var(--mono);font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--paper);background:var(--ink);padding:6px 12px}
+.shadow .hd .stamp{margin-left:auto;color:var(--mark);background:var(--paper);padding:1px 7px;border:1px solid var(--mark)}
+.shadow .body{padding:14px 18px 17px;font-size:16.5px;line-height:1.5}
+.redact{display:inline-block;height:.9em;width:50px;background:var(--ink);vertical-align:-.1em;margin:0 3px}
+.shadow .reading{border:1px solid var(--ink);padding:20px 22px;margin:22px 0 0;font-family:var(--serif);font-size:21px;line-height:1.36}
+.fieldnote{border:1px dashed var(--mark);color:var(--mark);padding:14px 18px;font-family:var(--mono);font-size:13px;line-height:1.55;margin-top:20px}
+.labels{display:grid;grid-template-columns:repeat(auto-fill,minmax(272px,1fr));gap:1px;background:var(--rule);border:1px solid var(--rule)}
+.label{background:var(--paper);padding:16px 16px 15px;display:flex;flex-direction:column;min-height:172px}
+.label .acc{font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--mark)}
+.label .obj{font-family:var(--serif);font-size:17px;line-height:1.34;margin:10px 0 12px}
+.label .foot{margin-top:auto;font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--soft);border-top:1px solid var(--hair);padding-top:8px;display:flex;justify-content:space-between;gap:8px}
+.kill .pair{display:grid;grid-template-columns:minmax(0,.92fr) minmax(0,1.6fr);gap:26px;border-bottom:1px solid var(--hair);padding:16px 0}
+.kill .tag{display:block;font-family:var(--mono);font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--mark);margin-bottom:8px}
+.kill .dead{font-family:var(--mono);font-size:14.5px;line-height:1.45;color:var(--soft);text-decoration:line-through;text-decoration-thickness:1.5px;text-decoration-color:var(--mark);overflow-wrap:break-word}
+.kill .dead::before{content:"× ";color:var(--mark);text-decoration:none;display:inline-block}
+.kill .alive{font-size:16px;line-height:1.5}
+.dial{border-top:1px solid var(--hair);padding:17px 0;display:grid;grid-template-columns:minmax(0,300px) minmax(0,1fr);gap:32px;align-items:start}
+.dial .dim{font-family:var(--mono);font-size:12.5px;letter-spacing:.06em;text-transform:uppercase}
+.meter{display:flex;margin-top:9px;height:14px;border-left:1px solid var(--ink)}
+.meter i{flex:1;border-right:1px solid var(--rule);background:var(--ink)}
+.dial .val{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;color:var(--mark);margin-top:7px}
+.dial p{margin:0;font-size:16px;line-height:1.5}
+.rev{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:18px}
+.rev .inv{background:var(--ink);color:var(--paper);padding:16px 18px 15px}
+.rev .inv .k{font-family:var(--mono);font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:#b5b0a4}
+.rev .inv h3{margin:9px 0 0;font-family:var(--serif);font-weight:400;font-size:19px;line-height:1.24}
+.rev .fix{border:1px solid var(--rule);border-top:0;padding:13px 18px 16px;font-size:15px}
+.bp{display:grid;grid-template-columns:104px minmax(0,1.05fr) 40px minmax(0,1.3fr);border-top:1px solid var(--hair);padding:18px 0}
+.bp .m{font-family:var(--mono);font-size:10.5px;color:var(--soft)}
+.bp .fact{font-family:var(--serif);font-size:19px;line-height:1.34}
+.bp .arrow{font-family:var(--mono);color:var(--mark)}
+.bp .conseq{font-size:15.5px;line-height:1.5}
+.xp{display:grid;grid-template-columns:minmax(0,206px) minmax(0,1fr);gap:26px;border-bottom:1px solid var(--hair);padding:15px 0}
+.chip{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;border:1px solid var(--ink);padding:6px 9px;display:inline-block;background:var(--paper2)}
+.xp .logic{color:var(--soft);font-size:14.5px;line-height:1.5}
+.xp .move{margin-top:10px;font-size:16px;line-height:1.5}
+.xp .move b{display:block;font-family:var(--mono);font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--mark);font-weight:400;margin-bottom:5px}
+.eras{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:38px}
+.era h3{font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--mark);margin:0 0 4px;padding-bottom:9px;border-bottom:2px solid var(--ink)}
+.era .item{border-bottom:1px solid var(--hair);padding:14px 0}
+.era .when{font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--soft)}
+.era .item p{margin:7px 0 0;font-size:15.5px;line-height:1.5}
+.strata{border:1px solid var(--ink);margin-bottom:46px}
+.stratum{display:grid;grid-template-columns:150px minmax(0,1fr);gap:22px;padding:18px 20px;border-bottom:1px solid var(--hair)}
+.stratum:last-child{border-bottom:0}
+.stratum .depth{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--mark);line-height:1.7}
+.stratum p{margin:0;font-size:16.5px;line-height:1.5}
+.stratum:nth-child(2){background:rgba(21,23,27,.04)}
+.stratum:nth-child(3){background:rgba(21,23,27,.08);padding-left:46px}
+.stratum:nth-child(4){background:rgba(21,23,27,.12);padding-left:70px}
+.analog{display:grid;grid-template-columns:repeat(auto-fit,minmax(258px,1fr));gap:1px;background:var(--rule);border:1px solid var(--rule)}
+.acard{background:var(--paper);padding:18px 18px 20px}
+.acard .like{font-family:var(--mono);font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--mark)}
+.acard p{margin:9px 0 0;font-size:14.5px;line-height:1.5;color:#2c2f36}
+.acard .lead{display:block;font-family:var(--serif);font-size:20px;line-height:1.18;color:var(--ink);margin-bottom:9px}
+#synthesis{border-top:3px solid var(--ink);padding-top:54px;margin-top:72px}
+.ins{display:grid;grid-template-columns:104px minmax(0,1fr);border-bottom:1px solid var(--hair);padding:24px 0}
+.ins .m{font-family:var(--mono);font-size:10.5px;color:var(--mark);padding-top:9px}
+.ins .k{font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--soft);margin-bottom:10px}
+.ins p{margin:0;font-family:var(--serif);font-size:clamp(20px,2.4vw,29px);line-height:1.24;letter-spacing:-.01em}
+#decision{background:var(--ink);color:var(--paper);padding:44px 40px 40px;margin-top:46px;border-left:8px solid var(--mark)}
+#decision .k{font-family:var(--mono);font-size:11px;letter-spacing:.26em;text-transform:uppercase;color:var(--mark)}
+#decision h3{font-family:var(--serif);font-weight:400;font-size:clamp(26px,4.2vw,50px);line-height:1.04;margin:18px 0 28px;letter-spacing:-.02em}
+#decision dl{display:grid;grid-template-columns:minmax(0,150px) minmax(0,1fr);gap:14px 26px;margin:0;border-top:1px solid rgba(239,236,228,.3);padding-top:22px}
+#decision dt{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:#b5b0a4;padding-top:5px}
+#decision dd{margin:0;font-size:17px;line-height:1.45}
+.gate{border:2px solid var(--ink);padding:24px 26px;margin-top:46px;display:grid;grid-template-columns:minmax(0,190px) minmax(0,1fr);gap:26px;background:var(--paper2)}
+.gate .k{font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--mark);line-height:1.7}
+.gate p{margin:0;font-family:var(--serif);font-size:clamp(19px,2.5vw,29px);line-height:1.22}
+footer{border-top:1px solid var(--ink);margin-top:72px;padding-top:18px;font-family:var(--mono);font-size:11px;color:var(--soft);display:flex;justify-content:space-between;gap:26px;flex-wrap:wrap;line-height:1.7}
+footer code{color:var(--ink)}
+@media (max-width:880px){
+.prov,.tally,.eras,.gate{grid-template-columns:minmax(0,1fr);gap:22px}
+nav.index{position:static}
+.prov div+div{border-left:0;padding-left:0;border-top:1px solid var(--rule)}
+.sechead,.premise,.bp,.dial,.xp,.ins,.stratum,.kill .pair{grid-template-columns:minmax(0,1fr);gap:10px}
+.bp .arrow{display:none}
+#decision dl{grid-template-columns:minmax(0,1fr)}
+.stratum:nth-child(3),.stratum:nth-child(4){padding-left:20px}
+}
+@media print{body{background:#fff}nav.index{position:static}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="sheet" id="top">
+<div class="toprow"><span>Evidence binder · autonomous session</span><span>Subject: echowaves.com / Dmitry Amelchenko</span><span>Record closed 2026-10-17T09:00</span><span>Status: complete</span></div>
+<h1 class="claim">“AI-generated” means averaged — and <em>averages are unverifiable.</em> So the portfolio stops describing Dmitry Amelchenko and starts proving him.<span class="sub">Repositioning echowaves.com from a generic AI-looking open-source showcase into a personal portfolio of dated artifacts, measurement methodology and signed registers — so that one senior engineering leader believes Dmitry is the person to take their organisation agentic-native, and opens a conversation.</span></h1>
+<dl class="prov">
+<div><dt>Session topic — verbatim from the record</dt><dd>Reposition echowaves.com from generic AI-looking OSS showcase into Dmitry Amelchenko's personal portfolio centered on agentic software engineering transformation</dd></div>
+<div><dt>Goal — verbatim from the record</dt><dd>Make a senior engineering leader / decision-maker believe Dmitry is the person to take their org agentic-native, and start a conversation</dd></div>
+</dl>
+</header>
+<nav class="index" aria-label="Lens index"><ol>
+<li><a href="#top">Claim</a></li>
+<li><a href="#premises">Premises <span>3</span></a></li>
+<li><a href="#lens-1">01 Shadow Work Mining <span>11</span></a></li>
+<li><a href="#lens-2">02 Sci-Fi Artifact From the Future <span>12</span></a></li>
+<li><a href="#lens-3">03 Kill the Crown Jewel <span>12</span></a></li>
+<li><a href="#lens-4">04 Crank the Dial to 11 <span>12</span></a></li>
+<li><a href="#lens-5">05 Reverse Brainstorming <span>12</span></a></li>
+<li><a href="#lens-6">06 First Principles Thinking <span>10</span></a></li>
+<li><a href="#lens-7">07 Cross-Pollination <span>12</span></a></li>
+<li><a href="#lens-8">08 Time Shifting <span>10</span></a></li>
+<li><a href="#lens-9">09 Values Archaeology + Analogical Thinking <span>12</span></a></li>
+<li><a href="#synthesis">Synthesis <span>13</span></a></li>
+<li><a href="#colophon">Colophon</a></li>
+</ol></nav>
+<section class="tally" aria-label="Tally of record">
+<div class="bigcount"><b>106</b><i>ideas in the record — every one rendered below, none summarised away</i><i style="margin-top:16px">14 insights · 9 lenses applied<br>mode: autonomous · one file, no external assets</i></div>
+<div class="bars"><div class="kicker" style="margin-bottom:10px">Running tally by lens</div>
+<div class="row"><a href="#lens-1" style="color:var(--soft);border:0">01</a><span class="track"><span class="fill" style="width:92%"></span></span><span class="nm">Shadow Work Mining · running 11</span><span class="ct">11</span></div>
+<div class="row"><a href="#lens-2" style="color:var(--soft);border:0">02</a><span class="track"><span class="fill" style="width:100%"></span></span><span class="nm">Sci-Fi Artifact From the Future · running 23</span><span class="ct">12</span></div>
+<div class="row"><a href="#lens-3" style="color:var(--soft);border:0">03</a><span class="track"><span class="fill" style="width:100%"></span></span><span class="nm">Kill the Crown Jewel · running 35</span><span class="ct">12</span></div>
+<div class="row"><a href="#lens-4" style="color:var(--soft);border:0">04</a><span class="track"><span class="fill" style="width:100%"></span></span><span class="nm">Crank the Dial to 11 · running 47</span><span class="ct">12</span></div>
+<div class="row"><a href="#lens-5" style="color:var(--soft);border:0">05</a><span class="track"><span class="fill" style="width:100%"></span></span><span class="nm">Reverse Brainstorming · running 59</span><span class="ct">12</span></div>
+<div class="row"><a href="#lens-6" style="color:var(--soft);border:0">06</a><span class="track"><span class="fill" style="width:83%"></span></span><span class="nm">First Principles Thinking · running 69</span><span class="ct">10</span></div>
+<div class="row"><a href="#lens-7" style="color:var(--soft);border:0">07</a><span class="track"><span class="fill" style="width:100%"></span></span><span class="nm">Cross-Pollination · running 81</span><span class="ct">12</span></div>
+<div class="row"><a href="#lens-8" style="color:var(--soft);border:0">08</a><span class="track"><span class="fill" style="width:83%"></span></span><span class="nm">Time Shifting · running 91</span><span class="ct">10</span></div>
+<div class="row"><a href="#lens-9" style="color:var(--soft);border:0">09</a><span class="track"><span class="fill" style="width:100%"></span></span><span class="nm">Values Archaeology + Analogical Thinking · running 103</span><span class="ct">12</span></div>
+<div class="row"><a href="#premises" style="color:var(--soft);border:0">00</a><span class="track"><span class="fill" style="width:25%"></span></span><span class="nm">Premises, pre-lens · running 106</span><span class="ct">3</span></div>
+<div class="row" style="border-bottom:2px solid var(--ink)"><span style="color:var(--mark)">Σ</span><span class="track"></span><span class="nm">Total ideas on record</span><span class="ct">106</span></div>
+</div></section>
+<section id="premises" style="padding-top:46px">
+<div class="sechead"><div class="num">PRE</div><div><h2>Written down before any lens was applied</h2><p class="idiom">Three opening observations, in record order. Every later lens argues with these terms.</p><div class="count">3 ideas · memlog L9–L11</div></div></div>
+<div class="premise"><div class="m">EX 001<br>memlog L9</div><p>The site's real subject is not packages or even AI: it is the distance between an organization that has AI tools and one that has changed how it builds. Dmitry has crossed that distance twice.</p></div>
+<div class="premise"><div class="m">EX 002<br>memlog L10</div><p>Echowaves is a signal-processing term: an echo returning changed after bouncing off a surface. Perfect brand metaphor for transformation — what you send out (a strategy, a tool) comes back as something measurably different.</p></div>
+<div class="premise"><div class="m">EX 003<br>memlog L11</div><p>The 89% eNPS number is the most un-AI-generated fact on the entire site. Nobody hallucinates 89 against a 2-25% industry band. It should be structurally load-bearing, not a stat chip.</p></div>
+</section>
+<section class="lens l1" id="lens-1">
+<div class="sechead"><div class="num">01 / LENS</div><div><h2>SHADOW WORK MINING</h2>
+<p class="idiom">Treatment: declassified blocks. Each disclosure is filed as a document with client names withheld — the redaction is itself proof that real material exists.</p>
+<div class="count">11 ideas · memlog L12–L24</div></div></div>
+<figure class="doc"><figcaption class="hd"><span>Shadow file 01 · client <span class="redact"></span></span><span>EX 004 · filed at memlog L12</span><span class="stamp">disclosed</span></figcaption><div class="body">the the awarding body / 47-point mobile satisfaction surge is the single most credible business-outcome proof available and it is currently absent from the site entirely.</div></figure>
+<figure class="doc"><figcaption class="hd"><span>Shadow file 02 · client <span class="redact"></span></span><span>EX 005 · filed at memlog L13</span><span class="stamp">disclosed</span></figcaption><div class="body">Dmitry has run transformation inside HIPAA and Fortune 100 regulated environments — the hardest possible difficulty setting — yet the site sells on 'secure: built-in security features' like an npm README.</div></figure>
+<figure class="doc"><figcaption class="hd"><span>Shadow file 03 · client <span class="redact"></span></span><span>EX 006 · filed at memlog L14</span><span class="stamp">disclosed</span></figcaption><div class="body">the CTO-at-a-recovery-social-network chapter is hidden because it looks less prestigious than insurance. It is actually the only zero-to-one build story and the only one with a mission in it.</div></figure>
+<figure class="doc"><figcaption class="hd"><span>Shadow file 04 · client <span class="redact"></span></span><span>EX 007 · filed at memlog L15</span><span class="stamp">disclosed</span></figcaption><div class="body">Dmitry under-claims agency — 'introduced AI-assisted engineering practices'. He ran tool evaluation, hands-on piloting, enablement and cross-org adoption. That is a named program with a thesis, described like a side activity.</div></figure>
+<figure class="doc"><figcaption class="hd"><span>Shadow file 05 · client <span class="redact"></span></span><span>EX 008 · filed at memlog L16</span><span class="stamp">disclosed</span></figcaption><div class="body">the fear underneath the generic site is being read as a hype consultant. Genericness is a costume worn against that fear.</div></figure>
+<div class="reading"><span class="kicker">EX 009 · memlog L17 · the lens, stated as a rule — </span>If Shadow Work Mining is right, the site's job is disclosure of specifics, not polish. Specificity is the anti-AI signature; AI-generated means averaged, and averages are unverifiable.</div>
+<figure class="doc"><figcaption class="hd"><span>Shadow file 06 · client <span class="redact"></span></span><span>EX 010 · filed at memlog L19</span><span class="stamp">disclosed</span></figcaption><div class="body">The thing he is afraid to claim, published as method: what share of merged code is agent-authored vs agent-assisted at scale, and the audit trail that makes that number honest.</div></figure>
+<figure class="doc"><figcaption class="hd"><span>Shadow file 07 · client <span class="redact"></span></span><span>EX 011 · filed at memlog L20</span><span class="stamp">disclosed</span></figcaption><div class="body">Admit a failed adoption publicly — a team or tool rollout that did not work, what it taught, what he now does differently. A transformation leader with one named failure is instantly more credible than ten wins.</div></figure>
+<figure class="doc"><figcaption class="hd"><span>Shadow file 08 · client <span class="redact"></span></span><span>EX 012 · filed at memlog L21</span><span class="stamp">disclosed</span></figcaption><div class="body">Name the cost honestly: what an agentic transformation actually costs in attrition, retraining, and lost velocity during the J-curve. Nobody else publishes the dip; publishing it proves he has been through one.</div></figure>
+<figure class="doc"><figcaption class="hd"><span>Shadow file 09 · client <span class="redact"></span></span><span>EX 013 · filed at memlog L22</span><span class="stamp">disclosed</span></figcaption><div class="body">Say the unfashionable thing: agent throughput without a quality gate is how you get a defect-rate cliff, and his &lt;1% defect rate is the counterweight that makes the speed claims believable.</div></figure>
+<figure class="doc"><figcaption class="hd"><span>Shadow file 10 · client <span class="redact"></span></span><span>EX 014 · filed at memlog L23</span><span class="stamp">disclosed</span></figcaption><div class="body">Own the immigrant-founder-to-Fortune-100-executive arc (Minsk to Boston, CTO to enterprise leader) as texture in one line — un-inventable backstory that no template can generate.</div></figure>
+<div class="fieldnote"><b>FIELD NOTE — INSIGHT, memlog L24.</b> Genericness is a costume worn against being read as a hype consultant; the fix is disclosure of unverifiable specifics, not better typography.</div>
+</section>
+<section class="lens l2" id="lens-2">
+<div class="sechead"><div class="num">02 / LENS</div><div><h2>SCI-FI ARTIFACT FROM THE FUTURE</h2>
+<p class="idiom">Treatment: museum labels. Each idea is an object from a future that already happened to him, accessioned and dated.</p>
+<div class="count">12 ideas · memlog L26–L37</div></div></div>
+<div class="labels">
+<figure class="label"><div class="acc">Acc. SF-01 · imagined acquisition</div><div class="obj">a 2029 LinkedIn recommendation from a CTO he never worked for directly — 'the third person we brought in after the vendor pilots stalled; first one who could show us our own baseline.'</div><div class="foot"><span>Date 2029</span><span>EX 015 · L26</span></div></figure>
+<figure class="label"><div class="acc">Acc. SF-02 · imagined acquisition</div><div class="obj">a job posting that no longer exists. In 2029 nobody hires a VP Mobile Engineering; they hire an 'Engineering Delivery Model Owner.' Dmitry's site is the surviving specimen of the role that got absorbed.</div><div class="foot"><span>Date 2029</span><span>EX 016 · L27</span></div></figure>
+<figure class="label"><div class="acc">Acc. SF-03 · imagined acquisition</div><div class="obj">a page from a 2031 university case study, 'enterprise mobile at an employer, 2024-2027,' with a quoted internal memo that has Dmitry's name in the footer. The site's structure = the case study's section headings.</div><div class="foot"><span>Date 2031</span><span>EX 017 · L28</span></div></figure>
+<figure class="label"><div class="acc">Acc. SF-04 · imagined acquisition</div><div class="obj">an internal 2026 postmortem at a client titled 'What we got wrong in year one of agentic delivery' — annotated by Dmitry. Reverse-engineered into a public field guide.</div><div class="foot"><span>Date 2026</span><span>EX 018 · L29</span></div></figure>
+<figure class="label"><div class="acc">Acc. SF-05 · imagined acquisition</div><div class="obj">a conference listing, 'Engineering as a Control System' — the name of the practice, not the tooling. The site's job is to make the term feel like it already exists and he named it.</div><div class="foot"><span>Date n.d.</span><span>EX 019 · L30</span></div></figure>
+<figure class="label"><div class="acc">Acc. SF-06 · imagined acquisition</div><div class="obj">a screenshot of a 2029 internal dashboard where 'time-to-verified' has replaced cycle time entirely. Build one honest 2026 version of that dashboard for his own public work.</div><div class="foot"><span>Date 2029</span><span>EX 020 · L31</span></div></figure>
+<figure class="label"><div class="acc">Acc. SF-07 · imagined acquisition</div><div class="obj">an O'Reilly book spine, thin, dark cover, title about specification-driven organizations. The site becomes the book's living pre-publication manuscript — chapters as sections, each ending in a working artifact.</div><div class="foot"><span>Date n.d.</span><span>EX 021 · L32</span></div></figure>
+<figure class="label"><div class="acc">Acc. SF-08 · imagined acquisition</div><div class="obj">a 2030 exit interview quote from an engineer: 'the agents were never the point; the specs were.' One sentence as the site's epigraph.</div><div class="foot"><span>Date 2030</span><span>EX 022 · L33</span></div></figure>
+<figure class="label"><div class="acc">Acc. SF-09 · imagined acquisition</div><div class="obj">a procurement questionnaire that a Fortune 500 now sends to every transformation vendor — because his framework became the rubric. Publish his own due-diligence questions openly.</div><div class="foot"><span>Date n.d.</span><span>EX 023 · L34</span></div></figure>
+<figure class="label"><div class="acc">Acc. SF-10 · imagined acquisition</div><div class="obj">a museum label for 'Copilot license, 2023-2027' next to 'Spec repository, 2026-present.' Site idea: a 'museum of practices already dying' section — what he is deliberately not adopting and why.</div><div class="foot"><span>Date 2023-2027</span><span>EX 024 · L35</span></div></figure>
+<figure class="label"><div class="acc">Acc. SF-11 · imagined acquisition</div><div class="obj">In the 2029 world, credentials are gone from his site (already his instinct) because impact ledgers replaced titles; the resume became an API others query. So: publish a machine-readable YAML/JSON of verified outcomes on the site — /impact.json — that agents themselves can read.</div><div class="foot"><span>Date 2029</span><span>EX 025 · L36</span></div></figure>
+<figure class="label"><div class="acc">Acc. SF-12 · imagined acquisition</div><div class="obj">Future artifact as interaction: the page is addressed to a hiring committee of agents. Offer 'Read this as JSON' and a one-paragraph agent legible summary, since in 2026 his work is already being screened by machines.</div><div class="foot"><span>Date 2026</span><span>EX 026 · L37</span></div></figure>
+</div>
+</section>
+<section class="lens l3" id="lens-3">
+<div class="sechead"><div class="num">03 / LENS</div><div><h2>KILL THE CROWN JEWEL</h2>
+<p class="idiom">Treatment: strikethrough, then what survives. The struck line is the limb of the current site; the text beside it is what has to carry the weight afterwards.</p>
+<div class="count">12 ideas · memlog L39–L50</div></div></div>
+<div class="pair"><div><span class="tag">Amputation 01 · EX 027 · L39</span><div class="dead">the GitHub star counts and download counts</div></div><div class="alive">Kill the GitHub star counts and download counts. Without them the site must prove judgment, not popularity — which is what a transformation buyer actually purchases.</div></div>
+<div class="pair"><div><span class="tag">Amputation 02 · EX 028 · L40</span><div class="dead">the package list entirely</div></div><div class="alive">Kill the package list entirely. What survives: two packages re-framed as evidence of a thesis (expo-cached-image as 'what happens when you make a performance budget enforceable by a library'), everything else moved to GitHub only.</div></div>
+<div class="pair"><div><span class="tag">Amputation 03 · EX 029 · L41</span><div class="dead">the word 'AI' from the whole site</div></div><div class="alive">Kill the word 'AI' from the whole site. Forced consequence: he must describe mechanisms — specs, evals, gates, ownership, feedback latency. Mechanism language is instantly non-generic.</div></div>
+<div class="pair"><div><span class="tag">Amputation 04 · EX 030 · L42</span><div class="dead">the gradient hero and the four emoji cards simultaneously</div></div><div class="alive">Kill the gradient hero and the four emoji cards simultaneously. What has to replace an emotional opener is a claim plus evidence in the first viewport: a sentence only he could sign.</div></div>
+<div class="pair"><div><span class="tag">Amputation 05 · EX 031 · L43</span><div class="dead">the About section (the classic AI tell: two paragraphs of self-description)</div></div><div class="alive">Kill the About section (the classic AI tell: two paragraphs of self-description). Replace with 'What I actually do when a company asks for this' — a sequence of weeks.</div></div>
+<div class="pair"><div><span class="tag">Amputation 06 · EX 032 · L44</span><div class="dead">testimonials-as-decoration</div></div><div class="alive">Kill testimonials-as-decoration. Either no quotes at all, or one quote that carries an uncomfortable number and names its source and context.</div></div>
+<div class="pair"><div><span class="tag">Amputation 07 · EX 033 · L45</span><div class="dead">the notion of a portfolio at all</div></div><div class="alive">Kill the notion of a portfolio at all: without it, the artifact becomes a working document — a public engagement plan template, a diagnostic, a baseline calculator. Portfolios describe; instruments do things.</div></div>
+<div class="pair"><div><span class="tag">Amputation 08 · EX 034 · L46</span><div class="dead">packages as the subject</div></div><div class="alive">Without packages as the subject, the open-source work re-enters as proof of a specific trait: he ships and maintains in public, alone, with docs — i.e. he can be trusted with other people's codebases because he already maintains strangers'.</div></div>
+<div class="pair"><div><span class="tag">Amputation 09 · EX 035 · L47</span><div class="dead">the crown jewel exposes the real one</div></div><div class="alive">Killing the crown jewel exposes the real one: the the awarding body 27/47-point outcome is not a package metric at all. The jewel was never npm; it is business-satisfaction movement inside a Fortune 100.</div></div>
+<div class="pair"><div><span class="tag">Amputation 10 · EX 036 · L48</span><div class="dead">'Built by Dmitry Amelchenko in Boston' style boilerplate</div></div><div class="alive">Delete 'Built by Dmitry Amelchenko in Boston' style boilerplate — replace with one concrete identifier that a human could check and a model would not guess: named internal things, dated commits, a specific migration or program name (cleared for public use).</div></div>
+<div class="pair"><div><span class="tag">Amputation 11 · EX 037 · L49</span><div class="dead">job titles · chronology</div></div><div class="alive">If the site can't mention job titles (his rule), it must be organized by mechanism instead of chronology: not 'where I worked' but 'the five moves I make', each with evidence drawn from wherever it came from.</div></div>
+<div class="pair"><div><span class="tag">Amputation 12 · EX 038 · L50</span><div class="dead">the CTA 'Contact us'</div></div><div class="alive">Kill the CTA 'Contact us'. The correct CTA after killing the jewel is a paid, scoped diagnostic — a small, specific, buyable first step that de-risks an eight-figure transformation decision.</div></div>
+</section>
+<section class="lens l4" id="lens-4">
+<div class="sechead"><div class="num">04 / LENS</div><div><h2>CRANK THE DIAL TO 11</h2>
+<div class="paren">dimension: proof density</div>
+<p class="idiom">Treatment: meters pinned at eleven. Proof density is the dial; each reading below is a dimension pushed to its limit.</p>
+<div class="count">12 ideas · memlog L52–L63</div></div></div>
+<div class="dial"><div><div class="dim">Dial to 11 on proof density</div><div class="meter" role="img" aria-label="dial reading eleven of eleven"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="val">11 / 11 · EX 039 · L52</div></div><p>every claim on the page carries a footnote with the measurement, the sample, and the date. The site reads like an audit; that is the aesthetic.</p></div>
+<div class="dial"><div><div class="dim">Dial further</div><div class="meter" role="img" aria-label="dial reading eleven of eleven"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="val">11 / 11 · EX 040 · L53</div></div><p>numbers render only when verified — each metric has a 'how this was measured' popover written in past tense, including what he got wrong.</p></div>
+<div class="dial"><div><div class="dim">Dial to 11 on specificity</div><div class="meter" role="img" aria-label="dial reading eleven of eleven"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="val">11 / 11 · EX 041 · L54</div></div><p>no sentence survives editing if it could be pasted onto another engineer's site. Publish the diff of deleted sentences as a design statement.</p></div>
+<div class="dial"><div><div class="dim">Dial to 11 on transparency</div><div class="meter" role="img" aria-label="dial reading eleven of eleven"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="val">11 / 11 · EX 042 · L55</div></div><p>show the actual (redacted) artifacts — a spec, an agent run log, a gate config, a before/after DORA chart. Redaction itself signals real material exists.</p></div>
+<div class="dial"><div><div class="dim">Dial to 11 on candour</div><div class="meter" role="img" aria-label="dial reading eleven of eleven"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="val">11 / 11 · EX 043 · L56</div></div><p>a permanent 'what I got wrong' section at the top of the page, above the wins, updated publicly.</p></div>
+<div class="dial"><div><div class="dim">Dial to 11 on evidence but zero adjectives</div><div class="meter" role="img" aria-label="dial reading eleven of eleven"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="val">11 / 11 · EX 044 · L57</div></div><p>the entire site is nouns, numbers and mechanisms. Removing every evaluative word is a style no generator produces by default.</p></div>
+<div class="dial"><div><div class="dim">Dial to 11 on the opposite axis — brevity</div><div class="meter" role="img" aria-label="dial reading eleven of eleven"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="val">11 / 11 · EX 045 · L58</div></div><p>the whole pitch in one sentence, then everything else is artifact. Restraint reads as confidence; AI output over-explains.</p></div>
+<div class="dial"><div><div class="dim">Dial to 11 on liveness</div><div class="meter" role="img" aria-label="dial reading eleven of eleven"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="val">11 / 11 · EX 046 · L59</div></div><p>the page shows real signals (commit cadence, package versions, issue response times) so it cannot be a static fabrication — and visibly breaks if he stops shipping.</p></div>
+<div class="dial"><div><div class="dim">Dial to 11 on the reader</div><div class="meter" role="img" aria-label="dial reading eleven of eleven"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="val">11 / 11 · EX 047 · L60</div></div><p>write the whole site as answers to the twelve questions a skeptical engineering VP actually asks, in their words, including the hostile ones ('this is vendor marketing', 'how do you know it wasn't the market').</p></div>
+<div class="dial"><div><div class="dim">Dial to 11 on proof-of-work</div><div class="meter" role="img" aria-label="dial reading eleven of eleven"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="val">11 / 11 · EX 048 · L61</div></div><p>publish an interactive baseline calculator — a visitor enters their own cycle time, defect rate and release cadence and sees which of his levers plausibly applies. Proof by usefulness, not assertion.</p></div>
+<div class="dial"><div><div class="dim">Dial to 11 on the J-curve honesty</div><div class="meter" role="img" aria-label="dial reading eleven of eleven"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="val">11 / 11 · EX 049 · L62</div></div><p>show a real (anonymized) velocity dip chart during adoption, with the recovery annotated. One graph nobody else will publish.</p></div>
+<div class="dial"><div><div class="dim">Dial to 11 on names</div><div class="meter" role="img" aria-label="dial reading eleven of eleven"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="val">11 / 11 · EX 050 · L63</div></div><p>coin and define terms — 'delivery physics', 'spec debt', 'verification tax', 'agentic readiness'. Owning vocabulary is the only moat a personal brand has left after content became free.</p></div>
+</section>
+<section class="lens l5" id="lens-5">
+<div class="sechead"><div class="num">05 / LENS</div><div><h2>REVERSE BRAINSTORMING</h2>
+<div class="paren">how could this site fail to land?</div>
+<p class="idiom">Treatment: inverted record. Each block states the recipe for failure, then the inverse move that answers it.</p>
+<div class="count">12 ideas · memlog L65–L76</div></div></div>
+<div class="rev">
+<div><div class="inv"><div class="k">Failure recipe 01 · EX 051 · L65</div><h3>How to guarantee failure: keep four identical feature cards.</h3></div><div class="fix">Consequence: if cards stay, they must each contain a mechanism and a number, not an adjective.</div></div>
+<div><div class="inv"><div class="k">Failure recipe 02 · EX 052 · L66</div><h3>How to guarantee failure: put 'AI' in the headline.</h3></div><div class="fix">Every buyer has seen that headline forty times this quarter. Put the outcome and the mechanism in the headline instead.</div></div>
+<div><div class="inv"><div class="k">Failure recipe 03 · EX 053 · L67</div><h3>How to guarantee failure: list nothing checkable.</h3></div><div class="fix">A page with no verifiable noun (no named program, dated artifact, published method) is indistinguishable from a generated page.</div></div>
+<div><div class="inv"><div class="k">Failure recipe 04 · EX 054 · L68</div><h3>How to guarantee failure: be tasteful.</h3></div><div class="fix">Symmetrical spacing, purple gradient, neutral sans, no opinions. Ugly-but-precise beats beautiful-but-vacuous for this buyer.</div></div>
+<div><div class="inv"><div class="k">Failure recipe 05 · EX 055 · L69</div><h3>How to guarantee failure: address everyone.</h3></div><div class="fix">A site for 'engineering leaders' reads as a site for no one; write visibly to the one person whose budget and sleep depend on this.</div></div>
+<div><div class="inv"><div class="k">Failure recipe 06 · EX 056 · L70</div><h3>How to guarantee failure: hide the price of engagement.</h3></div><div class="fix">Buyers assume consulting opacity; a published range or scoped-diagnostic price is a trust signal competitors will not copy.</div></div>
+<div><div class="inv"><div class="k">Failure recipe 07 · EX 057 · L71</div><h3>How to guarantee failure: never say no.</h3></div><div class="fix">Publish 'who I turn down / what I won't do' — an agentic-coding mandate with no engineering manager buy-in, for example.</div></div>
+<div><div class="inv"><div class="k">Failure recipe 08 · EX 058 · L72</div><h3>How to guarantee failure: make it a brochure.</h3></div><div class="fix">The inverse fix: the site's main object is a tool the visitor uses once and leaves with something (a diagnostic score, a readiness map).</div></div>
+<div><div class="inv"><div class="k">Failure recipe 09 · EX 059 · L73</div><h3>How to guarantee failure: bury the regulated-environment proof.</h3></div><div class="fix">Most agentic-pilot buyers are now stuck in compliance review; his HIPAA/Fortune 100 scar tissue is the category-defining asset.</div></div>
+<div><div class="inv"><div class="k">Failure recipe 10 · EX 060 · L74</div><h3>How to guarantee failure: no voice.</h3></div><div class="fix">Grammar-perfect, cadence-flattened prose is the tell. Keep one idiosyncratic sentence rhythm and one deliberately blunt line per section.</div></div>
+<div><div class="inv"><div class="k">Failure recipe 11 · EX 061 · L75</div><h3>How to guarantee failure: no reading path for a 30-second skimmer and a 30-minute skeptic at once.</h3></div><div class="fix">Ship both: a five-line spine, then expandable evidence layers.</div></div>
+<div><div class="inv"><div class="k">Failure recipe 12 · EX 062 · L76</div><h3>How to guarantee failure: end with 'contact me'.</h3></div><div class="fix">End with a decision the reader can take in one step — book a 45-minute baseline readout, or run the diagnostic on their own repo data.</div></div>
+</div>
+</section>
+<section class="lens l6" id="lens-6">
+<div class="sechead"><div class="num">06 / LENS</div><div><h2>FIRST PRINCIPLES THINKING</h2>
+<p class="idiom">Treatment: bedrock and consequence. Left column is the fact that does not move; right column is what the site must therefore do.</p>
+<div class="count">10 ideas · memlog L78–L87</div></div></div>
+<div class="bp"><div class="m">BP 01<br>EX 063<br>L78</div><div class="fact">Bedrock fact: a buyer of transformation is not buying advice, they are buying the absence of their own career risk</div><div class="arrow">→</div><div class="conseq">Site idea: an explicit 'what I will hold myself' list — accountability language, which almost nobody in consulting writes.</div></div>
+<div class="bp"><div class="m">BP 02<br>EX 064<br>L79</div><div class="fact">Bedrock fact: organizations do not change because information arrives; they change when feedback loops and incentives move</div><div class="arrow">→</div><div class="conseq">So the site must demonstrate loop design, not knowledge. Sections become loops he installed.</div></div>
+<div class="bp"><div class="m">BP 03<br>EX 065<br>L80</div><div class="fact">Bedrock fact: trust in a stranger equals verifiable specifics plus time on record</div><div class="arrow">→</div><div class="conseq">Site idea: an 'on the record' archive — dated posts, talks and predictions that can be checked later, so the page accrues evidence just by existing.</div></div>
+<div class="bp"><div class="m">BP 04<br>EX 066<br>L81</div><div class="fact">Bedrock fact: his scarce asset is not AI knowledge (now free) but having run this inside a regulated Fortune 100 with real constraints</div><div class="arrow">→</div><div class="conseq">Therefore: lead with constraint competence, not capability.</div></div>
+<div class="bp"><div class="m">BP 05<br>EX 067<br>L82</div><div class="fact">Bedrock fact: the buyer's real question is 'will my engineers revolt?' The 89% eNPS answers it</div><div class="arrow">→</div><div class="conseq">so reframe eNPS as the agentic-adoption risk metric, not an HR vanity score.</div></div>
+<div class="bp"><div class="m">BP 06<br>EX 068<br>L83</div><div class="fact">Bedrock fact: a portfolio has no mechanism for proof; a log does.</div><div class="arrow">→</div><div class="conseq">Rebuild the site as an append-only public log with dates, so credibility comes from continuity rather than claims.</div></div>
+<div class="bp"><div class="m">BP 07<br>EX 069<br>L84</div><div class="fact">Bedrock fact: reading is not the transaction; the transaction is a conversation with a shared artifact</div><div class="arrow">→</div><div class="conseq">Therefore the site's core object should be the thing both parties look at together in meeting one — a diagnostic, a baseline, a readiness map.</div></div>
+<div class="bp"><div class="m">BP 08<br>EX 070<br>L85</div><div class="fact">Bedrock fact: most agentic programs stall between pilot and production.</div><div class="arrow">→</div><div class="conseq">Name that gap publicly ('the last ten percent is organizational, not technical') and make the site about exactly that gap — it is where he uniquely lives.</div></div>
+<div class="bp"><div class="m">BP 09<br>EX 071<br>L86</div><div class="fact">Bedrock fact: he cannot claim a client's confidential numbers without permission</div><div class="arrow">→</div><div class="conseq">Solution: an impact ledger with ranges, methodology and named-but-unattributed context, plus references available on request — rigorous and legal.</div></div>
+<div class="bp"><div class="m">BP 10<br>EX 072<br>L87</div><div class="fact">Bedrock fact: writing is the only infinitely scalable demo of thinking</div><div class="arrow">→</div><div class="conseq">Therefore long-form, opinionated, dated essays are not marketing content; they are the product sample.</div></div>
+</section>
+<section class="lens l7" id="lens-7">
+<div class="sechead"><div class="num">07 / LENS</div><div><h2>CROSS-POLLINATION</h2>
+<div class="paren">how would other industries prove transformation credibility?</div>
+<p class="idiom">Treatment: source chips mapped to the borrowed move — another industry’s credibility device, and the exact thing worth taking from it.</p>
+<div class="count">12 ideas · memlog L89–L100</div></div></div>
+<div class="xp"><div><span class="chip">Hospitals</span><div class="kicker" style="margin-top:9px">EX 073 · L89</div></div><div><div class="logic">Hospitals accredit transformation work with Joint Commission standards</div><div class="move"><b>Stolen move</b>publish 'The Agentic Readiness Standard' — 20 numbered criteria, each scored with evidence. He becomes the standard-setter, not the vendor.</div></div></div>
+<div class="xp"><div><span class="chip">Management consultants</span><div class="kicker" style="margin-top:9px">EX 074 · L90</div></div><div><div class="logic">Management consultants sell a named framework and a colored 2x2 (McKinsey, BCG)</div><div class="move"><b>Stolen move</b>one memorable two-axis model — e.g. Autonomy x Verification — drawn once, used everywhere, legally his.</div></div></div>
+<div class="xp"><div><span class="chip">Airlines</span><div class="kicker" style="margin-top:9px">EX 075 · L91</div></div><div><div class="logic">Airlines publish on-time performance because regulators force disclosure; trust followed the data</div><div class="move"><b>Stolen move</b>publish his own delivery metrics in a fixed monthly format, like an airline scorecard, whether flattering or not.</div></div></div>
+<div class="xp"><div><span class="chip">Chefs</span><div class="kicker" style="margin-top:9px">EX 076 · L92</div></div><div><div class="logic">Chefs prove themselves with one dish at one restaurant, not a CV of kitchens</div><div class="move"><b>Stolen move</b>make 'the one dish' a repeatable engagement — named, priced, and described end to end (e.g. a 6-week Delivery Baseline).</div></div></div>
+<div class="xp"><div><span class="chip">Architecture studios</span><div class="kicker" style="margin-top:9px">EX 077 · L93</div></div><div><div class="logic">Architecture studios show built work in plans, sections and post-occupancy photos, not renders</div><div class="move"><b>Stolen move</b>present transformations as drawings — before-state diagram, intervention diagram, after-state diagram, plus what actually happened a year later.</div></div></div>
+<div class="xp"><div><span class="chip">Sommeliers</span><div class="kicker" style="margin-top:9px">EX 078 · L94</div></div><div><div class="logic">Sommeliers build trust with a tasting vocabulary that makes beginners feel competent</div><div class="move"><b>Stolen move</b>give engineering leaders a ten-word vocabulary to describe agentic maturity so they can talk to their own CTO — and cite him for it.</div></div></div>
+<div class="xp"><div><span class="chip">ERs</span><div class="kicker" style="margin-top:9px">EX 079 · L95</div></div><div><div class="logic">ERs use triage protocols: explicit, boring, life-saving checklists</div><div class="move"><b>Stolen move</b>publish an 'agentic adoption triage card' for stalled pilots — six checks, each with a tell and a first move.</div></div></div>
+<div class="xp"><div><span class="chip">Sports analytics</span><div class="kicker" style="margin-top:9px">EX 080 · L96</div></div><div><div class="logic">Sports analytics won by publishing the metric others were embarrassed by (WAR replaced scouting instinct)</div><div class="move"><b>Stolen move</b>propose one successor metric to cycle time — e.g. verified-outcome lead time — and defend it against DORA purists.</div></div></div>
+<div class="xp"><div><span class="chip">Ship crews</span><div class="kicker" style="margin-top:9px">EX 081 · L97</div></div><div><div class="logic">Ship crews keep a deck log; the master's signature on an entry is legally binding</div><div class="move"><b>Stolen move</b>a public 'log of decisions' with dates, rationale and what he'd change — the aesthetic of a signed register.</div></div></div>
+<div class="xp"><div><span class="chip">Musicians</span><div class="kicker" style="margin-top:9px">EX 082 · L98</div></div><div><div class="logic">Musicians prove live skill with recordings of actual performances, not press shots</div><div class="move"><b>Stolen move</b>publish real recorded working sessions (screen recordings of him driving an agent to a merged PR, warts included).</div></div></div>
+<div class="xp"><div><span class="chip">Detectives</span><div class="kicker" style="margin-top:9px">EX 083 · L99</div></div><div><div class="logic">Detectives convince by chain of custody</div><div class="move"><b>Stolen move</b>every published claim links to the artifact that supports it, with redaction visibly marked — 'exhibit A/B/C' as the site's navigation.</div></div></div>
+<div class="xp"><div><span class="chip">Winemakers</span><div class="kicker" style="margin-top:9px">EX 084 · L100</div></div><div><div class="logic">Winemakers sell vintage and terroir: same grape, different ground</div><div class="move"><b>Stolen move</b>state plainly which conditions his results depended on (team size, domain, regulation, culture) so buyers can self-qualify; honesty converts better than universality.</div></div></div>
+</section>
+<section class="lens l8" id="lens-8">
+<div class="sechead"><div class="num">08 / LENS</div><div><h2>TIME SHIFTING</h2>
+<div class="paren">1900s artisan / 2150 colonist</div>
+<p class="idiom">Treatment: era split. The same question asked from the workshop and from the colony ship; the answers disagree productively.</p>
+<div class="count">10 ideas · memlog L102–L111</div></div></div>
+<div class="eras">
+<div class="era"><h3>Past — the workshop, the guild, the paper</h3>
+<div class="item"><div class="when">1900s — stopwatch, guild, poster · EX 085 · L102</div><p>As a 1900s engineer: efficiency consulting was sold with public measurements and signed attestations — Taylor's stopwatch, Gilbreth's motion studies. The genre Dmitry is in literally began there; own the lineage openly rather than the AI-consultant version of it.</p></div>
+<div class="item"><div class="when">1900s — stopwatch, guild, poster · EX 086 · L103</div><p>1900s guild logic: a master's reputation was the apprentice's guarantee. Idea: put a hard commitment behind the work — 'if the baseline does not move in 90 days, here is what happens'. Signed guarantees vanished from this profession; bringing one back is startling.</p></div>
+<div class="item"><div class="when">1900s — stopwatch, guild, poster · EX 089 · L106</div><p>1900s poster logic: one message, huge type, readable from a moving train. Idea: the first viewport carries exactly one sentence and one number; everything else scrolls into view later.</p></div>
+<div class="item"><div class="when">1970s — mainframe, conference paper · EX 092 · L109</div><p>As a 1970s mainhouse engineer: credibility came from a published conference paper. Idea: submit two real papers (industry track) and put the citations on the site — peer review is the one credential an LLM cannot fake retroactively.</p></div>
+<div class="item"><div class="when">artisan era — the workbench · EX 094 · L111</div><p>Artisan-era move: show the workbench, not the showroom. Idea: an honest 'current workbench' panel — three things in progress right now, one blocked, one abandoned; a live shop door with sawdust.</p></div>
+</div>
+<div class="era"><h3>Future — the colony ship, the reader of 2031</h3>
+<div class="item"><div class="when">2150 — colony ship, verification economy · EX 087 · L104</div><p>As a 2150 colony ship: roles are assigned by demonstrated loop-control, not résumé. Their founding document lists capabilities and their failure conditions. Idea: state each offering with its disqualifying condition — 'do not hire me if X' — which no brochure has and every engineer trusts.</p></div>
+<div class="item"><div class="when">2150 — colony ship, verification economy · EX 088 · L105</div><p>2150 framing: agents write the prose, so human-written text is a luxury good marked by imperfection. Idea: keep one handwritten (literally scanned) annotation per section — marginalia as authenticity proof.</p></div>
+<div class="item"><div class="when">2150 — colony ship, verification economy · EX 090 · L107</div><p>2150 archaeology: what survives of an org chart is the artifact it produced. Idea: the site's navigation is artifacts, not sections — Specs / Gates / Migrations / Log — so structure itself argues his point.</p></div>
+<div class="item"><div class="when">2031 — a reader who never heard of Copilot · EX 091 · L108</div><p>Time-shift the reader: write the homepage as if read in 2031 by someone who has never heard of Copilot or pull requests. Terms that need explaining are dated; terms that survive are the real content he is selling.</p></div>
+<div class="item"><div class="when">2150 — colony ship, verification economy · EX 093 · L110</div><p>2150 constraint: attention is free, verification is scarce. So the site's currency is not content volume but cryptographic-ish traceability — dated, hash-linked posts (git-signed) that prove when he said what.</p></div>
+</div>
+</div>
+</section>
+<section class="lens l9" id="lens-9">
+<div class="sechead"><div class="num">09 / LENS</div><div><h2>VALUES ARCHAEOLOGY + ANALOGICAL THINKING</h2>
+<div class="paren">'this is like what?'</div>
+<p class="idiom">Treatment: strata, then analogy. Values excavated by depth, then the roles the work keeps resembling.</p>
+<div class="count">12 ideas · memlog L113–L124</div></div></div>
+<div class="kicker" style="margin-bottom:12px">Values archaeology — depth strata</div><div class="strata">
+<div class="stratum"><div class="depth">Value 01 — verified outcomes over visibility<br>depth 0–20 m · EX 095 · L113</div><p>Why does he care about this site? Because his team's work mattered more than the org noticed. Bedrock value: engineers should be judged on verified outcomes, not visibility. That value can be the site's spine and his enemies list.</p></div>
+<div class="stratum"><div class="depth">Value 02 — say only what you can show<br>depth 20–60 m · EX 096 · L114</div><p>Deeper: he resists 'AI thought leader' because he is allergic to unearned certainty. Bedrock value: say only what you can show. Therefore the site's design rule becomes a published rule — 'nothing on this page is unverifiable' — which is also its marketing.</p></div>
+<div class="stratum"><div class="depth">Value 03 — constraint-seeking<br>depth 60–120 m · EX 097 · L115</div><p>Deeper still: he wants to be trusted with the hard version of the problem, not the fun one. Bedrock value: constraint-seeking. Site tone: he competes for regulated, scaled, unglamorous engagements and says so.</p></div>
+<div class="stratum"><div class="depth">Value 04 — craftsmanship over throughput<br>depth 120–200 m · EX 098 · L116</div><p>Bedrock value named: craftsmanship over throughput — his own packages are maintained solo with docs. So the site can honestly say 'I keep things working long after launch', which is exactly what transformation buyers fear they cannot get.</p></div>
+</div>
+<div class="kicker" style="margin-bottom:12px">Analogical thinking — “this is like what?”</div><div class="analog">
+<div class="acard"><div class="like">Analogy 01 · EX 099 · L117</div><p><span class="lead">This is like what? A ship's pilot: </span> not the crew, not the owner, but the licensed stranger who comes aboard for the hard channel and signs the log. Site language: 'I come aboard for the hard part.' Instantly differentiated role definition.</p></div>
+<div class="acard"><div class="like">Analogy 02 · EX 100 · L118</div><p><span class="lead">This is like a hospital infection-control lead: </span> success is measured in things that stopped happening. Idea: publish absence metrics — defects that never shipped, incidents prevented, outages avoided by gates.</p></div>
+<div class="acard"><div class="like">Analogy 03 · EX 101 · L119</div><p><span class="lead">This is like an orchestra conductor who also tunes instruments: </span> the transformation leader must be able to do the boring mechanical work. Idea: show tuning (real PRs he personally merged, real config files) alongside conducting (org design).</p></div>
+<div class="acard"><div class="like">Analogy 04 · EX 102 · L120</div><p><span class="lead">This is like a mountain guide: </span> paid for judgment about weather, not for climbing ability. Idea: publish 'calls I made that were wrong and how I knew' — judgment under uncertainty is the product.</p></div>
+<div class="acard"><div class="like">Analogy 05 · EX 103 · L121</div><p><span class="lead">This is like a forensic accountant brought in after the audit: </span> the buyer wants someone who will tell them their number is wrong before a regulator does. Idea: offer an adversarial baseline review as the entry-level engagement.</p></div>
+<div class="acard"><div class="like">Analogy 06 · EX 104 · L122</div><p><span class="lead">This is like a restorer of paintings: </span> consent to do less than possible, reversible interventions, documentation of every touch. Idea: 'reversibility' as a selling point for agentic change in conservative orgs — his regulated background makes it credible.</p></div>
+<div class="acard"><div class="like">Analogy 07 · EX 105 · L123</div><p>This is like a translator between two languages engineering leaders cannot speak to each other (business cadence and agent capability). Idea: the site publishes literal translation tables — 'what the CTO says / what it means / what I change'.</p></div>
+<div class="acard"><div class="like">Analogy 08 · EX 106 · L124</div><p><span class="lead">Final analogy: </span> a luthier, not a factory. One at a time, measured by how it sounds in someone else's hands. Site scale consequence: keep capacity deliberately small and say so — scarcity framed as craft, not ego.</p></div>
+</div>
+</section>
+<section id="synthesis">
+<div class="sechead"><div class="num">END / SYNTHESIS</div><div><h2>What the nine lenses agree on</h2><p class="idiom">13 insights recorded at the close of the session, in order. The last is the decision; everything above it is evidence for it.</p><div class="count">memlog L125–L137</div></div></div>
+<div class="ins"><div class="m">01<br>L125</div><div><div class="k">SPINE</div><p>'AI-generated' means averaged, and averages are unverifiable. So the strategy is not better design, it is radical verifiability — every claim carries a dated, checkable artifact. Publish the design rule itself: nothing on this page is unverifiable.</p></div></div>
+<div class="ins"><div class="m">02<br>L126</div><div><div class="k">REFRAME</div><p>he is not an 'AI transformation expert' (crowded, commoditized) — he designs verification systems that let an org grant agents real autonomy without losing trust. Autonomy is cheap; verified autonomy is the product.</p></div></div>
+<div class="ins"><div class="m">03<br>L127</div><div><div class="k">THE GAP</div><p>pilots stall between demo and production because the last ten percent is organizational, not technical. That gap is exactly where his evidence lives (regulated Fortune 100 + HIPAA + 50+ orgs + eNPS). Position there, not on tooling.</p></div></div>
+<div class="ins"><div class="m">04<br>L128</div><div><div class="k">BEST PROOF IS THIRD-PARTY</div><p>the the awarding body 27-point / 47-point mobile satisfaction surge is published and currently absent from the site. Lead with it; internal velocity numbers become supporting exhibits.</p></div></div>
+<div class="ins"><div class="m">05<br>L129</div><div><div class="k">Insight 05</div><p>89% eNPS is not an HR stat, it is the agentic-adoption risk metric — the answer to the buyer's real fear ('will my engineers revolt?'). It also quietly underwrites every speed claim, because speed without quality culture reads as risk.</p></div></div>
+<div class="ins"><div class="m">06<br>L130</div><div><div class="k">THREE IDEAS WEARING THREE HATS</div><p>accountability ('what I hold myself'), the signed ship's-pilot log, and published disqualifying conditions. Merge into one instrument: named engagement + commitment + who I turn away.</p></div></div>
+<div class="ins"><div class="m">07<br>L131</div><div><div class="k">CATEGORY SHIFT</div><p>portfolio (describes) -&gt; instrument (does). Site's core object is the artifact both parties look at in meeting one: baseline diagnostic, agentic readiness standard, impact ledger with methodology.</p></div></div>
+<div class="ins"><div class="m">08<br>L132</div><div><div class="k">STRUCTURE FOLLOWS MECHANISM, NOT CHRONOLOGY</div><p>no titles, no timeline (his explicit rule). Navigation becomes artifacts and moves — Baseline / Specs / Gates / Log / Impact — each backed by evidence drawn from wherever it came from.</p></div></div>
+<div class="ins"><div class="m">09<br>L133</div><div><div class="k">VOCABULARY IS THE ONLY REMAINING MOAT</div><p>coin and define delivery physics, spec debt, verification tax, time-to-verified, agentic readiness. Owning five terms outperforms owning fifty posts.</p></div></div>
+<div class="ins"><div class="m">10<br>L134</div><div><div class="k">COUNTER-INTUITIVE DIFFERENTIATOR FOR CONSERVATIVE BUYERS</div><p>reversibility (restorer's consent, reversible interventions, documented touches). Hype sells acceleration; regulated orgs buy the ability to undo. His background uniquely licenses this.</p></div></div>
+<div class="ins"><div class="m">11<br>L135</div><div><div class="k">CANDOUR LAYER IS THE TRUST ENGINE</div><p>publish the J-curve dip, one named failure, the metric he refuses to optimize and why, 'who I turn down', and a price for the first scoped step. Competitors structurally cannot copy this.</p></div></div>
+<div class="ins"><div class="m">12<br>L136</div><div><div class="k">MAKE IT AGENT-LEGIBLE ON PURPOSE</div><p>/impact.json + one-paragraph machine summary, since 2026 screening is already partly automated and a portfolio that both humans and agents can verify is its own statement.</p></div></div>
+<div id="decision"><div class="k">Chosen direction · adopted 2026-10-17T09:00 · memlog L137</div><h3>hero: one sentence + one number (no gradients, no emoji cards, the word 'AI' banned)</h3><dl>
+<dt>spine</dt><dd>five mechanisms with evidence</dd>
+<dt>instruments</dt><dd>baseline diagnostic, readiness standard, impact ledger</dd>
+<dt>and</dt><dd>candour section above the wins</dd>
+<dt>and</dt><dd>single CTA to a named 6-week Delivery Baseline with stated disqualifiers</dd>
+</dl></div>
+<div class="gate"><div class="k">Published design rule<br>insight 01 · memlog L125</div><div><p>Nothing on this page is unverifiable.</p><p style="font-family:var(--sans);font-size:15px;line-height:1.6;margin-top:14px">Every idea on this page carries the memlog line it was written on; every number in it is dated; the record itself is cited in the colophon. A sentence that could be pasted onto another engineer’s site never made it into this file.</p></div></div>
+</section>
+<footer id="colophon">
+<span>Source of record: <code>_bmad-output/brainstorming/brainstorm-echowaves-portfolio-repositioning-2026-10-17/.memlog.md</code><br>106 ideas · 14 insights · 9 lenses · mode autonomous · session closed 2026-10-17T09:00</span>
+<span>Rendered from the record without summarising or dropping any entry.<br>No external assets, no network calls, no analytics.<br>Dmitry Amelchenko · echowaves.com</span>
+</footer>
+</div>
+<script>
+(function(){
+  var links=[].slice.call(document.querySelectorAll('nav.index a')), map={};
+  links.forEach(function(a){ map[a.getAttribute('href').slice(1)] = a; });
+  if(!('IntersectionObserver' in window)) return;
+  var io=new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(!e.isIntersecting) return;
+      links.forEach(function(a){ a.classList.remove('on'); });
+      var a=map[e.target.id]; if(a) a.classList.add('on');
+    });
+  },{rootMargin:'-12% 0px -76% 0px'});
+  Object.keys(map).forEach(function(id){
+    var el=document.getElementById(id); if(el) io.observe(el);
+  });
+})();
+</script>
+</body></html>

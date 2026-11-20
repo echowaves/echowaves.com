@@ -1,0 +1,343 @@
+<!--
+  bmad-ux creative-tool artifact — pick-by-eye comparison only.
+  Two questions in one file: (A) hero headline candidates, (B) terminal palettes.
+  DESIGN.md and EXPERIENCE.md spines win over this file on any conflict.
+  Nothing here is final; every hex is offered for lifting, not binding.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hero headline candidates + terminal palettes — echowaves.com</title>
+<style>
+  /* ===== page frame (not part of the design) ===== */
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background:#26272b; padding:32px 24px 80px;
+    font-family:'SF Mono','JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;
+    color:#d4d4d4; line-height:1.6;
+  }
+  .page { max-width:1020px; margin:0 auto; }
+  h1 { font-size:15px; letter-spacing:1.2px; text-transform:uppercase; color:#8a8a8a; margin:44px 0 8px; }
+  h1:first-child { margin-top:0; }
+  .lede { font-size:13px; color:#7e7e7e; max-width:76ch; margin-bottom:28px; }
+
+  /* ===== shared terminal window ===== */
+  .win { border:1px solid #3a3a3a; border-radius:11px; overflow:hidden; margin-bottom:14px; background:#0b0b0d; }
+  .titlebar { display:flex; align-items:center; gap:7px; padding:11px 14px; background:#1c1c20; border-bottom:1px solid #333; }
+  .dot { width:11px; height:11px; border-radius:50%; }
+  .dot.r{background:#ff5f57;} .dot.y{background:#febc2e;} .dot.g{background:#28c840;}
+  .path { margin-left:12px; font-size:12px; color:#8a8a8a; }
+  .tabs { display:flex; gap:2px; padding:0 10px; background:#141417; border-bottom:1px solid #333; overflow-x:auto; }
+  .tab { font-size:12px; padding:9px 14px 8px; color:#7c7c7c; white-space:nowrap; border-bottom:2px solid transparent; }
+  .tab[aria-current="page"] { color:#e8e8e8; background:#0b0b0d; border-bottom-color:#e8e8e8; }
+  .screen { padding:26px 26px 30px; font-size:15px; }
+  .prompt { color:#4fd18b; }
+  .cmd { color:#e8e8e8; }
+  h2.hero { font-size:31px; line-height:1.18; letter-spacing:-0.4px; margin:6px 0 12px; font-weight:600; }
+  .sub { font-size:15.5px; color:#a9a9a9; max-width:66ch; }
+  .row { display:flex; gap:0; margin:26px 0 22px; flex-wrap:wrap; }
+  .cell { flex:1 1 200px; border-left:2px solid #3a3a3a; padding:2px 0 2px 14px; }
+  .fig { font-size:22px; font-weight:600; color:#e8e8e8; }
+  .lab { font-size:12px; color:#858585; margin-top:3px; }
+  .para { font-size:14px; color:#9a9a9a; max-width:70ch; }
+  .btn { display:inline-block; margin-top:22px; font-size:13.5px; padding:9px 16px; border:1px solid #e8e8e8; color:#e8e8e8; }
+
+  /* ===== candidate annotation strip ===== */
+  .note { font-size:12.5px; color:#8f8f8f; max-width:96ch; margin:0 0 34px; padding-left:14px; border-left:2px solid #454545; }
+  .note b { color:#c9c9c9; font-weight:600; }
+
+  /* ===== palette variants (each block carries its own tokens) ===== */
+  /* --- Tokyo Night: the machine room, blue-hour lit. Cool indigo ground, cyan and magenta signals. --- */
+  .tn { background:#1a1b26; border-color:#292e42; }
+  .tn .titlebar { background:#16161e; border-bottom-color:#292e42; }
+  .tn .path { color:#7aa2f7; }
+  .tn .tabs { background:#16161e; border-bottom-color:#292e42; }
+  .tn .tab { color:#565f89; }
+  .tn .tab[aria-current="page"] { color:#c0caf5; background:#1a1b26; border-bottom-color:#7aa2f7; }
+  .tn h2.hero, .tn .fig, .tn .cmd { color:#c0caf5; }
+  .tn .prompt { color:#9ece6a; }
+  .tn .sub, .tn .para { color:#a9b1d6; }
+  .tn .lab { color:#787c99; }
+  .tn .cell { border-left-color:#292e42; }
+  .tn .btn { border-color:#bb9af7; color:#bb9af7; }
+
+  /* --- Homebrew green phosphor: the terminal everyone has pictured since 1984. One hue, absolute authority. --- */
+  .hb { background:#060606; border-color:#123f1c; }
+  .hb .titlebar { background:#0d0d0d; border-bottom-color:#123f1c; }
+  .hb .path { color:#33d24b; }
+  .hb .tabs { background:#0d0d0d; border-bottom-color:#123f1c; }
+  .hb .tab { color:#1f7a2f; }
+  .hb .tab[aria-current="page"] { color:#8dfa9c; background:#060606; border-bottom-color:#33d24b; }
+  .hb h2.hero, .hb .fig, .hb .cmd { color:#8dfa9c; }
+  .hb .prompt { color:#33d24b; }
+  .hb .sub, .hb .para { color:#3fa852; }
+  .hb .lab { color:#2b7a3a; }
+  .hb .cell { border-left-color:#1f5c29; }
+  .hb .btn { border-color:#33d24b; color:#8dfa9c; }
+
+  /* --- Solarized Dark: the one you can read for an hour. Low contrast by design, zero glare. --- */
+  .sd { background:#002b36; border-color:#073642; }
+  .sd .titlebar { background:#00242e; border-bottom-color:#073642; }
+  .sd .path { color:#268bd2; }
+  .sd .tabs { background:#00242e; border-bottom-color:#073642; }
+  .sd .tab { color:#586e75; }
+  .sd .tab[aria-current="page"] { color:#93a1a1; background:#002b36; border-bottom-color:#2aa198; }
+  .sd h2.hero, .sd .fig, .sd .cmd { color:#93a1a1; }
+  .sd .prompt { color:#859900; }
+  .sd .sub, .sd .para { color:#657b83; }
+  .sd .lab { color:#586e75; }
+  .sd .cell { border-left-color:#073642; }
+  .sd .btn { border-color:#2aa198; color:#2aa198; }
+
+  /* --- Catppuccin Mocha: warm dark, pastel accents. Friendly for a terminal, still precise. --- */
+  .cm { background:#1e1e2e; border-color:#313244; }
+  .cm .titlebar { background:#181825; border-bottom-color:#313244; }
+  .cm .path { color:#89b4fa; }
+  .cm .tabs { background:#181825; border-bottom-color:#313244; }
+  .cm .tab { color:#6c7086; }
+  .cm .tab[aria-current="page"] { color:#cdd6f4; background:#1e1e2e; border-bottom-color:#cba6f7; }
+  .cm h2.hero, .cm .fig, .cm .cmd { color:#cdd6f4; }
+  .cm .prompt { color:#a6e3a1; }
+  .cm .sub, .cm .para { color:#bac2de; }
+  .cm .lab { color:#7f849c; }
+  .cm .cell { border-left-color:#313244; }
+  .cm .btn { border-color:#f5c2e7; color:#f5c2e7; }
+
+  /* ===== token chips ===== */
+  .chips { display:flex; flex-wrap:wrap; gap:8px; margin:0 0 40px; }
+  .chip { display:flex; align-items:center; gap:7px; font-size:11.5px; color:#9a9a9a; border:1px solid #3a3a3a; border-radius:6px; padding:4px 8px; background:#141417; }
+  .sw { width:13px; height:13px; border-radius:3px; border:1px solid rgba(255,255,255,.18); }
+  .reg { font-size:12.5px; color:#8f8f8f; margin-bottom:12px; }
+</style>
+</head>
+<body>
+<div class="page">
+
+<h1>A · Hero headline candidates</h1>
+<p class="lede">Same window, same metrics, five different claims about what Dmitry does. Read the big line first, then ask which one a stranger could repeat back correctly. Palette is deliberately neutral here so the words carry it.</p>
+
+<!-- ============ A1 ============ -->
+<div class="win">
+  <div class="titlebar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="path">dmitry@echowaves — ~/echowaves</span></div>
+  <div class="tabs"><span class="tab" aria-current="page">work</span><span class="tab">results</span><span class="tab">method</span><span class="tab">products</span><span class="tab">writing</span><span class="tab">contact</span></div>
+  <div class="screen">
+    <p><span class="prompt">$</span> <span class="cmd">whoami</span></p>
+    <h2 class="hero">Hard problems get solved by teams.</h2>
+    <p class="sub">I build the team, tune how it collaborates, and put AI where it buys real capacity. Then the numbers below stop being surprising.</p>
+    <div class="row">
+      <div class="cell"><div class="fig">20 → 10 days</div><div class="lab">Release cycle, halved</div></div>
+      <div class="cell"><div class="fig">89%</div><div class="lab">Employee Net Promoter Score</div></div>
+      <div class="cell"><div class="fig">&lt;1%</div><div class="lab">Annual production defect rate</div></div>
+    </div>
+    <p class="para">Six weeks. I measure how delivery actually works where you are, put one gate into the path your teams already ship through, and hand back a plan with owners and sequence.</p>
+    <span class="btn">Start a conversation</span>
+  </div>
+</div>
+<p class="note"><b>A1 — team as the unit of work.</b> Keeps your rhythm (short declarative sentence, no adjectives). The metrics underneath now have an author: eNPS 89% is team evidence, so headline and ledger finally agree. Strains nothing in the voice rules.</p>
+
+<!-- ============ A2 ============ -->
+<div class="win">
+  <div class="titlebar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="path">dmitry@echowaves — ~/echowaves</span></div>
+  <div class="tabs"><span class="tab" aria-current="page">work</span><span class="tab">results</span><span class="tab">method</span><span class="tab">products</span><span class="tab">writing</span><span class="tab">contact</span></div>
+  <div class="screen">
+    <p><span class="prompt">$</span> <span class="cmd">whoami</span></p>
+    <h2 class="hero">I build teams that ship.</h2>
+    <p class="sub">Delivery you can measure, from people who stayed. Collaboration tuned until the pipeline is boring, and AI added where a human team should not have been hired at all.</p>
+    <div class="row">
+      <div class="cell"><div class="fig">20 → 10 days</div><div class="lab">Release cycle, halved</div></div>
+      <div class="cell"><div class="fig">89%</div><div class="lab">Employee Net Promoter Score</div></div>
+      <div class="cell"><div class="fig">&lt;1%</div><div class="lab">Annual production defect rate</div></div>
+    </div>
+    <p class="para">Six weeks. I measure how delivery actually works where you are, put one gate into the path your teams already ship through, and hand back a plan with owners and sequence.</p>
+    <span class="btn">Start a conversation</span>
+  </div>
+</div>
+<p class="note"><b>A2 — shortest possible.</b> Four words, survives being quoted in an email by someone who only saw the hero. "Delivery you can measure" keeps the verifiability spine. Cost: it says nothing about AI, so that has to arrive one section down.</p>
+
+<!-- ============ A3 ============ -->
+<div class="win">
+  <div class="titlebar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="path">dmitry@echowaves — ~/echowaves</span></div>
+  <div class="tabs"><span class="tab" aria-current="page">work</span><span class="tab">results</span><span class="tab">method</span><span class="tab">products</span><span class="tab">writing</span><span class="tab">contact</span></div>
+  <div class="screen">
+    <p><span class="prompt">$</span> <span class="cmd">cat priorities.txt</span></p>
+    <h2 class="hero">Teams. Collaboration. AI capacity.</h2>
+    <p class="sub">In that order. A team that cannot talk to itself does not get faster from a model, so the sequence is the method.</p>
+    <div class="row">
+      <div class="cell"><div class="fig">20 → 10 days</div><div class="lab">Release cycle, halved</div></div>
+      <div class="cell"><div class="fig">89%</div><div class="lab">Employee Net Promoter Score</div></div>
+      <div class="cell"><div class="fig">&lt;1%</div><div class="lab">Annual production defect rate</div></div>
+    </div>
+    <p class="para">Six weeks. I measure how delivery actually works where you are, put one gate into the path your teams already ship through, and hand back a plan with owners and sequence.</p>
+    <span class="btn">Start a conversation</span>
+  </div>
+</div>
+<p class="note"><b>A3 — the three nouns as a list.</b> Most literal to what you asked for, and the "in that order" line does real argumentative work. Cost: an unranked triad is weaker than a sentence; nobody repeats a list back correctly, and it reads more like a menu than a claim.</p>
+
+<!-- ============ A4 ============ -->
+<div class="win">
+  <div class="titlebar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="path">dmitry@echowaves — ~/echowaves</span></div>
+  <div class="tabs"><span class="tab" aria-current="page">work</span><span class="tab">results</span><span class="tab">method</span><span class="tab">products</span><span class="tab">writing</span><span class="tab">contact</span></div>
+  <div class="screen">
+    <p><span class="prompt">$</span> <span class="cmd">whoami</span></p>
+    <h2 class="hero">I build high-performing engineering teams.</h2>
+    <p class="sub">Collaboration tuned until lead time collapses, then AI added to the work humans should not be doing. Measured before, measured after.</p>
+    <div class="row">
+      <div class="cell"><div class="fig">20 → 10 days</div><div class="lab">Release cycle, halved</div></div>
+      <div class="cell"><div class="fig">89%</div><div class="lab">Employee Net Promoter Score</div></div>
+      <div class="cell"><div class="fig">&lt;1%</div><div class="lab">Annual production defect rate</div></div>
+    </div>
+    <p class="para">Six weeks. I measure how delivery actually works where you are, put one gate into the path your teams already ship through, and hand back a plan with owners and sequence.</p>
+    <span class="btn">Start a conversation</span>
+  </div>
+</div>
+<p class="note"><b>A4 — your phrasing, kept verbatim.</b> Clearest for a buyer searching that exact phrase, and it is the one a recruiter pattern-matches. Flagging the cost rather than hiding it: "high-performing" is an evaluative adjective, which your own voice rule bans ("nouns, numbers, mechanisms; no evaluative adjectives"), and every consultancy says it. If you pick this one, that is a deliberate override of the voice rule — worth logging as such.</p>
+
+<!-- ============ A5 ============ -->
+<div class="win">
+  <div class="titlebar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="path">dmitry@echowaves — ~/echowaves</span></div>
+  <div class="tabs"><span class="tab" aria-current="page">work</span><span class="tab">results</span><span class="tab">method</span><span class="tab">products</span><span class="tab">writing</span><span class="tab">contact</span></div>
+  <div class="screen">
+    <p><span class="prompt">$</span> <span class="cmd">man amelchenko</span></p>
+    <h2 class="hero">NAME<br>teams, collaboration, AI capacity</h2>
+    <p class="sub">DESCRIPTION — installs a delivery system a team can run without me. Section 1: who does what when a release breaks. Section 2: where a model takes work a person was hired to think about.</p>
+    <div class="row">
+      <div class="cell"><div class="fig">20 → 10 days</div><div class="lab">Release cycle, halved</div></div>
+      <div class="cell"><div class="fig">89%</div><div class="lab">Employee Net Promoter Score</div></div>
+      <div class="cell"><div class="fig">&lt;1%</div><div class="lab">Annual production defect rate</div></div>
+    </div>
+    <p class="para">Six weeks. I measure how delivery actually works where you are, put one gate into the path your teams already ship through, and hand back a plan with owners and sequence.</p>
+    <span class="btn">Start a conversation</span>
+  </div>
+</div>
+<p class="note"><b>A5 — commit fully to the terminal metaphor.</b> The man-page gag is memorable and unmistakably human, which is the whole anti-AI-slop thesis. Highest risk: it costs the first-time reader a few seconds, and Rev 2 happened precisely because the page got hard to parse. Also note a screen reader reads "NAME teams collaboration AI capacity DESCRIPTION section 1" as prose.</p>
+
+<h1>B · Terminal palettes</h1>
+<p class="lede">Same content (A1) in four palettes, whole-page window treatment. Token chips under each list the exact hex for every semantic role, so whichever you pick lifts straight into <code>src/index.css</code>.</p>
+
+<!-- ============ B1 Tokyo Night ============ -->
+<p class="reg"><b>Tokyo Night</b> — the machine room at blue hour. Cool indigo ground, cyan and violet signals; reads as an editor someone actually configured.</p>
+<div class="win tn">
+  <div class="titlebar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="path">dmitry@echowaves — ~/echowaves</span></div>
+  <div class="tabs"><span class="tab" aria-current="page">work</span><span class="tab">results</span><span class="tab">method</span><span class="tab">products</span><span class="tab">writing</span><span class="tab">contact</span></div>
+  <div class="screen">
+    <p><span class="prompt">$</span> <span class="cmd">whoami</span></p>
+    <h2 class="hero">Hard problems get solved by teams.</h2>
+    <p class="sub">I build the team, tune how it collaborates, and put AI where it buys real capacity. Then the numbers below stop being surprising.</p>
+    <div class="row">
+      <div class="cell"><div class="fig">20 → 10 days</div><div class="lab">Release cycle, halved</div></div>
+      <div class="cell"><div class="fig">89%</div><div class="lab">Employee Net Promoter Score</div></div>
+      <div class="cell"><div class="fig">&lt;1%</div><div class="lab">Annual production defect rate</div></div>
+    </div>
+    <p class="para">Six weeks. I measure how delivery actually works where you are, put one gate into the path your teams already ship through, and hand back a plan with owners and sequence.</p>
+    <span class="btn">Start a conversation</span>
+  </div>
+</div>
+<div class="chips">
+  <span class="chip"><span class="sw" style="background:#1a1b26"></span>bg #1a1b26</span>
+  <span class="chip"><span class="sw" style="background:#16161e"></span>panel #16161e</span>
+  <span class="chip"><span class="sw" style="background:#292e42"></span>border #292e42</span>
+  <span class="chip"><span class="sw" style="background:#c0caf5"></span>text #c0caf5</span>
+  <span class="chip"><span class="sw" style="background:#787c99"></span>dim #787c99</span>
+  <span class="chip"><span class="sw" style="background:#7aa2f7"></span>accent #7aa2f7</span>
+  <span class="chip"><span class="sw" style="background:#bb9af7"></span>accent-2 #bb9af7</span>
+  <span class="chip"><span class="sw" style="background:#9ece6a"></span>success #9ece6a</span>
+  <span class="chip"><span class="sw" style="background:#f7768e"></span>danger #f7768e</span>
+</div>
+
+<!-- ============ B2 Homebrew green ============ -->
+<p class="reg"><b>Homebrew green phosphor</b> — one hue, absolute authority. The loudest choice; nobody mistakes it for a template.</p>
+<div class="win hb">
+  <div class="titlebar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="path">dmitry@echowaves — ~/echowaves</span></div>
+  <div class="tabs"><span class="tab" aria-current="page">work</span><span class="tab">results</span><span class="tab">method</span><span class="tab">products</span><span class="tab">writing</span><span class="tab">contact</span></div>
+  <div class="screen">
+    <p><span class="prompt">$</span> <span class="cmd">whoami</span></p>
+    <h2 class="hero">Hard problems get solved by teams.</h2>
+    <p class="sub">I build the team, tune how it collaborates, and put AI where it buys real capacity. Then the numbers below stop being surprising.</p>
+    <div class="row">
+      <div class="cell"><div class="fig">20 → 10 days</div><div class="lab">Release cycle, halved</div></div>
+      <div class="cell"><div class="fig">89%</div><div class="lab">Employee Net Promoter Score</div></div>
+      <div class="cell"><div class="fig">&lt;1%</div><div class="lab">Annual production defect rate</div></div>
+    </div>
+    <p class="para">Six weeks. I measure how delivery actually works where you are, put one gate into the path your teams already ship through, and hand back a plan with owners and sequence.</p>
+    <span class="btn">Start a conversation</span>
+  </div>
+</div>
+<div class="chips">
+  <span class="chip"><span class="sw" style="background:#060606"></span>bg #060606</span>
+  <span class="chip"><span class="sw" style="background:#0d0d0d"></span>panel #0d0d0d</span>
+  <span class="chip"><span class="sw" style="background:#1f5c29"></span>border #1f5c29</span>
+  <span class="chip"><span class="sw" style="background:#8dfa9c"></span>text #8dfa9c</span>
+  <span class="chip"><span class="sw" style="background:#2b7a3a"></span>dim #2b7a3a</span>
+  <span class="chip"><span class="sw" style="background:#33d24b"></span>accent #33d24b</span>
+  <span class="chip"><span class="sw" style="background:#baffc4"></span>accent-2 #baffc4</span>
+  <span class="chip"><span class="sw" style="background:#33d24b"></span>success #33d24b</span>
+  <span class="chip"><span class="sw" style="background:#ff5f57"></span>danger #ff5f57</span>
+</div>
+
+<!-- ============ B3 Solarized Dark ============ -->
+<p class="reg"><b>Solarized Dark</b> — the one you can read for an hour. Low contrast on purpose; the restrained choice for a long read.</p>
+<div class="win sd">
+  <div class="titlebar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="path">dmitry@echowaves — ~/echowaves</span></div>
+  <div class="tabs"><span class="tab" aria-current="page">work</span><span class="tab">results</span><span class="tab">method</span><span class="tab">products</span><span class="tab">writing</span><span class="tab">contact</span></div>
+  <div class="screen">
+    <p><span class="prompt">$</span> <span class="cmd">whoami</span></p>
+    <h2 class="hero">Hard problems get solved by teams.</h2>
+    <p class="sub">I build the team, tune how it collaborates, and put AI where it buys real capacity. Then the numbers below stop being surprising.</p>
+    <div class="row">
+      <div class="cell"><div class="fig">20 → 10 days</div><div class="lab">Release cycle, halved</div></div>
+      <div class="cell"><div class="fig">89%</div><div class="lab">Employee Net Promoter Score</div></div>
+      <div class="cell"><div class="fig">&lt;1%</div><div class="lab">Annual production defect rate</div></div>
+    </div>
+    <p class="para">Six weeks. I measure how delivery actually works where you are, put one gate into the path your teams already ship through, and hand back a plan with owners and sequence.</p>
+    <span class="btn">Start a conversation</span>
+  </div>
+</div>
+<div class="chips">
+  <span class="chip"><span class="sw" style="background:#002b36"></span>bg #002b36</span>
+  <span class="chip"><span class="sw" style="background:#00242e"></span>panel #00242e</span>
+  <span class="chip"><span class="sw" style="background:#073642"></span>border #073642</span>
+  <span class="chip"><span class="sw" style="background:#93a1a1"></span>text #93a1a1</span>
+  <span class="chip"><span class="sw" style="background:#586e75"></span>dim #586e75</span>
+  <span class="chip"><span class="sw" style="background:#268bd2"></span>accent #268bd2</span>
+  <span class="chip"><span class="sw" style="background:#2aa198"></span>accent-2 #2aa198</span>
+  <span class="chip"><span class="sw" style="background:#859900"></span>success #859900</span>
+  <span class="chip"><span class="sw" style="background:#dc322f"></span>danger #dc322f</span>
+</div>
+
+<!-- ============ B4 Catppuccin Mocha ============ -->
+<p class="reg"><b>Catppuccin Mocha</b> — warm dark with pastel signals. Approachable for a terminal, still precise; the modern-config feel without the coldness.</p>
+<div class="win cm">
+  <div class="titlebar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="path">dmitry@echowaves — ~/echowaves</span></div>
+  <div class="tabs"><span class="tab" aria-current="page">work</span><span class="tab">results</span><span class="tab">method</span><span class="tab">products</span><span class="tab">writing</span><span class="tab">contact</span></div>
+  <div class="screen">
+    <p><span class="prompt">$</span> <span class="cmd">whoami</span></p>
+    <h2 class="hero">Hard problems get solved by teams.</h2>
+    <p class="sub">I build the team, tune how it collaborates, and put AI where it buys real capacity. Then the numbers below stop being surprising.</p>
+    <div class="row">
+      <div class="cell"><div class="fig">20 → 10 days</div><div class="lab">Release cycle, halved</div></div>
+      <div class="cell"><div class="fig">89%</div><div class="lab">Employee Net Promoter Score</div></div>
+      <div class="cell"><div class="fig">&lt;1%</div><div class="lab">Annual production defect rate</div></div>
+    </div>
+    <p class="para">Six weeks. I measure how delivery actually works where you are, put one gate into the path your teams already ship through, and hand back a plan with owners and sequence.</p>
+    <span class="btn">Start a conversation</span>
+  </div>
+</div>
+<div class="chips">
+  <span class="chip"><span class="sw" style="background:#1e1e2e"></span>bg #1e1e2e</span>
+  <span class="chip"><span class="sw" style="background:#181825"></span>panel #181825</span>
+  <span class="chip"><span class="sw" style="background:#313244"></span>border #313244</span>
+  <span class="chip"><span class="sw" style="background:#cdd6f4"></span>text #cdd6f4</span>
+  <span class="chip"><span class="sw" style="background:#7f849c"></span>dim #7f849c</span>
+  <span class="chip"><span class="sw" style="background:#89b4fa"></span>accent #89b4fa</span>
+  <span class="chip"><span class="sw" style="background:#cba6f7"></span>accent-2 #cba6f7</span>
+  <span class="chip"><span class="sw" style="background:#a6e3a1"></span>success #a6e3a1</span>
+  <span class="chip"><span class="sw" style="background:#f38ba8"></span>danger #f38ba8</span>
+</div>
+
+<p class="lede">A fifth palette already exists on disk from the earlier session: <code>.working/direction-01-shell.html</code> (custom shell ground #0B0E14, prompt green #4FD18B, path cyan #58C4DC, amber keys #F2B04A). Open it alongside if you want to compare rather than start from these four.</p>
+
+</div>
+</body>
+</html>

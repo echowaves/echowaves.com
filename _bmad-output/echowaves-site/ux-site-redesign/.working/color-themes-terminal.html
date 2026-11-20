@@ -1,0 +1,372 @@
+<!--
+  ARTIFACT: bmad-ux creative-tool artifact — COLOR THEME COMPARISON ONLY.
+  This file exists so Dmitry can compare four terminal palettes by eye at
+  realistic scale. It is NOT a spine document: DESIGN.md and EXPERIENCE.md
+  win over this file on any conflict. Do not treat copy, spacing, or tokens
+  here as final; only the palette swatches are meant to be lifted.
+
+  Four stacked full-page terminal-window mockups of the echowaves.com home
+  page (macOS Terminal shell: traffic lights, tab-bar nav, monospace).
+  No JavaScript, no network requests, no webfonts, no emoji.
+
+  PALETTES (authentic source values; per-palette notes in <style> below):
+    01 Tokyo Night        — https://github.com/folke/tokyo-night.nvim
+    02 Homebrew green      — classic ANSI green-on-black phosphor
+    03 Solarized Dark      — Ethan Schoonover canonical values
+    04 Catppuccin Mocha    — https://catppuccin.com/palette
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Echowaves — Terminal Color Theme Comparison</title>
+<style>
+  /* ================================================================
+     PAGE CHROME (neutral dark grey; deliberately palette-neutral)
+     ================================================================ */
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body{
+    background:#191b1e;
+    color:#c8ccd2;
+    font-family:'SF Mono','JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;
+    padding:48px 24px 96px;
+    line-height:1.5;
+  }
+  .page-head{ max-width:1000px; margin:0 auto 48px; }
+  .page-head h1{ font-size:20px; font-weight:700; color:#e6e9ee; letter-spacing:.02em; }
+  .page-head p{ font-size:13px; color:#8a909a; margin-top:8px; max-width:72ch; }
+
+  section{ max-width:1000px; margin:0 auto 72px; }
+  h2{ font-size:15px; font-weight:700; color:#e6e9ee; margin-bottom:4px; letter-spacing:.02em; }
+  h2 .idx{ color:#6d737d; font-weight:400; margin-right:8px; }
+  .register{ display:block; font-size:13px; font-weight:400; font-style:italic;
+             color:#8a909a; margin-bottom:16px; }
+
+  /* ================================================================
+     TERMINAL WINDOW (structure shared by all four palettes)
+     ================================================================ */
+  .term{
+    border-radius:10px; overflow:hidden;
+    background:var(--bg);
+    border:1px solid var(--border);
+    box-shadow:0 24px 64px rgba(0,0,0,.55);
+    font-size:14px;
+  }
+  .titlebar{
+    display:flex; align-items:center; gap:14px;
+    background:var(--panel);
+    border-bottom:1px solid var(--border);
+    padding:10px 14px;
+  }
+  .dots{ display:flex; gap:8px; }
+  .dot{ width:12px; height:12px; border-radius:50%; }
+  .dot.r{ background:#ff5f57; } .dot.y{ background:#febc2e; } .dot.g{ background:#28c840; }
+  .path{ font-size:12px; color:var(--dim); margin:0 auto; padding-right:64px; }
+
+  .tabs{ display:flex; gap:2px; background:var(--panel); border-bottom:1px solid var(--border);
+         padding:0 10px; overflow-x:auto; }
+  .tab{ font-size:12.5px; color:var(--dim); padding:8px 16px 9px; white-space:nowrap;
+        border-bottom:2px solid transparent; }
+  .tab.active{
+    color:var(--accent); background:var(--bg);
+    border-top:2px solid var(--accent);
+    border-left:1px solid var(--border); border-right:1px solid var(--border);
+    border-bottom:2px solid var(--accent);
+    margin-bottom:-1px; font-weight:700;
+  }
+
+  .screen{ background:var(--bg); padding:36px 40px 40px; }
+  .promptline{ font-size:13px; margin-bottom:20px; }
+  .promptline .who{ color:var(--success); }
+  .promptline .sep{ color:var(--dim); }
+  .promptline .cwd{ color:var(--accent-2); }
+  .promptline .sig{ color:var(--text); }
+
+  h3.hero{ font-size:34px; line-height:1.15; font-weight:700; color:var(--text);
+           letter-spacing:-.01em; margin-bottom:10px; }
+  .sub{ font-size:16px; color:var(--accent); margin-bottom:6px; }
+  .cmd{ font-size:13.5px; color:var(--dim); margin-bottom:32px; }
+  .cmd b{ color:var(--text); font-weight:400; }
+
+  .metrics{ display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:30px; }
+  .metric{ border:1px solid var(--border); background:var(--panel); padding:18px 20px; }
+  .metric .num{ font-size:26px; font-weight:700; color:var(--accent); margin-bottom:6px; }
+  .metric:nth-child(2) .num{ color:var(--success); }
+  .metric .label{ font-size:12px; color:var(--dim); }
+
+  p.copy{ font-size:13.5px; color:var(--dim); max-width:76ch; margin-bottom:34px; }
+
+  .btn{
+    display:inline-block; text-decoration:none; cursor:pointer;
+    font-size:13px; font-weight:700; font-family:inherit;
+    color:var(--bg); background:var(--accent);
+    border:1px solid var(--accent);
+    padding:11px 22px;
+  }
+
+  /* ================================================================
+     TOKEN CHIPS (below each mockup)
+     ================================================================ */
+  .chips{ display:flex; flex-wrap:wrap; gap:8px; margin-top:14px; }
+  .chip{
+    display:inline-flex; align-items:center; gap:8px;
+    border:1px solid #2e3238; background:#202327; border-radius:4px;
+    padding:5px 10px; font-size:11.5px; color:#aab0b9;
+  }
+  .chip .sw{ width:14px; height:14px; border-radius:3px; border:1px solid rgba(255,255,255,.18); }
+  .chip .role{ color:#7d838d; }
+
+  /* ================================================================
+     PALETTE 01 — TOKYO NIGHT
+     Authentic values from folke/tokyo-night.nvim:
+       bg        #1a1b26   (bg)
+       panel     #24283b   (dark variant surface / terminal titlebar)
+       border    #292e42   (bg_highlight)
+       text      #a9b1d6   (fg)
+       dim       #565f89   (comment)
+       accent    #7aa2f7   (blue)
+       accent-2  #bb9af7   (purple / magenta)
+       success   #9ece6a   (green)
+       danger    #f7768e   (red)
+     Register: indigo-slate ground, cyan/magenta accents.
+     ================================================================ */
+  .p-tokyo{
+    --bg:#1a1b26; --panel:#24283b; --border:#292e42;
+    --text:#a9b1d6; --dim:#565f89;
+    --accent:#7aa2f7; --accent-2:#bb9af7;
+    --success:#9ece6a; --danger:#f7768e;
+  }
+
+  /* ================================================================
+     PALETTE 02 — HOMEBREW / CLASSIC GREEN PHOSPHOR
+       bg        #050705   (invented: near-black with green cast)
+       panel     #0a100a   (invented: lifted surface, same cast)
+       border    #1d3a24   (invented: dim phosphor line)
+       text      #33ff66   (bright ANSI green, phosphor P1)
+       dim       #27a45c   (invented: half-brightness phosphor)
+       accent    #33ff66   (same bright green — monochrome is the point)
+       accent-2  #ffb000   (amber CRT secondary; invented, breaks mono on purpose)
+       success   #00d95f   (invented: slightly deeper than accent)
+       danger    #ff4d4d   (invented: red must escape the green field)
+     ================================================================ */
+  .p-homebrew{
+    --bg:#050705; --panel:#0a100a; --border:#1d3a24;
+    --text:#33ff66; --dim:#27a45c;
+    --accent:#33ff66; --accent-2:#ffb000;
+    --success:#00d95f; --danger:#ff4d4d;
+  }
+
+  /* ================================================================
+     PALETTE 03 — SOLARIZED DARK (canonical, Ethan Schoonover)
+       bg        #002b36   (base03)
+       panel     #073642   (base02)
+       border    #0f4a58   (invented: Solarized defines no border; sits
+                            between base02 and base01 to stay muted)
+       text      #93a1a1   (base1)
+       dim       #586e75   (base01 — low contrast is intentional)
+       accent    #268bd2   (blue)
+       accent-2  #2aa198   (cyan)
+       success   #859900   (green)
+       danger    #dc322f   (red)
+     ================================================================ */
+  .p-solarized{
+    --bg:#002b36; --panel:#073642; --border:#0f4a58;
+    --text:#93a1a1; --dim:#586e75;
+    --accent:#268bd2; --accent-2:#2aa198;
+    --success:#859900; --danger:#dc322f;
+  }
+
+  /* ================================================================
+     PALETTE 04 — CATPPUCCIN MOCHA (canonical palette values)
+       bg        #1e1e2e   (base)
+       panel     #313244   (surface0)
+       border    #45475a   (surface1)
+       text      #cdd6f4   (text)
+       dim       #6c7086   (overlay0)
+       accent    #89b4fa   (blue)
+       accent-2  #cba6f7   (mauve)
+       success   #a6e3a1   (green)
+       danger    #f38ba8   (red)
+     ================================================================ */
+  .p-mocha{
+    --bg:#1e1e2e; --panel:#313244; --border:#45475a;
+    --text:#cdd6f4; --dim:#6c7086;
+    --accent:#89b4fa; --accent-2:#cba6f7;
+    --success:#a6e3a1; --danger:#f38ba8;
+  }
+</style>
+</head>
+<body>
+
+<div class="page-head">
+  <h1>Echowaves — terminal color theme comparison</h1>
+  <p>Same home page, same shell (title bar, tab navigation, hero, metrics, body copy, CTA), four palettes. Compare by eye at realistic scale; token chips under each window carry the exact hex values for lifting. Spine documents win on conflict.</p>
+</div>
+
+<!-- ============================================================
+     01 · TOKYO NIGHT
+     ============================================================ -->
+<section>
+  <h2><span class="idx">01</span>Tokyo Night</h2>
+  <span class="register">the last train through the neon district, 1am</span>
+  <div class="term p-tokyo">
+    <div class="titlebar">
+      <span class="dots"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></span>
+      <span class="path">dmitry@echowaves — ~/echowaves</span>
+    </div>
+    <nav class="tabs">
+      <span class="tab active">work</span><span class="tab">results</span><span class="tab">method</span><span class="tab">products</span><span class="tab">writing</span><span class="tab">contact</span>
+    </nav>
+    <div class="screen">
+      <div class="promptline"><span class="who">dmitry@echowaves</span> <span class="sep">:</span> <span class="cwd">~/echowaves</span> <span class="sig">% cat brief.md</span></div>
+      <h3 class="hero">I solve hard problems.</h3>
+      <p class="sub">Enterprise delivery metrics, measured where they were produced.</p>
+      <p class="cmd"><b>$ npm install the-future</b></p>
+      <div class="metrics">
+        <div class="metric"><div class="num">20 → 10 days</div><div class="label">Release cycle, halved</div></div>
+        <div class="metric"><div class="num">89%</div><div class="label">Employee Net Promoter Score</div></div>
+        <div class="metric"><div class="num">&lt;1%</div><div class="label">Annual production defect rate</div></div>
+      </div>
+      <p class="copy">Six weeks. I measure how delivery actually works where you are, put one gate into the path your teams already ship through, and hand back a plan with owners and sequence.</p>
+      <a class="btn" href="#">Start a conversation</a>
+    </div>
+  </div>
+  <div class="chips">
+    <span class="chip"><span class="sw" style="background:#1a1b26"></span><span class="role">bg</span> #1a1b26</span>
+    <span class="chip"><span class="sw" style="background:#24283b"></span><span class="role">panel</span> #24283b</span>
+    <span class="chip"><span class="sw" style="background:#292e42"></span><span class="role">border</span> #292e42</span>
+    <span class="chip"><span class="sw" style="background:#a9b1d6"></span><span class="role">text</span> #a9b1d6</span>
+    <span class="chip"><span class="sw" style="background:#565f89"></span><span class="role">dim</span> #565f89</span>
+    <span class="chip"><span class="sw" style="background:#7aa2f7"></span><span class="role">accent</span> #7aa2f7</span>
+    <span class="chip"><span class="sw" style="background:#bb9af7"></span><span class="role">accent-2</span> #bb9af7</span>
+    <span class="chip"><span class="sw" style="background:#9ece6a"></span><span class="role">success</span> #9ece6a</span>
+    <span class="chip"><span class="sw" style="background:#f7768e"></span><span class="role">danger</span> #f7768e</span>
+  </div>
+</section>
+
+<!-- ============================================================
+     02 · HOMEBREW / CLASSIC GREEN PHOSPHOR
+     ============================================================ -->
+<section>
+  <h2><span class="idx">02</span>Homebrew / classic green phosphor</h2>
+  <span class="register">the machine room at 2am, only the terminal lit</span>
+  <div class="term p-homebrew">
+    <div class="titlebar">
+      <span class="dots"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></span>
+      <span class="path">dmitry@echowaves — ~/echowaves</span>
+    </div>
+    <nav class="tabs">
+      <span class="tab active">work</span><span class="tab">results</span><span class="tab">method</span><span class="tab">products</span><span class="tab">writing</span><span class="tab">contact</span>
+    </nav>
+    <div class="screen">
+      <div class="promptline"><span class="who">dmitry@echowaves</span> <span class="sep">:</span> <span class="cwd">~/echowaves</span> <span class="sig">% cat brief.md</span></div>
+      <h3 class="hero">I solve hard problems.</h3>
+      <p class="sub">Enterprise delivery metrics, measured where they were produced.</p>
+      <p class="cmd"><b>$ npm install the-future</b></p>
+      <div class="metrics">
+        <div class="metric"><div class="num">20 → 10 days</div><div class="label">Release cycle, halved</div></div>
+        <div class="metric"><div class="num">89%</div><div class="label">Employee Net Promoter Score</div></div>
+        <div class="metric"><div class="num">&lt;1%</div><div class="label">Annual production defect rate</div></div>
+      </div>
+      <p class="copy">Six weeks. I measure how delivery actually works where you are, put one gate into the path your teams already ship through, and hand back a plan with owners and sequence.</p>
+      <a class="btn" href="#">Start a conversation</a>
+    </div>
+  </div>
+  <div class="chips">
+    <span class="chip"><span class="sw" style="background:#050705"></span><span class="role">bg</span> #050705</span>
+    <span class="chip"><span class="sw" style="background:#0a100a"></span><span class="role">panel</span> #0a100a</span>
+    <span class="chip"><span class="sw" style="background:#1d3a24"></span><span class="role">border</span> #1d3a24</span>
+    <span class="chip"><span class="sw" style="background:#33ff66"></span><span class="role">text</span> #33ff66</span>
+    <span class="chip"><span class="sw" style="background:#27a45c"></span><span class="role">dim</span> #27a45c</span>
+    <span class="chip"><span class="sw" style="background:#33ff66"></span><span class="role">accent</span> #33ff66</span>
+    <span class="chip"><span class="sw" style="background:#ffb000"></span><span class="role">accent-2</span> #ffb000</span>
+    <span class="chip"><span class="sw" style="background:#00d95f"></span><span class="role">success</span> #00d95f</span>
+    <span class="chip"><span class="sw" style="background:#ff4d4d"></span><span class="role">danger</span> #ff4d4d</span>
+  </div>
+</section>
+
+<!-- ============================================================
+     03 · SOLARIZED DARK
+     ============================================================ -->
+<section>
+  <h2><span class="idx">03</span>Solarized Dark</h2>
+  <span class="register">the readable one you can stare at for an hour</span>
+  <div class="term p-solarized">
+    <div class="titlebar">
+      <span class="dots"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></span>
+      <span class="path">dmitry@echowaves — ~/echowaves</span>
+    </div>
+    <nav class="tabs">
+      <span class="tab active">work</span><span class="tab">results</span><span class="tab">method</span><span class="tab">products</span><span class="tab">writing</span><span class="tab">contact</span>
+    </nav>
+    <div class="screen">
+      <div class="promptline"><span class="who">dmitry@echowaves</span> <span class="sep">:</span> <span class="cwd">~/echowaves</span> <span class="sig">% cat brief.md</span></div>
+      <h3 class="hero">I solve hard problems.</h3>
+      <p class="sub">Enterprise delivery metrics, measured where they were produced.</p>
+      <p class="cmd"><b>$ npm install the-future</b></p>
+      <div class="metrics">
+        <div class="metric"><div class="num">20 → 10 days</div><div class="label">Release cycle, halved</div></div>
+        <div class="metric"><div class="num">89%</div><div class="label">Employee Net Promoter Score</div></div>
+        <div class="metric"><div class="num">&lt;1%</div><div class="label">Annual production defect rate</div></div>
+      </div>
+      <p class="copy">Six weeks. I measure how delivery actually works where you are, put one gate into the path your teams already ship through, and hand back a plan with owners and sequence.</p>
+      <a class="btn" href="#">Start a conversation</a>
+    </div>
+  </div>
+  <div class="chips">
+    <span class="chip"><span class="sw" style="background:#002b36"></span><span class="role">bg</span> #002b36</span>
+    <span class="chip"><span class="sw" style="background:#073642"></span><span class="role">panel</span> #073642</span>
+    <span class="chip"><span class="sw" style="background:#0f4a58"></span><span class="role">border</span> #0f4a58</span>
+    <span class="chip"><span class="sw" style="background:#93a1a1"></span><span class="role">text</span> #93a1a1</span>
+    <span class="chip"><span class="sw" style="background:#586e75"></span><span class="role">dim</span> #586e75</span>
+    <span class="chip"><span class="sw" style="background:#268bd2"></span><span class="role">accent</span> #268bd2</span>
+    <span class="chip"><span class="sw" style="background:#2aa198"></span><span class="role">accent-2</span> #2aa198</span>
+    <span class="chip"><span class="sw" style="background:#859900"></span><span class="role">success</span> #859900</span>
+    <span class="chip"><span class="sw" style="background:#dc322f"></span><span class="role">danger</span> #dc322f</span>
+  </div>
+</section>
+
+<!-- ============================================================
+     04 · CATPPUCCIN MOCHA
+     ============================================================ -->
+<section>
+  <h2><span class="idx">04</span>Catppuccin Mocha</h2>
+  <span class="register">warm desk lamp, quiet room, coffee still hot</span>
+  <div class="term p-mocha">
+    <div class="titlebar">
+      <span class="dots"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></span>
+      <span class="path">dmitry@echowaves — ~/echowaves</span>
+    </div>
+    <nav class="tabs">
+      <span class="tab active">work</span><span class="tab">results</span><span class="tab">method</span><span class="tab">products</span><span class="tab">writing</span><span class="tab">contact</span>
+    </nav>
+    <div class="screen">
+      <div class="promptline"><span class="who">dmitry@echowaves</span> <span class="sep">:</span> <span class="cwd">~/echowaves</span> <span class="sig">% cat brief.md</span></div>
+      <h3 class="hero">I solve hard problems.</h3>
+      <p class="sub">Enterprise delivery metrics, measured where they were produced.</p>
+      <p class="cmd"><b>$ npm install the-future</b></p>
+      <div class="metrics">
+        <div class="metric"><div class="num">20 → 10 days</div><div class="label">Release cycle, halved</div></div>
+        <div class="metric"><div class="num">89%</div><div class="label">Employee Net Promoter Score</div></div>
+        <div class="metric"><div class="num">&lt;1%</div><div class="label">Annual production defect rate</div></div>
+      </div>
+      <p class="copy">Six weeks. I measure how delivery actually works where you are, put one gate into the path your teams already ship through, and hand back a plan with owners and sequence.</p>
+      <a class="btn" href="#">Start a conversation</a>
+    </div>
+  </div>
+  <div class="chips">
+    <span class="chip"><span class="sw" style="background:#1e1e2e"></span><span class="role">bg</span> #1e1e2e</span>
+    <span class="chip"><span class="sw" style="background:#313244"></span><span class="role">panel</span> #313244</span>
+    <span class="chip"><span class="sw" style="background:#45475a"></span><span class="role">border</span> #45475a</span>
+    <span class="chip"><span class="sw" style="background:#cdd6f4"></span><span class="role">text</span> #cdd6f4</span>
+    <span class="chip"><span class="sw" style="background:#6c7086"></span><span class="role">dim</span> #6c7086</span>
+    <span class="chip"><span class="sw" style="background:#89b4fa"></span><span class="role">accent</span> #89b4fa</span>
+    <span class="chip"><span class="sw" style="background:#cba6f7"></span><span class="role">accent-2</span> #cba6f7</span>
+    <span class="chip"><span class="sw" style="background:#a6e3a1"></span><span class="role">success</span> #a6e3a1</span>
+    <span class="chip"><span class="sw" style="background:#f38ba8"></span><span class="role">danger</span> #f38ba8</span>
+  </div>
+</section>
+
+</body>
+</html>
