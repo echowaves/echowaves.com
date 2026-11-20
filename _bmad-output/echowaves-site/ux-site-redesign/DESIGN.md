@@ -172,17 +172,39 @@ bound to AA on every role including the 3:1 floor for rules; guests publish thei
 colours — a pale border is a light palette being itself — so rules are held to 3:1 in Phosphor
 only. `npm run verify` fails the build on any text role below AA on any surface in any palette.
 
+**Palettes are frozen.** Ruling of 2026-11-20: an inherited palette is somebody else's published
+colour system, so canonical fidelity outranks any external contrast score — a palette is not to be
+retuned because an audit dislikes a number. Each guest token's shipped hex is therefore pinned in
+the registry's `published` map (`src/data/themes.ts`), and `npm run verify` fails on any departure:
+a pinned token must equal its pin unless the theme lists that token in `nudgedTokens`, and even then
+it may move in lightness only. The tolerance is hue Δ ≤ 1.5° and saturation Δ ≤ 5, set above the
+maxima actually measured across the thirteen shipped nudges (1.0° and 0.4); lightness is uncapped
+because the AA gate already bounds legibility. Phosphor declares no pins — this site measured it, so
+it has no upstream to be faithful to — and `npm run verify` allows exactly one measured palette, so
+a guest cannot exempt itself by flagging.
+
+**To change a pinned hex deliberately:** in one reviewed commit, set the new `tokens` value, list the
+token in that theme's `nudgedTokens`, and write the move into its `source` narration; or, if the
+palette is genuinely being re-pinned to something else, change `published` instead and say why. That
+declaration is the only way past the guard — a palette-wide `nudged: true` flag authorises nothing on
+its own, because it records history rather than permission. Nothing else, not an audit and not a
+convenience edit, authorises a repaint. One caveat: on near-grey tokens (GitHub Light's rules, One
+Light's greys) hue is numerically unstable, so a legitimate lightness move can trip the hue check by
+a degree or two — repinning in the same commit is the documented answer, not widening the tolerance.
+Regenerate the tables below afterwards.
+
 Every role is measured on the surface its text renders on. Regenerate with `node scripts/contrast.mjs`;
-the numbers are the ones `npm run verify` enforces, from `scripts/lib/contrast.mjs`.
+the numbers are the ones `npm run verify` enforces, from `scripts/lib/contrast.mjs`, and the
+Provenance column reports how many of a palette's tokens are pinned.
 
 ### Light palettes
 
-| Theme | Ground | Hexes | Tokens |
+| Theme | Ground | Provenance | Tokens |
 |---|---|---|---|
-| `github-light` | #ffffff | canonical | 12 |
-| `solarized-light` | #fdf6e3 | published, text roles nudged to AA | 12 |
-| `one-light` | #fafafa | published, text roles nudged to AA | 12 |
-| `gruvbox-light` | #fbf1c7 | published, text roles nudged to AA | 12 |
+| `github-light` | #ffffff | pinned 12/12 | 12 |
+| `solarized-light` | #fdf6e3 | pinned 12/12, AA nudges declared | 12 |
+| `one-light` | #fafafa | pinned 12/12, AA nudges declared | 12 |
+| `gruvbox-light` | #fbf1c7 | pinned 12/12, AA nudges declared | 12 |
 
 | Theme | headlines | body copy | prompt, links | one emphasis | refusal red | ink on accent | tabs & meta on panel | links on panel | copy on raised | rules, frame |
 |---|---|---|---|---|---|---|---|---|---|---|
@@ -193,12 +215,12 @@ the numbers are the ones `npm run verify` enforces, from `scripts/lib/contrast.m
 
 ### Dark palettes
 
-| Theme | Ground | Hexes | Tokens |
+| Theme | Ground | Provenance | Tokens |
 |---|---|---|---|
 | `phosphor` | #060606 | measured here, AA incl. rules | 12 |
-| `dracula` | #282a36 | published, text roles nudged to AA | 12 |
-| `nord` | #2e3440 | published, text roles nudged to AA | 12 |
-| `solarized-dark` | #002b36 | published, text roles nudged to AA | 12 |
+| `dracula` | #282a36 | pinned 12/12, AA nudges declared | 12 |
+| `nord` | #2e3440 | pinned 12/12, AA nudges declared | 12 |
+| `solarized-dark` | #002b36 | pinned 12/12, AA nudges declared | 12 |
 
 | Theme | headlines | body copy | prompt, links | one emphasis | refusal red | ink on accent | tabs & meta on panel | links on panel | copy on raised | rules, frame |
 |---|---|---|---|---|---|---|---|---|---|---|
@@ -207,7 +229,7 @@ the numbers are the ones `npm run verify` enforces, from `scripts/lib/contrast.m
 | Nord | `#eceff4` 10.84:1 | `#d8dee9` 9.25:1 | `#91c5d3` 6.62:1 | `#ebcb8b` 8.00:1 | `#d08b91` 4.63:1 | `#2e3440` 6.62:1 | `#d8dee9` 6.39:1 | `#91c5d3` 4.57:1 | `#eceff4` 6.40:1 | `#4c566a` 1.69:1 |
 | Solarized Dark | `#fdf6e3` 13.92:1 | `#93a1a1` 5.61:1 | `#2caaa0` 5.26:1 | `#b58900` 4.68:1 | `#e56663` 4.58:1 | `#002b36` 5.26:1 | `#93a1a1` 4.86:1 | `#2caaa0` 4.56:1 | `#fdf6e3` 9.68:1 | `#586e75` 2.79:1 |
 
-Each role is measured on the surface its text renders on (`--background`, `--panel` or `--panel-raised`; ink-on-accent sits on `--accent`). AA is 4.5:1 for every text role in every palette; the 3:1 rule floor is enforced on palettes this site tuned — guest rules ship published and pale.
+Each role is measured on the surface its text renders on (`--background`, `--panel` or `--panel-raised`; ink-on-accent sits on `--accent`). AA is 4.5:1 for every text role in every palette; the 3:1 rule floor is enforced on palettes this site tuned — guest rules ship published and pale. Guest hexes are pinned in the registry (`published`), and `npm run verify` fails any departure from a pin that is not a declared lightness-only nudge.
 
 Thirteen tokens moved to clear AA on 2026-10-26, all of them in the guest palettes and each one a
 lightness-only shift that keeps hue and saturation: Dracula's body copy (the published comment

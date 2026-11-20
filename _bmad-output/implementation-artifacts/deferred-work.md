@@ -19,10 +19,6 @@
   evidence: Plausible per spec (forced-colors forces background-color), but unverifiable in this sandbox — no browser. One check in Windows High Contrast (or Safari forced-colors emulation) settles whether a `forced-colors: active` rule for `.mark-glyph` is needed.
 
 - source_spec: `_bmad-output/implementation-artifacts/spec-aa-text-contrast.md`
-  status: required-by-freeze (2026-11-20) — no longer optional; it is the only machine enforcement of "do not modify the existing themes"
-  summary: Nothing enforces the guest-fidelity half of the contrast policy — that a nudged hex kept its hue/saturation and moved the minimum distance; verify only checks the ratio came out ≥4.5.
-  evidence: A future edit could repaint a guest palette wholesale in the name of AA and every check would pass. Proving it needs published-hex baselines stored per token (a `published` field) plus an HSL-delta guard in verify-site.mjs; DESIGN.md states the rule, the registry narrates each move — only the machine-check is missing. Scope: verify fails when a text-role hex differs from its `published` value by more than the nudge recorded in `source`, so palette tuning for an external contrast score cannot pass silently.
-- source_spec: `_bmad-output/implementation-artifacts/spec-aa-text-contrast.md`
   summary: Per-theme favicons are declared registry-derived ("accent on ground") but verify only checks their hrefs exist; editing an accent without rerunning `npm run icons` ships stale tabs silently.
   evidence: This very change had to hand-regenerate the four nudged palettes' PNGs; a pixel-sample check (decode each favicon, compare corner/centre colours against tokens.background/tokens.accent) would have caught any forgotten run. Needs a dependency-free PNG decode in verify-site.mjs.
 - source_spec: `_bmad-output/implementation-artifacts/spec-aa-text-contrast.md`
@@ -31,3 +27,13 @@
 - source_spec: `_bmad-output/implementation-artifacts/spec-unified-theme-dropdown.md`
   summary: Safari may not repaint a closed <select> whose selected <option>'s textContent was rewritten by sync().
   evidence: Blind-hunter finding 2026-10-27; the stub DOM cannot model WebKit's select rendering. Settles with one manual check on real Safari/WebKit: pick a set-default palette and confirm the closed control re-renders to "Light — <palette>" without focus change.
+- source_spec: `_bmad-output/implementation-artifacts/spec-palette-fidelity-guard.md`
+  summary: Nothing runs `npm run verify` automatically — `.github/` has no workflows, so every guard in this repo, including the new palette freeze, fires only when someone runs the command locally.
+  evidence: Pre-existing repo-wide condition (the site is deployed manually by its owner, by ruling), but the fidelity guard's claim that "prose becomes a build failure" rests on it. Settles with one CI job running `npm run check` on push, or the owner's explicit decision that local discipline is enough for a manually deployed site.
+
+## Resolved
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-aa-text-contrast.md`
+  status: resolved 2026-11-20 by `_bmad-output/implementation-artifacts/spec-palette-fidelity-guard.md`
+  summary: The guest-fidelity half of the contrast policy now has machine enforcement — `scripts/lib/palette-fidelity.mjs`, run by the verify check "guest palettes stay faithful to their pinned baselines", refuses any guest token that departs from its pin without a per-token declaration.
+  evidence: Scope settled narrower than this entry first asked. It demanded comparison against each upstream palette's published hex; only ~12 of 96 shipped hexes are documented anywhere in the repo, so the guard pins what shipped on 2026-11-20 instead (owner ruling: never invent colour values into the registry). What it now refuses is any undeclared repaint, declared moves beyond lightness, and unpinned tokens; a future edit that repaints a guest palette wholesale in the name of AA fails `npm run verify` and names the token.

@@ -10,8 +10,10 @@
 // rule for this site). Scanned: src/data, src/pages, src/components/site.
 
 import assert from 'node:assert/strict';
-import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
+import { spawnSync } from 'node:child_process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -199,6 +201,7 @@ const {
   themesInGroup,
   themesRegionCss,
 } = themeRegistry;
+const fidelity = await import(pathToFileURL(path.join(ROOT, 'scripts', 'lib', 'palette-fidelity.mjs')).href);
 const { ratio } = contrast;
 
 /** Sentinels of the generated palette region in src/index.css. */
@@ -838,6 +841,199 @@ await check('every palette declares the full token set and stays legible', () =>
   }
   assert.deepEqual(problems, [], `\n     ${problems.join('\n     ')}`);
   return 'every palette clears AA on every text role; pale guest rules are a palette being itself, not a failure';
+});
+
+// Guest palettes are somebody else's published colour systems, frozen as shipped by owner ruling
+// of 2026-11-20. The AA check above measures what a ratio came out to; this measures where a hex
+// came from. Rule and tolerances live in scripts/lib/palette-fidelity.mjs so they can be tested.
+await check('guest palettes stay faithful to their pinned baselines', () => {
+  // `measured` is the only way out of the guard, so it belongs to exactly one palette: this site's.
+  const measured = themes.filter((theme) => theme.measured);
+  assert.equal(measured.length, 1, `${measured.map((theme) => theme.id).join(', ')} claim to be measured; only this site's own palette may`);
+  assert.equal(measured[0].id, 'phosphor', `the measured palette is ${measured[0].id}, not phosphor — a guest cannot exempt itself by flagging`);
+  const problems = fidelity.fidelityProblems(TOKEN_NAMES, themes);
+  assert.deepEqual(problems, [], `\n     ${problems.join('\n     ')}`);
+  const pinned = themes.filter((theme) => !theme.measured).reduce((sum, theme) => sum + TOKEN_NAMES.filter((token) => theme.published?.[token]).length, 0);
+  return `${pinned} guest tokens pinned against repaint; nudges stay lightness-only`;
+});
+
+// The guard above proves only that today's registry is clean. These fixtures prove it also
+// refuses the drifts it exists to refuse — including a bypass attempt nobody would think to
+// commit (a guest theme with no pins at all). Fixtures rather than hand-edits because this file
+// runs its checks at import, so an inline rule could only be tested by editing a real palette.
+await check('the fidelity guard refuses every drift it promises to', () => {
+  const guest = (overrides = {}) => ({
+    id: 'fixture',
+    group: 'dark',
+    measured: false,
+    tokens: {
+      background: '#282a36',
+      panel: '#44475a',
+      'panel-raised': '#5f70a3',
+      desk: '#21222c',
+      border: '#6272a4',
+      'decoration-green': '#6272a4',
+      text: '#f8f8f2',
+      'text-dim': '#afb7d1',
+      accent: '#8be9fd',
+      emphasis: '#ffb86c',
+      danger: '#ff5555',
+      'ink-on-accent': '#282a36',
+    },
+    published: {
+      background: '#282a36',
+      panel: '#44475a',
+      'panel-raised': '#5f70a3',
+      desk: '#21222c',
+      border: '#6272a4',
+      'decoration-green': '#6272a4',
+      text: '#f8f8f2',
+      'text-dim': '#afb7d1',
+      accent: '#8be9fd',
+      emphasis: '#ffb86c',
+      danger: '#ff5555',
+      'ink-on-accent': '#282a36',
+    },
+    ...overrides,
+  });
+  const own = (overrides = {}) => guest({ id: 'own', measured: true, published: undefined, ...overrides });
+  // The shipped Dracula nudge: Comment #6272a4 lightened to #afb7d1, hue and saturation intact.
+  const nudged = (token, baseline) => ({
+    nudgedTokens: [token],
+    published: { ...guest().published, [token]: baseline },
+  });
+
+  const cases = [
+    ['a pinned token shipped unchanged is faithful', [guest()], []],
+    [
+      'a per-token declared lightness-only nudge passes (hue Δ0.4°, sat Δ0.4)',
+      [guest(nudged('text-dim', '#6272a4'))],
+      [],
+    ],
+    [
+      'a palette-wide nudged flag authorises nothing on its own',
+      [guest({ nudged: true, tokens: { ...guest().tokens, 'text-dim': '#6272a4' } })],
+      ['undeclared change'],
+    ],
+    [
+      'a lightness-only drift with no nudge declared still fails',
+      [guest({ tokens: { ...guest().tokens, 'text-dim': '#6272a4' } })],
+      ['undeclared change'],
+    ],
+    [
+      'a wholesale repaint of a pinned token fails, naming theme and token',
+      [guest({ tokens: { ...guest().tokens, 'text-dim': '#ff00cc' } })],
+      ['fixture: --text-dim ships #ff00cc', 'undeclared change'],
+    ],
+    [
+      'an off-hue nudge fails on the hue delta',
+      [guest(nudged('text-dim', '#96a3c5'))],
+      ['past 1.5°'],
+    ],
+    [
+      'an off-saturation nudge fails on the saturation delta',
+      [guest({ nudgedTokens: ['accent'], published: { ...guest().published, accent: '#8be9fd' }, tokens: { ...guest().tokens, accent: '#8be0f4' } })],
+      ['past ±5'],
+    ],
+    [
+      'a malformed pin is reported, not thrown',
+      [guest({ published: { ...guest().published, 'text-dim': '#12345' } })],
+      ['published baseline for --text-dim is "#12345", not a #rrggbb colour'],
+    ],
+    [
+      'an unpinned guest token is a bypassable guard and fails',
+      [guest({ published: undefined })],
+      ['published baseline missing for background'],
+    ],
+    ['this site’s own palette is exempt', [own()], []],
+  ];
+
+  const problems = [];
+  for (const [label, fixture, expected] of cases) {
+    const found = fidelity.fidelityProblems(TOKEN_NAMES, fixture);
+    if (expected.length === 0 && found.length > 0) problems.push(`${label}: expected clean, got "${found[0]}"`);
+    for (const needle of expected) {
+      if (!found.some((line) => line.includes(needle))) problems.push(`${label}: expected a failure containing "${needle}", got ${found.length ? `"${found[0]}"` : 'no failure'}`);
+    }
+  }
+
+  // The published registry must still be byte-clean: the guard reads the real file, so a fixture
+  // that passes while the registry drifted would mean the two have diverged.
+  if (fidelity.fidelityProblems(TOKEN_NAMES, themes).length) problems.push('the shipped registry fails its own guard');
+
+  assert.deepEqual(problems, [], `\n     ${problems.join('\n     ')}`);
+  return `${cases.length} drift fixtures refused or accepted as specified`;
+});
+
+// The strongest claim about a guard is that it stops the edit in the real pipeline. This tampers
+// a copy of the registry — never the working tree — and runs the shipped rule against it.
+await check('a tampered guest palette is refused by the shipped rule', () => {
+  // Not `mkdirSync(...).join(...)`: mkdirSync returns undefined when the directory already
+  // exists, which would make the second run of this check fail for a reason unrelated to palettes.
+  const scratch = path.join(os.tmpdir(), `echowaves-fidelity-${process.pid}`);
+  try {
+    mkdirSync(scratch, { recursive: true });
+    const source = readFileSync(path.join(SRC, 'data', 'themes.ts'), 'utf8');
+    writeFileSync(
+      path.join(scratch, 'probe.mjs'),
+      `const t = await import(${JSON.stringify(pathToFileURL(path.join(scratch, 'themes.ts')).href)});\n` +
+        `const f = await import(${JSON.stringify(pathToFileURL(path.join(ROOT, 'scripts', 'lib', 'palette-fidelity.mjs')).href)});\n` +
+        'const ps = f.fidelityProblems(t.TOKEN_NAMES, t.themes);' +
+          'for (const p of ps) console.log(p);' +
+          // Mirrors what verify-site.mjs does with the array: non-empty means a failed build.
+          'process.exit(ps.length ? 1 : 0);\n'
+    );
+    /** Repaint one Dracula token in a copy of the registry and run the shipped rule over it. */
+    const repaint = (from, to) => {
+      const tampered = source.replace(`      'text-dim': '${from}',`, `      'text-dim': '${to}',`);
+      assert.notEqual(tampered, source, `the tamper string for ${from} no longer matches src/data/themes.ts — update this check`);
+      writeFileSync(path.join(scratch, 'themes.ts'), tampered);
+      const run = spawnSync(process.execPath, [path.join(scratch, 'probe.mjs')], { encoding: 'utf8', timeout: 30_000 });
+      assert.equal(run.signal, null, 'the tamper probe hung instead of refusing the edit');
+      assert.notEqual(run.status, 0, `repainting Dracula body copy ${from}→${to} slipped through the shipped rule`);
+      return run.stdout;
+    };
+    // Off-hue repaint — the wholesale edit the freeze exists to stop.
+    const offHue = repaint('#afb7d1', '#ff00cc');
+    assert.match(offHue, /dracula: --text-dim ships #ff00cc/, `tampered run did not name the drift:\n${offHue}`);
+    // Lightness-only repaint with nothing declared — legal-looking to a contrast-chasing editor,
+    // and still refused because no token-level nudge was recorded.
+    const lightness = repaint('#afb7d1', '#c7cdE0'.toLowerCase());
+    assert.match(lightness, /dracula: --text-dim ships #c7cde0.*undeclared change/s, `a lightness-only repaint passed:\n${lightness}`);
+    return 'off-hue and lightness-only repaints of Dracula body copy both exit non-zero and name the token';
+  } finally {
+    rmSync(scratch, { recursive: true, force: true });
+  }
+});
+
+// DESIGN.md claims its tables report provenance, so that claim gets checked like any other.
+await check('the contrast printer reports the pins the guard enforces', () => {
+  const spawn = (args) => {
+    const run = spawnSync(process.execPath, [path.join(ROOT, 'scripts', 'contrast.mjs'), ...args], { encoding: 'utf8', timeout: 30_000 });
+    assert.equal(run.signal, null, 'the contrast printer hung');
+    assert.equal(run.status, 0, `printer failed:\n${run.stderr}`);
+    return run.stdout;
+  };
+  const total = TOKEN_NAMES.length;
+
+  // --text is the per-token view: every role line carries its pin beside the measured ratio.
+  const flat = spawn(['--text']);
+  const guest = new RegExp(`dracula —[\\s\\S]*?^ {2}pinned: (\\d+)\\/${total}$`, 'm').exec(flat);
+  assert.ok(guest, 'the printer does not report how many Dracula tokens are pinned');
+  assert.equal(guest[1], String(total), 'the printer under-reports Dracula’s pins');
+  // Shipped hex, then the ratio, then the same value again from `published`. Padding is allowed to
+  // change; the pair of hexes around the ratio is what "beside the measured ratio" means.
+  const line = /^ {2}--text\s+on #282a36.*$/m.exec(flat)?.[0] ?? '';
+  assert.match(line, /#f8f8f2\s+[\d.]+:1\s+#f8f8f2/, `the printer does not show a pinned baseline beside the measured ratio:\n${line}`);
+  assert.match(flat, /phosphor —[\s\S]*?site palette, unpinned/, 'the printer should mark this site’s own palette as unpinned');
+
+  // And the markdown branch is what DESIGN.md actually quotes, so it gets checked too: a guest row
+  // must carry its pin coverage, and this site's own palette must not look pinned.
+  const md = spawn([]);
+  assert.match(md, new RegExp(`^\\| \`dracula\` \\| #282a36 \\| pinned ${total}/${total}, AA nudges declared`, 'm'), `no pin coverage in DESIGN.md's Dracula row:\n${md}`);
+  assert.match(md, /^\| Theme \| Ground \| Provenance \| Tokens \|$/m, 'the markdown tables lost their Provenance column');
+  assert.ok(!/\| \`phosphor\` \| #060606 \| pinned/.test(md), 'Phosphor is reported as pinned; it has no upstream pin');
+  return 'pin counts and per-token baselines reach both printer modes from the registry';
 });
 
 await check('print and forced colours still outrank every palette', () => {
