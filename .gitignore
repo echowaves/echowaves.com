@@ -36,3 +36,12 @@ yarn-error.log*
 
 # bmad: per-run rendered workflow copies, regenerated on demand
 _bmad/render/
+
+# Private by construction. These two record what the history rewrites removed — the
+# support ticket and this initiative's memory — so they stay local, not published.
+_bmad-output/echowaves-site/ux-site-redesign/github-purge-request.md
+_bmad-output/echowaves-site/ux-site-redesign/github-purge-request.txt
+_bmad-output/echowaves-site/ux-site-redesign/.memlog.md
+
+# The scrub rules are the client names themselves; they live in ~/.echowaves-local-imports
+scrub-rules.json

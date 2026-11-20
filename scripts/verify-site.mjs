@@ -15,6 +15,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { RULES_FILE, loadRules } from './scrub-attributions.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const SRC = path.join(ROOT, 'src');
@@ -542,6 +543,52 @@ await check('banned copy is detected', () => {
   const missed = fixtures.filter((fixture) => findCopyViolations([fixture]).length === 0);
   assert.deepEqual(missed, [], `these banned strings slipped through: ${missed.join(' | ')}`);
   return `${fixtures.length} fixture strings all rejected`;
+});
+
+// Client-attributed employer names are never committed here. The guard cannot carry the
+// names either — a tracked denylist is a publication — so it reads the same out-of-repo
+// rules file scripts/scrub-attributions.mjs scrubs with, and skips when that file is absent.
+await check('no client-attributed employer detail in tracked files', () => {
+  let rules;
+  try {
+    rules = loadRules();
+  } catch (error) {
+    skip(error.message.split('\n')[0]);
+  }
+
+  // A rule that matches nothing is a broken rule, and a broken rule is how a scrubber
+  // reports success over text it never touched. Literal rules must at least match the
+  // file that declares them.
+  const rulesText = readFileSync(RULES_FILE, 'utf8');
+  const deadRules = rules
+    .filter(({ re }) => !/[\\^$.*+?()[\]{}|]/.test(re.source))
+    .filter(({ re }) => !(rulesText.match(re) || []).length);
+  assert.deepEqual(
+    deadRules.map(({ re }) => re.source),
+    [],
+    `these rules match nothing, not even the file declaring them:\n     ${deadRules
+      .map(({ re }) => re.source)
+      .join('\n     ')}`
+  );
+
+  const listed = spawnSync('git', ['ls-files', '-z'], { cwd: ROOT, encoding: 'utf8' });
+  if (listed.status !== 0) skip(`git ls-files exited ${listed.status}`);
+  const tracked = listed.stdout.split('\0').filter(Boolean);
+  const violations = [];
+  for (const rel of tracked) {
+    let text;
+    try {
+      text = readFileSync(path.join(ROOT, rel), 'utf8');
+    } catch {
+      continue; // binary or unreadable: nothing textual to find
+    }
+    for (const { re } of rules) {
+      const hits = text.match(re);
+      if (hits) violations.push(`${rel}: ${hits.length} × /${re.source}/`);
+    }
+  }
+  assert.equal(violations.length, 0, `\n     ${violations.join('\n     ')}`);
+  return `${tracked.length} tracked files scanned against ${rules.length} rules`;
 });
 
 /** A product naming a store must link to that store; guessing one is worse than none. */

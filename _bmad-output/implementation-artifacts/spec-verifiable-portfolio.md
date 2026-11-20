@@ -79,7 +79,7 @@ context:
 ## Implementation Notes
 
 - Route narrowed from the brainstorm intent: interactive baseline diagnostic, Agentic Readiness Standard page, public dated log, and talks archive deferred to `_bmad-output/implementation-artifacts/deferred-work.md`.
-- Claims come only from the user-supplied executive resume summary (`[executive summary import, kept outside the repository]`, read via `python3 -c` unzip of `word/document.xml`). Anything whose public wording needs sign-off is marked `needsReview` and listed by `npm run verify`.
+- Claims come only from the user-supplied executive resume summary (a `.docx` kept outside the repository under `~/.echowaves-local-imports/`, read via `python3 -c` unzip of `word/document.xml`). Anything whose public wording needs sign-off is marked `needsReview` and listed by `npm run verify`.
 - Matrix coverage: no test runner exists in this repo and none may be added, so each I/O row is covered by an assertion inside `scripts/verify-content.mjs` (run via `npm run verify`, zero dependencies): registry fallback exercised with `ECHOWAVES_OFFLINE=1`, claim-schema violations and banned-copy violations exercised against fixture strings, `/impact.json` shape compared against the rendered ledger. Each check prints `PASS <matrix row>` so the run output is the evidence.
 - Live registry figures come from build-time fetch of the npm registry (`https://api.npmjs.org/downloads/point/last-week/<pkg>`) and GitHub API (`https://api.github.com/repos/echowaves/<repo>`), isolated in one helper with per-provider try/catch so an offline build degrades to no-figures rather than failure.
 

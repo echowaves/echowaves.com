@@ -2,62 +2,80 @@
 // One-off scrub of client-attributed employment detail from _bmad-output artifacts,
 // so the folder can be versioned. Numbers stay (the site already publishes them
 // unattributed); employer and awarding-body names go.
-import { readdirSync, statSync, readFileSync, writeFileSync } from 'node:fs';
-import { join } from 'node:path';
+//
+// The names themselves live OUTSIDE this repository, in a JSON rules file, because a
+// tracked scrubber would re-publish exactly what it removes. `npm run verify` reads the
+// same file so the names cannot creep back into a commit unnoticed.
+//
+//   node scripts/scrub-attributions.mjs [root] [rulesFile]
+import { readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 
 const ROOT = process.argv[2] ?? '_bmad-output';
-const DASH = '[\\u2013\\u2014-]'; // en dash, em dash, hyphen
 
-// Ordered: specific phrasings first, bare names last.
-const RULES = [
-  [new RegExp(`J\\.?D\\.? ?Power:? ?an employer`, 'gi'), 'the awarding body'],
-  [/Does the J\.D\. Power attribution stay company-level \(already public reporting\)/gi, 'Does the awarding-body attribution stay company-level (already public reporting)'],
-  [/externally published and curre/gi, 'published and curre'],
-  [new RegExp(`J\\.?D\\.? ?Power`, 'gi'), 'the awarding body'],
-  [new RegExp(`(2011${DASH}\\s?15)\\s*,?\\s*VP of SWE, an employer`, 'gi'), '$1 VP of SWE at an employer'],
-  [new RegExp(`an employer VP of SWE (2011${DASH}2015)`, 'gi'), 'VP of SWE at an employer $1'],
-  [/VP SWE, an employer/gi, 'VP SWE at an employer'],
-  [/@ an employer \(VP SWE\)/gi, 'at an employer (VP SWE)'],
-  [/\(an employer\)/gi, '(an employer)'],
-  [/· an employer/gi, '· an employer'],
-  [/an employer/gi, 'an employer'],
-  [/an employer mobile/gi, 'enterprise mobile at an employer'],
-  [/an employer \(Fortune 100\)/gi, 'a Fortune 100 employer'],
-  [/an employer, Mobile/gi, 'an employer, Mobile'],
-  [/an employer · Fortune 100/gi, 'a Fortune 100 employer'],
-  [/an employer · People Leader, Mobile Engineering/gi, 'People Leader, Mobile Engineering at a Fortune 100 employer'],
-  [/At an employer I cut/gi, 'At one employer I cut'],
-  [/'an employer Mobile, /g, "'Enterprise Mobile at an Employer, "],
-  [/an employer/gi, 'an employer'],
-  [/an employer/g, 'an employer'],
-];
+/** Where the client names live. Kept outside the repository on purpose. */
+export const RULES_FILE =
+  process.argv[3] ??
+  process.env.ECHOWAVES_SCRUB_RULES ??
+  path.join(os.homedir(), '.echowaves-local-imports', 'scrub-rules.json');
 
+/** Reads [{ pattern, flags, replacement }] in the order they must be applied. */
+export function loadRules(file = RULES_FILE) {
+  let raw;
+  try {
+    raw = JSON.parse(readFileSync(file, 'utf8'));
+  } catch (error) {
+    if (error.code === 'ENOENT') {
+      throw new Error(
+        `no scrub rules file at ${file}\n` +
+          '     it holds the client names and lives outside the repository; pass a path or set ECHOWAVES_SCRUB_RULES'
+      );
+    }
+    throw error;
+  }
+  if (!Array.isArray(raw.rules) || raw.rules.length === 0) {
+    throw new Error(`${file} must hold a non-empty "rules" array of { pattern, flags, replacement }`);
+  }
+  return raw.rules.map(({ pattern, flags = 'gi', replacement }) => ({
+    re: new RegExp(pattern, flags),
+    replacement,
+  }));
+}
+
+/** Every text artifact the scrubber is allowed to touch. */
 function walk(dir, out = []) {
-  for (const e of readdirSync(dir)) {
-    const p = join(dir, e);
+  for (const entry of readdirSync(dir)) {
+    const p = path.join(dir, entry);
     const st = statSync(p);
     if (st.isDirectory()) walk(p, out);
-    else if (/\.(md|html|txt|yaml|json)$/.test(e)) out.push(p);
+    else if (/\.(md|html|txt|yaml|json)$/.test(entry)) out.push(p);
   }
   return out;
 }
 
-let files = 0;
-let hits = 0;
-for (const file of walk(ROOT)) {
-  const before = readFileSync(file, 'utf8');
-  let after = before;
-  for (const [re, to] of RULES) {
-    const n = (after.match(re) || []).length;
-    if (n) {
-      hits += n;
-      after = after.replace(re, to);
+const invokedDirectly =
+  process.argv[1] && path.resolve(process.argv[1]) === path.resolve(new URL(import.meta.url).pathname);
+
+if (invokedDirectly) {
+  const rules = loadRules();
+  let files = 0;
+  let hits = 0;
+  for (const file of walk(ROOT)) {
+    const before = readFileSync(file, 'utf8');
+    let after = before;
+    for (const { re, replacement } of rules) {
+      const n = (after.match(re) || []).length;
+      if (n) {
+        hits += n;
+        after = after.replace(re, replacement);
+      }
+    }
+    if (after !== before) {
+      writeFileSync(file, after);
+      files++;
+      console.log(`scrubbed ${file}`);
     }
   }
-  if (after !== before) {
-    writeFileSync(file, after);
-    files++;
-    console.log(`scrubbed ${file}`);
-  }
+  console.log(`\n${files} files changed, ${hits} replacements`);
 }
-console.log(`\n${files} files changed, ${hits} replacements`);
