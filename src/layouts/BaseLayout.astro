@@ -224,6 +224,15 @@ const themeScript = `(${function () {
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/manifest.json" />
 
+    <!--
+      Agent discovery, advertised from the markup as well as served at the well-known paths:
+      an agent that never thinks to probe a path still finds the catalog by reading the page.
+      Both files are written by src/integrations/agent-discovery.ts from this module's own data,
+      so what is advertised here cannot point anywhere the build did not produce.
+    -->
+    <link rel="ard" href="/.well-known/ard.json" />
+    <link rel="ai-catalog" href="/.well-known/ai-catalog.json" />
+
     <script is:inline set:html={themeScript} />
 
     <!-- Google tag (gtag.js) -->

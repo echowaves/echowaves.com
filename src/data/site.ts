@@ -594,3 +594,186 @@ export function buildAppsJsonLd() {
     ];
   });
 }
+
+/** Where this site is published. Every discovery URL is built from here, so none is typed twice. */
+export const siteOrigin = 'https://echowaves.com';
+
+/** The Agentic Resource Discovery spec version the catalog is written against. */
+export const ARD_SPEC_VERSION = '1.0';
+
+const hostIdentifier = new URL(siteOrigin).host;
+const publisher = { identifier: hostIdentifier, displayName: 'Echowaves' };
+
+/** Absolute URL for a path on this site. */
+export function siteUrl(pathname: string): string {
+  const at = pathname.startsWith('/') ? pathname : `/${pathname}`;
+  return `${siteOrigin}${at === '/' ? '' : at}`;
+}
+
+/** Same, for a link that may already be absolute — the store links are. */
+export function absoluteUrl(href: string): string {
+  return /^https?:\/\//.test(href) ? href : siteUrl(href);
+}
+
+/** `urn:air:{publisher}:{namespace}:{name}` names are flat, so a path becomes one segment. */
+function slug(pathname: string): string {
+  const parts = pathname.split('/').filter(Boolean);
+  return parts.length === 0 ? 'index' : parts.join('-');
+}
+
+/**
+ * The pages an agent should be able to reach: every tab, the two utility pages, and the
+ * WiSaw build story. `/wisaw` is absent for the reason `astro.config.mjs` gives for the
+ * sitemap — it canonicalises to `/builds/wisaw`, so publishing both would list one story twice.
+ */
+export function discoveryPages(): { href: string; title: string; description: string }[] {
+  return [
+    ...pages.map(({ href, title, description }) => ({ href, title, description })),
+    {
+      href: utilityPages.support.href,
+      title: utilityPages.support.title,
+      description: utilityPages.support.description,
+    },
+    {
+      href: utilityPages.privacy.href,
+      title: utilityPages.privacy.title,
+      description: utilityPages.privacy.description,
+    },
+    { href: '/builds/wisaw', title: wisawStory.title, description: wisawStory.pageDescription },
+  ];
+}
+
+/** Source repositories behind the packages and apps this site advertises. */
+export function discoveryRepositories(): { name: string; url: string; summary: string }[] {
+  const repos = packages.map((pkg) => ({
+    name: pkg.repo,
+    url: `https://github.com/echowaves/${pkg.repo}`,
+    summary: pkg.summary,
+  }));
+  for (const product of products) {
+    for (const link of product.links) {
+      if (!link.href.startsWith('https://github.com/')) continue;
+      const name = link.href.split('/').filter(Boolean).pop() ?? '';
+      repos.push({ name, url: link.href, summary: `${product.name}: ${product.summary}` });
+    }
+  }
+  return repos;
+}
+
+export interface CatalogEntry {
+  identifier: string;
+  type: string;
+  url: string;
+  displayName: string;
+  description?: string;
+  publisher?: { identifier: string; displayName: string };
+}
+
+/**
+ * The ARD v1.0 catalog, written to `/.well-known/ard.json` and `/.well-known/ai-catalog.json`
+ * by src/integrations/agent-discovery.ts, and advertised from every page's head. An agent that
+ * probes either path gets JSON instead of the HTML 404 it used to get.
+ *
+ * Every entry points at something that already exists: a page this build emits, or a URL the
+ * site itself already publishes out of this module. Nothing here is typed by hand, which is what
+ * lets scripts/verify-site.mjs refuse an entry whose target has gone missing.
+ */
+export function buildAiCatalog(): {
+  specVersion: string;
+  host: { displayName: string; identifier: string; documentationUrl: string };
+  entries: CatalogEntry[];
+} {
+  const entries: CatalogEntry[] = [
+    ...discoveryPages().map((page) => ({
+      identifier: `urn:air:${hostIdentifier}:page:${slug(page.href)}`,
+      type: 'text/html',
+      url: siteUrl(page.href),
+      displayName: page.title,
+      description: page.description,
+    })),
+    {
+      identifier: `urn:air:${hostIdentifier}:dataset:impact`,
+      type: 'application/json',
+      url: siteUrl('/impact.json'),
+      displayName: 'Impact figures (JSON)',
+      description:
+        'The delivery figures, products and packages this site renders, as machine-readable data built from the same module.',
+    },
+    ...packages.map((pkg) => ({
+      identifier: `urn:air:${hostIdentifier}:npm:${pkg.npmPackage}`,
+      type: 'text/html',
+      url: `https://www.npmjs.com/package/${pkg.npmPackage}`,
+      displayName: pkg.name,
+      description: pkg.summary,
+      publisher,
+    })),
+    ...discoveryRepositories().map((repo) => ({
+      identifier: `urn:air:${hostIdentifier}:git:${repo.name}`,
+      type: 'text/html',
+      url: repo.url,
+      displayName: `${repo.name} source`,
+      description: repo.summary,
+      publisher,
+    })),
+  ];
+
+  return {
+    specVersion: ARD_SPEC_VERSION,
+    host: {
+      displayName: 'Echowaves',
+      identifier: hostIdentifier,
+      documentationUrl: siteUrl('/method/'),
+    },
+    entries,
+  };
+}
+
+/**
+ * llms.txt in llms.txt.org order — H1, blockquote summary, detail, then sections of links —
+ * which is also what the PageSpeed agent-discoverability audit checks for: at least one H1 and
+ * at least one link. Titles and descriptions are the ones the pages themselves use, so the file
+ * cannot disagree with what it lists.
+ */
+export function buildLlmsTxt(): string {
+  const lines = [
+    '# Echowaves',
+    '',
+    `> ${pages[0].description}`,
+    '',
+    `${identity.name}, ${identity.location}. A static site with no accounts, no forms and no login; the contact address is ${identity.email}. Two machine-readable reads of the same content: ${siteUrl('/impact.json')} for the figures, and ${siteUrl('/.well-known/ai-catalog.json')} as an ARD ${ARD_SPEC_VERSION} catalog of every resource listed below.`,
+    '',
+    '## Pages',
+    '',
+    ...discoveryPages().map((page) => `- [${page.title}](${siteUrl(page.href)}): ${page.description}`),
+    '',
+    '## Packages',
+    '',
+    ...packages.map(
+      (pkg) =>
+        `- [${pkg.name}](https://www.npmjs.com/package/${pkg.npmPackage}): ${pkg.summary} Source: https://github.com/echowaves/${pkg.repo}`
+    ),
+    '',
+    '## Products',
+    '',
+    ...products.map(
+      (product) =>
+        `- [${product.name}](${siteUrl('/builds/')}) (${product.kind}): ${product.summary} ${product.links
+          .map((link) => `[${link.label}](${absoluteUrl(link.href)})`)
+          .join(' ')}`
+    ),
+    '',
+    // No source-code section: each package line above already carries its repository, and the
+    // app repositories are linked from their product. Repeating them would only give an agent
+    // two places to read the same URL.
+    '## Elsewhere',
+    '',
+    ...identity.links.map((link) => `- [${link.label}](${link.href})`),
+    '',
+    '## Machine-readable',
+    '',
+    `- [Impact figures (JSON)](${siteUrl('/impact.json')}): the delivery figures, products and packages this site renders, as data`,
+    `- [Resource catalog (ARD ${ARD_SPEC_VERSION})](${siteUrl('/.well-known/ai-catalog.json')}): every resource above, with identifiers and types`,
+    '',
+  ];
+  return lines.join('\n');
+}

@@ -31,6 +31,18 @@
   summary: Nothing runs `npm run verify` automatically — `.github/` has no workflows, so every guard in this repo, including the new palette freeze, fires only when someone runs the command locally.
   evidence: Pre-existing repo-wide condition (the site is deployed manually by its owner, by ruling), but the fidelity guard's claim that "prose becomes a build failure" rests on it. Settles with one CI job running `npm run check` on push, or the owner's explicit decision that local discipline is enough for a manually deployed site.
 
+- source_spec: `_bmad-output/specs/spec-agent-discovery-and-contrast`
+  summary: The critical path pays for a separate stylesheet — PageSpeed reports `_astro/BaseLayout.ehcjp4p0.css` as render-blocking (2.9 KiB, 160 ms) with LCP element render delay 190 ms and no preconnect candidates.
+  evidence: Real at HEAD, not deployment lag: the audited file's content hash matches what `npm run build` emits today. Nothing in the agent-discovery spec covers it — that spec's capabilities are discovery files and gates. Inlining the stylesheet or splitting a critical block is a rendering decision that touches every palette's paint order, so it belongs with DESIGN.md's owner rather than smuggled in beside a JSON artifact.
+
+- source_spec: `_bmad-output/specs/spec-agent-discovery-and-contrast`
+  summary: gtag.js is the site's only remaining third-party script and shows up as "Reduce unused JavaScript, 76 KiB" plus two long tasks.
+  evidence: [BaseLayout.astro](../../src/layouts/BaseLayout.astro) loads `googletagmanager.com/gtag/js` with an inline config block; verify proves no first-party bundle, so this is the whole JS story. Removing or deferring it is a privacy and analytics decision the site already documents on `/privacy`, not a performance one — settling means deciding whether aggregate page counts are worth 76 KiB of third-party code.
+
+- source_spec: `_bmad-output/specs/spec-agent-discovery-and-contrast`
+  summary: The Best Practices block asks for CSP, HSTS, COOP, X-Frame-Options and Trusted Types; none is reachable from this repository.
+  evidence: Every one is a response header, and the spec's constraint forbids hosting or server configuration changes because echowaves.com is deployed by hand. Recorded so the score is understood as owner-only work rather than an open engineering gap.
+
 ## Resolved
 
 - source_spec: `_bmad-output/implementation-artifacts/spec-aa-text-contrast.md`

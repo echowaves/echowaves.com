@@ -1,5 +1,6 @@
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
+import agentDiscovery from './src/integrations/agent-discovery.ts';
 
 export default defineConfig({
   site: 'https://echowaves.com',
@@ -9,5 +10,5 @@ export default defineConfig({
   // shared years ago rendered without a title or social card. src/pages/wisaw.astro
   // is a real page that carries the metadata and still forwards. It stays out of the
   // sitemap because /builds/wisaw is the canonical URL for the same story.
-  integrations: [sitemap({ filter: (page) => !page.endsWith('/wisaw/') })],
+  integrations: [sitemap({ filter: (page) => !page.endsWith('/wisaw/') }), agentDiscovery()],
 });

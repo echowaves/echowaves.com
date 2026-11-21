@@ -39,10 +39,12 @@ A mandate to meet, with an opportunity attached. Google's Lighthouse added agent
 
 - **No build on this site may ever attempt to deploy it.** echowaves.com is always deployed manually by Dmitry: no deploy, publish, or go-live step belongs in any plan, script, or workflow produced from this spec.
 - No hosting or server/header configuration changes either. Every artifact must be a static file the Astro build emits into `dist/`, which rules out CDN or nginx header rules as the mechanism.
-- The site ships zero JavaScript and stays that way. Agent discovery is static files plus markup — never a client-side manifest generator.
+- The site ships no first-party JavaScript and stays that way (the third-party analytics tag and the inline theme runtime are separate decisions, not this one). Agent discovery is static files plus markup — never a client-side manifest generator.
 - Catalog entries are valid against ARD spec v1.0: `specVersion` and `entries[]` required; each entry carries an `urn:air:{publisher}:{namespace}:{name}` identifier, a media `type`, and exactly one of `url` or `data`.
 - `llms.txt` follows llms.txt.org section order (H1, blockquote summary, optional detail, `## File Structure`) and satisfies Lighthouse's two checks: at least one H1, at least one link.
 - Catalog entries cite only resources whose URLs come from the `src/data` modules the verify gate already scans — no hand-typed URLs, matching the site rule that every claim carries a source.
+- Entry scope is what the site already publishes: its pages, `/impact.json`, and the npm and source-repository links drawn from the package and product data. Generated Markdown renditions are out unless someone first publishes them as real files (owner ruling, 2026-11-20).
+- `/wisaw` is not listed in either artifact: it canonicalises to `/builds/wisaw`, which `astro.config.mjs` already keeps out of the sitemap for the same reason. Listing both would give an agent two URLs for one story.
 
 ## Non-goals
 
@@ -60,12 +62,10 @@ A fresh Lighthouse run on a site built from this HEAD reports zero errors under 
 ## Assumptions
 
 - Both `/.well-known/ard.json` (what Lighthouse probes) and `/.well-known/ai-catalog.json` (the ARD v1.0 well-known path) are served with identical content, plus an HTML `<link>`, rather than betting on one name.
-- The contrast failure belongs to the deployed CSS, not HEAD: all eight palettes measure ≥ 4.5:1 for every text role at HEAD, and the hero's copy-on-raised role is 4.55:1 at its worst (Dracula).
+- The contrast failure cannot be written off as stale deployment: the audit names `_astro/BaseLayout.ehcjp4p0.css` and a build of HEAD emits that same content hash, so the audited CSS is HEAD's. All eight palettes measure ≥ 4.5:1 for every text role at HEAD (hero copy-on-raised worst case 4.55:1, Dracula), so CAP-4 closes by measuring the reported element and naming its surface — not by shipping. See `audit-ledger.md`.
 - The prior UX review's note about eleven sub-AA ratios in published palettes is superseded by commit `6c0c34d`, which nudged every palette's text roles to AA.
 
 ## Open Questions
 
 - Can the manual deploy path set `Content-Type: application/ai-catalog+json` on the catalog files? If it cannot, valid JSON served under any type still passes Lighthouse, which parses the body — so this is a polish item, not a blocker.
-- Should `/wisaw` (a 270-word stub canonicalising to `/builds/wisaw`) appear in `llms.txt` and the catalog, or be excluded as duplicate content?
-- Which artifact types are in scope for catalog entries: links to real pages and package repositories only, or also generated Markdown renditions that would have to be published first?
 - Are thin-page findings (e.g. `/contact` at 96 visible words) in scope here, or out as content work?

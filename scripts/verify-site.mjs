@@ -720,6 +720,269 @@ await check('/impact.json matches the content the site renders', () => {
   return `${payload.claims.length} claims identical in payload and rendered pages`;
 });
 
+const DIST = path.join(ROOT, 'dist');
+
+// --- Agent discovery -----------------------------------------------------------
+// CAP-1..CAP-3 and CAP-5 of _bmad-output/specs/spec-agent-discovery-and-contrast. Until
+// src/integrations/agent-discovery.ts existed, an agent that probed /.well-known/ard.json got
+// the HTML 404 page — which is what PageSpeed reported as "ARD manifest is invalid". These
+// checks hold both artifacts to the spec's own rules and to the build that emitted them, so a
+// deleted, malformed or stale file fails `npm run verify` instead of quietly shipping.
+
+/** Every absolute URL the site publishes out of its own data modules. */
+function publishedUrls() {
+  const urls = new Set();
+  for (const link of site.identity.links) urls.add(link.href);
+  for (const product of site.products) {
+    for (const link of product.links) urls.add(site.absoluteUrl(link.href));
+  }
+  for (const pkg of site.packages) {
+    urls.add(`https://www.npmjs.com/package/${pkg.npmPackage}`);
+    urls.add(`https://github.com/echowaves/${pkg.repo}`);
+  }
+  for (const page of site.discoveryPages()) urls.add(site.siteUrl(page.href));
+  urls.add(site.siteUrl('/impact.json'));
+  urls.add(site.siteUrl('/.well-known/ai-catalog.json'));
+  urls.add(site.siteUrl('/.well-known/ard.json'));
+  return urls;
+}
+
+/**
+ * Why a discovery URL is not safe to publish, or null when it is. A URL earns its place by
+ * being one the site already shows somewhere (CAP-3: no hand-typed URLs), and anything on our
+ * own origin must also be a file this build actually emitted.
+ */
+function discoveryProblem(url, { published }) {
+  if (typeof url !== 'string' || !/^https?:\/\//.test(url)) {
+    return `${JSON.stringify(url)} is not an absolute http(s) URL`;
+  }
+  let at;
+  try {
+    at = new URL(url);
+  } catch {
+    return `${url} does not parse as a URL`;
+  }
+  if (!published.has(url)) return 'is not a URL this site publishes from its data modules';
+  if (at.host !== new URL(site.siteOrigin).host) return null;
+
+  const pathname = at.pathname === '' ? '/' : at.pathname;
+  const file = pathname.replace(/^\//, '');
+  const candidates = [
+    path.join(DIST, pathname, 'index.html'),
+    path.join(DIST, file),
+    path.join(DIST, `${file}.html`),
+  ];
+  return candidates.some((candidate) => existsSync(candidate))
+    ? null
+    : 'is on this origin but has no matching file in dist/';
+}
+
+/** ARD v1.0 rules the audit applies. Returns a finding per violation; empty means valid. */
+function findCatalogProblems(catalog, ctx) {
+  const problems = [];
+  if (catalog.specVersion !== site.ARD_SPEC_VERSION) {
+    problems.push(`specVersion is ${JSON.stringify(catalog.specVersion)}, expected "${site.ARD_SPEC_VERSION}"`);
+  }
+  if (!Array.isArray(catalog.entries) || catalog.entries.length === 0) {
+    problems.push('entries[] is missing or empty — a catalog that lists nothing proves nothing');
+    return problems;
+  }
+
+  const seen = new Set();
+  for (const [index, entry] of catalog.entries.entries()) {
+    const where = `entry ${index}`;
+    const identifier = entry?.identifier;
+    if (typeof identifier !== 'string' || !/^urn:air:[^:/]+:[a-z-]+:[^:/]+$/.test(identifier)) {
+      problems.push(`${where}: identifier ${JSON.stringify(identifier)} is not urn:air:{publisher}:{namespace}:{name}`);
+    } else if (seen.has(identifier)) {
+      problems.push(`${where}: identifier ${identifier} is listed twice`);
+    } else {
+      seen.add(identifier);
+    }
+
+    if (typeof entry?.type !== 'string' || !entry.type.includes('/')) {
+      problems.push(`${where}: type must be a media type like text/html`);
+    }
+    const hasUrl = typeof entry?.url === 'string' && entry.url.length > 0;
+    if (hasUrl === (entry?.data !== undefined)) {
+      problems.push(`${where}: needs exactly one of url or data, got ${hasUrl ? 'both' : 'neither'}`);
+    }
+    if (typeof entry?.displayName !== 'string' || entry.displayName.trim() === '') {
+      problems.push(`${where}: displayName is what an agent uses to choose what to open`);
+    }
+    if (hasUrl) {
+      const trouble = discoveryProblem(entry.url, ctx);
+      if (trouble) problems.push(`${where} (${identifier}): ${entry.url} ${trouble}`);
+    }
+  }
+  return problems;
+}
+
+/** llms.txt.org section order plus the two things the PageSpeed audit checks for. */
+function findLlmsProblems(text, ctx) {
+  const problems = [];
+  const lines = text.split('\n');
+  const nonEmpty = lines.findIndex((line) => line.trim() !== '');
+  const headings = lines.filter((line) => /^# /.test(line));
+
+  if (headings.length !== 1) problems.push(`${headings.length} H1 lines — llms.txt has exactly one, and it comes first`);
+  else if (nonEmpty !== lines.indexOf(headings[0])) problems.push('the H1 is not the first line of the file');
+
+  const summary = lines.findIndex((line) => line.startsWith('> '));
+  const firstSection = lines.findIndex((line) => /^## /.test(line));
+  if (summary === -1) problems.push('no blockquote summary under the H1');
+  else if (firstSection !== -1 && summary > firstSection) {
+    problems.push('the summary sits below a section heading — llms.txt.org wants it directly under the H1');
+  }
+  if (firstSection === -1) problems.push('no ## sections — an index is a list of links, not one paragraph');
+
+  const links = [...text.matchAll(/\[([^\]]+)\]\(([^)\s]+)\)/g)];
+  if (links.length === 0) problems.push('no links at all — nothing for an agent to follow');
+  for (const [, label, href] of links) {
+    const trouble = discoveryProblem(href, ctx);
+    if (trouble) problems.push(`[${label}](${href}) ${trouble}`);
+  }
+  return problems;
+}
+
+await check('the ARD catalog is valid 1.0 and every entry resolves', () => {
+  const names = ['ard.json', 'ai-catalog.json'];
+  const raw = {};
+  const problems = [];
+  for (const name of names) {
+    const file = path.join(DIST, '.well-known', name);
+    if (!existsSync(file)) {
+      problems.push(`dist/.well-known/${name} is missing — src/integrations/agent-discovery.ts writes it at build time`);
+      continue;
+    }
+    raw[name] = readFileSync(file, 'utf8');
+  }
+  if (problems.length > 0) throw new Error(`\n     ${problems.join('\n     ')}`);
+
+  // Both names carry the same bytes, so an agent cannot get a different answer from each.
+  assert.equal(raw['ard.json'], raw['ai-catalog.json'], 'the two well-known names disagree');
+
+  const parsed = JSON.parse(raw['ard.json']);
+  // Freshness over mtime: what ships must be what the current data modules say, so an entry
+  // for a deleted page cannot survive a rebuild.
+  assert.deepEqual(parsed, site.buildAiCatalog(), 'the catalog disagrees with src/data/site.ts — rebuild');
+
+  const found = findCatalogProblems(parsed, { published: publishedUrls() });
+  assert.deepEqual(found, [], `\n     ${found.join('\n     ')}`);
+  return `${parsed.entries.length} entries, JSON at both names`;
+});
+
+await check('a tampered catalog is refused by the shipped rule', () => {
+  const ctx = { published: publishedUrls() };
+  const good = site.buildAiCatalog();
+  const fixtures = {
+    'no specVersion': () => {
+      const copy = structuredClone(good);
+      delete copy.specVersion;
+      return copy;
+    },
+    'empty entries': () => ({ ...structuredClone(good), entries: [] }),
+    'entry with neither url nor data': () => {
+      const copy = structuredClone(good);
+      delete copy.entries[0].url;
+      return copy;
+    },
+    'entry with both url and data': () => {
+      const copy = structuredClone(good);
+      copy.entries[0].data = { any: 'thing' };
+      return copy;
+    },
+    'identifier that is not a urn:air name': () => {
+      const copy = structuredClone(good);
+      copy.entries[0].identifier = 'https://echowaves.com/';
+      return copy;
+    },
+    'duplicate identifier': () => {
+      const copy = structuredClone(good);
+      copy.entries[1].identifier = copy.entries[0].identifier;
+      return copy;
+    },
+    'entry with no displayName': () => {
+      const copy = structuredClone(good);
+      copy.entries[0].displayName = '  ';
+      return copy;
+    },
+    'page that was deleted from the site': () => {
+      const copy = structuredClone(good);
+      copy.entries[0].url = `${site.siteOrigin}/writing-deleted/`;
+      return copy;
+    },
+    'URL typed by hand rather than drawn from data': () => {
+      const copy = structuredClone(good);
+      copy.entries[0].url = 'https://example.com/not-linked-here';
+      return copy;
+    },
+  };
+
+  const slipped = [];
+  for (const [label, build] of Object.entries(fixtures)) {
+    if (findCatalogProblems(build(), ctx).length === 0) slipped.push(label);
+  }
+  assert.deepEqual(slipped, [], `tampered catalogs the rule accepted: ${slipped.join(', ')}`);
+  const clean = findCatalogProblems(good, ctx);
+  assert.deepEqual(clean, [], `the shipped catalog itself fails its own rule:\n     ${clean.join('\n     ')}`);
+  return `${Object.keys(fixtures).length} tampered catalogs refused`;
+});
+
+await check('llms.txt is an index an agent can follow', () => {
+  const file = path.join(DIST, 'llms.txt');
+  assert.ok(existsSync(file), 'dist/llms.txt is missing — src/integrations/agent-discovery.ts writes it at build time');
+  const text = readFileSync(file, 'utf8');
+  assert.equal(text, site.buildLlmsTxt(), 'dist/llms.txt disagrees with src/data/site.ts — rebuild');
+
+  const found = findLlmsProblems(text, { published: publishedUrls() });
+  assert.deepEqual(found, [], `\n     ${found.join('\n     ')}`);
+
+  // /wisaw canonicalises to /builds/wisaw and stays out of the sitemap for the same reason, so
+  // publishing it here too would hand an agent two URLs for one story.
+  const stub = site.siteUrl('/wisaw');
+  assert.ok(!text.includes(`](${stub})`), `llms.txt lists ${stub}, which canonicalises to /builds/wisaw`);
+
+  const sections = (text.match(/^## /gm) ?? []).length;
+  return `${sections} sections, ${(text.match(/\[[^\]]+\]\(/g) ?? []).length} links, no duplicate story`;
+});
+
+await check('a tampered llms.txt is refused by the shipped rule', () => {
+  const ctx = { published: publishedUrls() };
+  const good = site.buildLlmsTxt();
+  const fixtures = {
+    'no H1': (text) => text.replace(/^# Echowaves\n/, ''),
+    'two H1 lines': (text) => `# Second title\n${text}`,
+    'summary moved below a section': (text) =>
+      text.replace(/^> [^\n]*\n/m, '').replace('## Pages', `## Pages\n\n> Late summary.`),
+    'no links': () => '# Echowaves\n\n> A summary with nothing to follow.\n',
+    'link to a page that no longer builds': (text) => text.replace(/https:\/\/echowaves\.com\/writing\//, 'https://echowaves.com/writing-deleted/'),
+    'link typed by hand': (text) => text.replace('https://echowaves.com/method/', 'https://example.com/method'),
+  };
+
+  const slipped = [];
+  for (const [label, mutate] of Object.entries(fixtures)) {
+    if (findLlmsProblems(mutate(good), ctx).length === 0) slipped.push(label);
+  }
+  assert.deepEqual(slipped, [], `tampered llms.txt files the rule accepted: ${slipped.join(', ')}`);
+  return `${Object.keys(fixtures).length} tampered indexes refused`;
+});
+
+await check('every built page advertises the catalog that exists', () => {
+  const advertised = [
+    'rel="ard" href="/.well-known/ard.json"',
+    'rel="ai-catalog" href="/.well-known/ai-catalog.json"',
+  ];
+  const problems = [];
+  for (const page of builtPages()) {
+    const html = readFileSync(page, 'utf8');
+    const missing = advertised.filter((tag) => !html.includes(tag));
+    if (missing.length > 0) problems.push(`${path.relative(ROOT, page)}: ${missing.join(', ')}`);
+  }
+  assert.deepEqual(problems, [], `\n     ${problems.join('\n     ')}`);
+  return `${builtPages().length} pages link both discovery files`;
+});
+
 await check('every tab leads to a built page', () => {
   const built = new Set(
     builtPages().map((page) => {
